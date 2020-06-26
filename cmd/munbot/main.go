@@ -10,7 +10,7 @@ import (
 	"time"
 
 	"gobot.io/x/gobot"
-	//~ "gobot.io/x/gobot/api"
+	"gobot.io/x/gobot/api"
 
 	"github.com/jrmsdev/munbot/adaptor"
 	"github.com/jrmsdev/munbot/driver"
@@ -44,6 +44,11 @@ import (
 
 func main() {
 	master := gobot.NewMaster()
+
+	a := api.NewAPI(master)
+	//~ a.AddHandler(api.BasicAuth("munbot", "tobnum"))
+	a.Debug()
+	a.Start()
 
 	conn := adaptor.New()
 	dev := driver.New(conn)
