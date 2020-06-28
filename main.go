@@ -4,30 +4,18 @@
 package munbot
 
 import (
-	"fmt"
+	//~ "fmt"
 	//~ "html"
 	//~ "net/http"
-	"time"
+	//~ "time"
 
-	"gobot.io/x/gobot"
+	//~ "gobot.io/x/gobot"
 	//~ "gobot.io/x/gobot/api"
 
-	"github.com/jrmsdev/munbot/adaptor"
-	"github.com/jrmsdev/munbot/driver"
+	//~ "github.com/jrmsdev/munbot/adaptor"
+	//~ "github.com/jrmsdev/munbot/driver"
 	"github.com/jrmsdev/munbot/internal/api"
 )
-
-//~ func main() {
-//~ master := gobot.NewMaster()
-
-//~ a := api.NewAPI(master)
-//a.AddHandler(api.BasicAuth("munbot", "lalala"))
-//~ a.Debug()
-
-//~ a.AddHandler(func(w http.ResponseWriter, r *http.Request) {
-//~ fmt.Fprintf(w, "Hello, %q \n", html.EscapeString(r.URL.Path))
-//~ })
-//~ a.Start()
 
 //~ master.AddCommand("custom_gobot_command",
 //~ func(params map[string]interface{}) interface{} {
@@ -46,23 +34,23 @@ import (
 func (m *Master) Main() {
 	api.Start(m.Master)
 
-	conn := adaptor.New()
-	dev := driver.New(conn)
-	work := func() {
-		dev.On(dev.Event(driver.Hello), func(data interface{}) {
-			fmt.Println(data)
-		})
-		gobot.Every(3000*time.Millisecond, func() {
-			fmt.Println(dev.Ping())
-		})
-	}
-	robot := gobot.NewRobot(
-		"munbot",
-		[]gobot.Connection{conn},
-		[]gobot.Device{dev},
-		work,
-	)
+	//~ conn := adaptor.New()
+	//~ dev := driver.New(conn)
+	//~ work := func() {
+		//~ dev.On(dev.Event(driver.Hello), func(data interface{}) {
+			//~ fmt.Println(data)
+		//~ })
+		//~ gobot.Every(3000*time.Millisecond, func() {
+			//~ fmt.Println(dev.Ping())
+		//~ })
+	//~ }
+	//~ robot := gobot.NewRobot(
+		//~ "munbot",
+		//~ []gobot.Connection{conn},
+		//~ []gobot.Device{dev},
+		//~ work,
+	//~ )
 
-	m.AddRobot(robot)
+	//~ m.AddRobot(robot)
 	m.Start()
 }
