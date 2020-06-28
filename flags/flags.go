@@ -11,6 +11,7 @@ import (
 )
 
 var (
+	Debug bool = false
 	ConfigDir string = filepath.FromSlash("~/.config/munbot")
 	configDirErr error
 	ConfigDistDir string = filepath.FromSlash("/etc/munbot")
@@ -28,14 +29,12 @@ func Init() {
 	}
 	ConfigDir = filepath.Join(ConfigDir, MasterName)
 
-	flag.StringVar(&ConfigDir, "cfgdir", ConfigDir,
-		"config dir")
-	flag.StringVar(&ConfigDistDir, "cfgdistdir", ConfigDistDir,
-		"dist config dir")
-	flag.StringVar(&ConfigSysDir, "cfgsysdir", ConfigSysDir,
-		"system config dir")
-	flag.StringVar(&MasterName, "name", MasterName,
-		"master robot name")
+	flag.BoolVar(&Debug, "debug", Debug, "enable debug")
+
+	flag.StringVar(&ConfigDir, "cfgdir", ConfigDir, "config dir")
+	flag.StringVar(&ConfigDistDir, "cfgdistdir", ConfigDistDir, "dist config dir")
+	flag.StringVar(&ConfigSysDir, "cfgsysdir", ConfigSysDir, "system config dir")
+	flag.StringVar(&MasterName, "name", MasterName, "master robot name")
 }
 
 func Parse() {

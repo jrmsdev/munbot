@@ -12,7 +12,7 @@ import (
 	"gobot.io/x/gobot"
 	"gobot.io/x/gobot/api"
 
-	//~ "github.com/jrmsdev/munbot"
+	"github.com/jrmsdev/munbot/flags"
 )
 
 //~ func main() {
@@ -29,7 +29,9 @@ import (
 
 func Start(m *gobot.Master) {
 	a := api.NewAPI(m)
+	if flags.Debug {
+		a.Debug()
+	}
 	//~ a.AddHandler(api.BasicAuth("munbot", "tobnum"))
-	a.Debug()
 	a.Start()
 }
