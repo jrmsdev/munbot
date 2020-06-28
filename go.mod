@@ -1,5 +1,5 @@
 module github.com/jrmsdev/munbot
 
-go 1.14
+go 1.13
 
 require gobot.io/x/gobot v1.14.0

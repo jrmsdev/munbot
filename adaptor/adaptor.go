@@ -17,7 +17,9 @@ func New() *Adaptor {
 	}
 }
 
-func (a *Adaptor) Name() string { return a.name }
+func (a *Adaptor) Name() string {
+	return a.name
+}
 
 func (a *Adaptor) SetName(name string) {
 	a.name = name
