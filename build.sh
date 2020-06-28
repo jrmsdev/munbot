@@ -3,6 +3,9 @@ set -eu
 SRC=${1:-''}
 if test '' = "${SRC}"; then
 	SRC='munbot'
+elif test 'munbot' = "${SRC}"; then
+	SRC='munbot'
+	shift
 else
 	SRC="munbot-${SRC}"
 	shift
