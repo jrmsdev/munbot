@@ -9,7 +9,8 @@ import (
 )
 
 func main() {
+	flags.Init()
 	flags.Parse()
-	cfg := munbot.NewConfig("munbot")
+	cfg := munbot.NewConfig(flags.MasterName)
 	println(cfg.String())
 }
