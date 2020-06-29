@@ -5,6 +5,7 @@ package munbot
 
 import (
 	"io"
+	"os"
 	"path/filepath"
 
 	"github.com/jrmsdev/munbot/flags"
@@ -34,6 +35,8 @@ func (c *Config) Read(fh io.ReadCloser) error {
 	return nil
 }
 
+var fileOpen = os.Open
+
 func Configure() *Config {
 	dirs := []string{
 		flags.ConfigDistDir,
@@ -44,7 +47,18 @@ func Configure() *Config {
 	cfg := newConfig()
 	for _, dn := range dirs {
 		fn := filepath.Join(dn, flags.ConfigFile)
-		log.Debugf("read %s", fn)
+		fh, err := fileOpen(fn)
+		if err != nil {
+			if os.IsNotExist(err) {
+				log.Debugf("read %s", err)
+			} else {
+				log.Panic(err)
+			}
+		}
+		if err := cfg.Read(fh); err != nil {
+			log.Debugf("read %s", fn)
+			log.Panic(err)
+		}
 	}
 	return cfg
 }
