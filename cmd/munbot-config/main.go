@@ -16,6 +16,6 @@ func main() {
 	flags.Parse(os.Args[1:])
 	log.Debug("start")
 	cfg := munbot.Configure()
-	println(cfg.String())
+	log.Debug(cfg)
 	log.Debug("end")
 }

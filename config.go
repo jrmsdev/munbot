@@ -54,10 +54,11 @@ func Configure() *Config {
 			} else {
 				log.Panic(err)
 			}
-		}
-		if err := cfg.Read(fh); err != nil {
+		} else {
 			log.Debugf("read %s", fn)
-			log.Panic(err)
+			if err := cfg.Read(fh); err != nil {
+				log.Panic(err)
+			}
 		}
 	}
 	return cfg
