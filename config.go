@@ -4,7 +4,9 @@
 package munbot
 
 import (
+	"encoding/json"
 	"io"
+	"io/ioutil"
 	"os"
 	"path/filepath"
 
@@ -12,26 +14,27 @@ import (
 	"github.com/jrmsdev/munbot/log"
 )
 
-type MasterConfig struct {
+type Config struct {
 	Name string `json:"name,omitempty"`
 }
 
-type Config struct {
-	Master *MasterConfig `json:"master,omitempty"`
-}
-
 func newConfig() *Config {
-	return &Config{
-		&MasterConfig{Name: "munbot"},
-	}
+	return &Config{Name: "munbot"}
 }
 
 func (c *Config) String() string {
-	return c.Master.Name
+	return c.Name
 }
 
 func (c *Config) Read(fh io.ReadCloser) error {
 	defer fh.Close()
+	blob, err := ioutil.ReadAll(fh)
+	if err != nil {
+		return log.Error(err)
+	}
+	if err := json.Unmarshal(blob, c); err != nil {
+		return log.Error(err)
+	}
 	return nil
 }
 
@@ -50,14 +53,14 @@ func Configure() *Config {
 		fh, err := fileOpen(fn)
 		if err != nil {
 			if os.IsNotExist(err) {
-				log.Debugf("read %s", err)
+				log.Debug(err)
 			} else {
-				log.Panic(err)
+				log.Panicf("%s: %s", fn, err)
 			}
 		} else {
 			log.Debugf("read %s", fn)
 			if err := cfg.Read(fh); err != nil {
-				log.Panic(err)
+				log.Panicf("%s: %s", fn, err)
 			}
 		}
 	}
