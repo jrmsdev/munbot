@@ -4,13 +4,13 @@
 package log
 
 import (
+	"errors"
 	"fmt"
 	gol "log"
 )
 
 var (
 	cdepth int = 2
-	defFlags int = gol.Flags()
 	debug bool = false
 	debugFlags int = gol.Ldate | gol.Ltime | gol.Lmicroseconds | gol.Llongfile
 )
@@ -20,18 +20,13 @@ func DebugEnable() {
 	gol.SetFlags(debugFlags)
 }
 
-func DebugDisable() {
-	debug = false
-	gol.SetFlags(defFlags)
-}
-
 func Panic(v ...interface{}) {
-	gol.Output(cdepth, fmt.Sprint(v...))
+	gol.Output(cdepth, fmt.Sprintf("[PANIC] %s", fmt.Sprint(v...)))
 	panic("oops!!")
 }
 
 func Panicf(format string, v ...interface{}) {
-	gol.Output(cdepth, fmt.Sprintf(format, v...))
+	gol.Output(cdepth, fmt.Sprintf("[PANIC] %s", fmt.Sprintf(format, v...)))
 	panic("oops!!")
 }
 
@@ -53,4 +48,16 @@ func Debugf(format string, v ...interface{}) {
 	if debug {
 		gol.Output(cdepth, fmt.Sprintf(format, v...))
 	}
+}
+
+func Error(v ...interface{}) error {
+	err := errors.New(fmt.Sprint(v...))
+	gol.Output(cdepth, fmt.Sprintf("[ERROR] %s", err))
+	return err
+}
+
+func Errorf(format string, v ...interface{}) error {
+	err := errors.New(fmt.Sprintf(format, v...))
+	gol.Output(cdepth, fmt.Sprintf("[ERROR] %s", err))
+	return err
 }
