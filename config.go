@@ -3,14 +3,20 @@
 
 package munbot
 
-type Config struct {
-	name string
+type MasterConfig struct {
+	Name string `json:"name,omitempty"`
 }
 
-func NewConfig(name string) *Config {
-	return &Config{name}
+type Config struct {
+	Master *MasterConfig `json:"master,omitempty"`
+}
+
+func NewConfig() *Config {
+	return &Config{
+		&MasterConfig{Name: "munbot"},
+	}
 }
 
 func (c *Config) String() string {
-	return c.name
+	return c.Master.Name
 }
