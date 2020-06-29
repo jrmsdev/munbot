@@ -8,11 +8,14 @@ import (
 
 	"github.com/jrmsdev/munbot"
 	"github.com/jrmsdev/munbot/flags"
+	"github.com/jrmsdev/munbot/log"
 )
 
 func main() {
 	flags.Init("munbot-config")
 	flags.Parse(os.Args[1:])
+	log.Debug("start")
 	cfg := munbot.NewConfig(flags.MasterName)
 	println(cfg.String())
+	log.Debug("end")
 }

@@ -52,6 +52,9 @@ func Parse(args []string) {
 	if err != nil {
 		log.Panic(err)
 	}
+	if Debug {
+		log.DebugEnable()
+	}
 	if Version {
 		showVersion()
 	}
