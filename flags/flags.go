@@ -5,10 +5,10 @@ package flags
 
 import (
 	"flag"
-	"log"
 	"os"
 	"path/filepath"
 
+	"github.com/jrmsdev/munbot/log"
 	"github.com/jrmsdev/munbot/version"
 )
 

@@ -4,7 +4,7 @@
 package adaptor
 
 import (
-	"log"
+	"github.com/jrmsdev/munbot/log"
 )
 
 type Adaptor struct {

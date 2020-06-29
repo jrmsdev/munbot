@@ -4,12 +4,12 @@
 package driver
 
 import (
-	"log"
 	"time"
 
 	"gobot.io/x/gobot"
 
 	"github.com/jrmsdev/munbot/adaptor"
+	"github.com/jrmsdev/munbot/log"
 )
 
 const Hello string = "hello"
