@@ -14,7 +14,6 @@ import (
 
 	//~ "github.com/jrmsdev/munbot/adaptor"
 	//~ "github.com/jrmsdev/munbot/driver"
-	"github.com/jrmsdev/munbot/flags"
 	"github.com/jrmsdev/munbot/internal/api"
 )
 
@@ -33,9 +32,6 @@ import (
 //~ }
 
 func (m *Master) Main() {
-	flags.Init()
-	flags.Parse()
-
 	api.Start(m.Master)
 
 	//~ conn := adaptor.New()

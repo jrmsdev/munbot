@@ -19,24 +19,31 @@ var (
 	MasterName string = "munbot"
 )
 
+var fs *flag.FlagSet
+
 func init() {
 	ConfigDir, configDirErr = os.UserConfigDir()
 }
 
-func Init() {
+func Init(program string) {
+	fs = flag.NewFlagSet(program, flag.ExitOnError)
+
 	if configDirErr != nil {
 		log.Panic(configDirErr)
 	}
 	ConfigDir = filepath.Join(ConfigDir, MasterName)
 
-	flag.BoolVar(&Debug, "debug", Debug, "enable debug")
+	fs.BoolVar(&Debug, "debug", Debug, "enable debug")
 
-	flag.StringVar(&ConfigDir, "cfgdir", ConfigDir, "config dir")
-	flag.StringVar(&ConfigDistDir, "cfgdistdir", ConfigDistDir, "dist config dir")
-	flag.StringVar(&ConfigSysDir, "cfgsysdir", ConfigSysDir, "system config dir")
-	flag.StringVar(&MasterName, "name", MasterName, "master robot name")
+	fs.StringVar(&ConfigDir, "cfgdir", ConfigDir, "config dir")
+	fs.StringVar(&ConfigDistDir, "cfgdistdir", ConfigDistDir, "dist config dir")
+	fs.StringVar(&ConfigSysDir, "cfgsysdir", ConfigSysDir, "system config dir")
+	fs.StringVar(&MasterName, "name", MasterName, "master robot name")
 }
 
-func Parse() {
-	flag.Parse()
+func Parse(args []string) {
+	err := fs.Parse(args)
+	if err != nil {
+		log.Panic(err)
+	}
 }
