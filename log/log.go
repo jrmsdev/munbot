@@ -35,7 +35,7 @@ func Panicf(format string, v ...interface{}) {
 	panic("oops!!")
 }
 
-func Print(format string, v ...interface{}) {
+func Print(v ...interface{}) {
 	gol.Output(cdepth, fmt.Sprint(v...))
 }
 
