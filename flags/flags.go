@@ -20,6 +20,7 @@ var (
 	configDirErr  error
 	ConfigDistDir string = filepath.FromSlash("/etc/munbot")
 	ConfigSysDir  string = filepath.FromSlash("/usr/local/etc/munbot")
+	ConfigFile    string = "config.json"
 	MasterName    string = "munbot"
 )
 
@@ -41,10 +42,14 @@ func Init(program string) {
 	fs.BoolVar(&Debug, "debug", false, "enable debug")
 	fs.BoolVar(&Version, "version", false, "show version info and exit")
 
-	fs.StringVar(&ConfigDir, "cfgdir", ConfigDir, "config dir")
-	fs.StringVar(&ConfigDistDir, "cfgdistdir", ConfigDistDir, "dist config dir")
-	fs.StringVar(&ConfigSysDir, "cfgsysdir", ConfigSysDir, "system config dir")
-	fs.StringVar(&MasterName, "name", MasterName, "master robot name")
+	fs.StringVar(&ConfigDir, "cfgdir", ConfigDir,
+		"config dir `path`")
+	fs.StringVar(&ConfigDistDir, "cfgdistdir", ConfigDistDir,
+		"dist config dir `path`")
+	fs.StringVar(&ConfigSysDir, "cfgsysdir", ConfigSysDir,
+		"system config dir `path`")
+	fs.StringVar(&MasterName, "name", MasterName, "master `robot` name")
+	fs.StringVar(&ConfigFile, "cfg", ConfigFile, "config file `name`")
 }
 
 func Parse(args []string) {
