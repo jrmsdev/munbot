@@ -4,20 +4,27 @@
 package config
 
 type Manager struct {
+	registry
 }
 
 func New() *Manager {
-	return &Manager{}
+	return &Manager{make(registry)}
 }
 
 func (c *Manager) NewString(name string, defval string) *StringValue {
-	return &StringValue{newValue("string", name), defval}
+	v := &StringValue{newValue("string", name), defval}
+	c.registry[name] = v
+	return v
 }
 
 func (c *Manager) NewInt(name string, defval int) *IntValue {
-	return &IntValue{newValue("int", name), defval}
+	v := &IntValue{newValue("int", name), defval}
+	c.registry[name] = v
+	return v
 }
 
 func (c *Manager) NewBool(name string, defval bool) *BoolValue {
-	return &BoolValue{newValue("bool", name), defval}
+	v := &BoolValue{newValue("bool", name), defval}
+	c.registry[name] = v
+	return v
 }

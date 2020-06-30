@@ -108,16 +108,6 @@ func (c *Config) Write(fh io.Writer) error {
 	return nil
 }
 
-func (c *Config) Dump() {
-	log.Debug("dump")
-	for k, v := range c.reg {
-		fmt.Printf("%s=%s\n", k, *v)
-	}
-	for k, v := range c.db {
-		fmt.Printf("%s=%s\n", k, v)
-	}
-}
-
 func (c *Config) Update(key, newval string) error {
 	if _, ok := c.reg[key]; !ok {
 		return errors.New(fmt.Sprintf("invalid config key: %s", key))
