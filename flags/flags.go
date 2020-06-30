@@ -29,7 +29,7 @@ func init() {
 	ConfigDir, configDirErr = os.UserConfigDir()
 }
 
-func Init(program string) {
+func Init(program string) *flag.FlagSet {
 	progname = program
 	fs = flag.NewFlagSet(progname, flag.ExitOnError)
 
@@ -48,6 +48,8 @@ func Init(program string) {
 	fs.StringVar(&ConfigSysDir, "cfgsysdir", ConfigSysDir,
 		"system config dir `path`")
 	fs.StringVar(&ConfigFile, "cfg", ConfigFile, "config file `name`")
+
+	return fs
 }
 
 func Parse(args []string) {
