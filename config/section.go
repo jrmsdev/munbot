@@ -27,8 +27,8 @@ func (s *Section) Name() string {
 
 func (s *Section) Dump() {
 	for e := s.opt.Front(); e != nil; e = e.Next() {
-		k := e.Value.(Value)
-		fmt.Printf("%s.%s=\n", s.name, k.Name())
+		v := e.Value.(Value)
+		fmt.Printf("%s.%s=%v\n", s.name, v.Name(), v.String())
 	}
 }
 
