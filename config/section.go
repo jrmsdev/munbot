@@ -28,14 +28,24 @@ func (s *Section) Name() string {
 	return s.name
 }
 
-func (s *Section) Dump(out io.Writer, listAll bool) {
+func (s *Section) Dump(out io.Writer, listAll bool, section, opt string) {
 	for e := s.opt.Front(); e != nil; e = e.Next() {
 		v := e.Value.(Value)
-		if listAll || v.modified() {
+		f := s.filter(section, opt, s.name, v.Name())
+		if (listAll && f) || (v.modified() && f) || (f && section != "") {
 			io.WriteString(out,
 				fmt.Sprintf("%s.%s=%s\n", s.name, v.Name(), v.String()))
 		}
 	}
+}
+
+func (s *Section) filter(sect, opt, xs, xn string) bool {
+	if sect == "" || sect == xs {
+		if opt == "" || opt == xn {
+			return true
+		}
+	}
+	return false
 }
 
 func (s *Section) Update(opt, newval string) error {

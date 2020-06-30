@@ -10,6 +10,7 @@ import (
 	"fmt"
 	"io"
 	"io/ioutil"
+	"strings"
 )
 
 type Manager struct {
@@ -28,11 +29,23 @@ func (m *Manager) NewSection(name string) *Section {
 	return s
 }
 
-func (m *Manager) Dump(out io.Writer, listAll bool) {
+func (m *Manager) Dump(out io.Writer, listAll bool, filter string) {
 	for e := m.sect.Front(); e != nil; e = e.Next() {
 		s := e.Value.(*Section)
-		s.Dump(out, listAll)
+		section, opt := m.filter(filter)
+		s.Dump(out, listAll, section, opt)
 	}
+}
+
+func (m *Manager) filter(f string) (string, string) {
+	s := ""
+	n := ""
+	i := strings.Split(f, ".")
+	s = i[0]
+	if len(i) >= 1 {
+		n = strings.Join(i[1:], ".")
+	}
+	return s, n
 }
 
 func (m *Manager) Update(section, opt, newval string) error {
