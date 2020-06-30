@@ -8,17 +8,23 @@ import (
 	"fmt"
 )
 
-type registry map[string]Value
+type registry struct {
+	db map[string]Value
+}
 
-func (r registry) Dump() {
-	for k, v := range r {
+func newReg() *registry {
+	return &registry{make(map[string]Value)}
+}
+
+func (r *registry) Dump() {
+	for k, v := range r.db {
 		fmt.Printf("%s=%s\n", k, v)
 	}
 }
 
-func (r registry) Update(key, newval string) error {
-	if _, ok := r[key]; !ok {
+func (r *registry) Update(key, newval string) error {
+	if _, ok := r.db[key]; !ok {
 		return errors.New(fmt.Sprintf("invalid config key: %s", key))
 	}
-	return r[key].Update(newval)
+	return r.db[key].Update(newval)
 }
