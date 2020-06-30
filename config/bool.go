@@ -13,10 +13,6 @@ type BoolValue struct {
 	b bool
 }
 
-func NewBool(name string, defval bool) *BoolValue {
-	return &BoolValue{newValue("bool", name), defval}
-}
-
 func (v *BoolValue) String() string {
 	return strconv.FormatBool(v.b)
 }

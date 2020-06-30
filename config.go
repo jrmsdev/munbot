@@ -20,6 +20,7 @@ import (
 var fileOpen func(string) (*os.File, error) = os.Open
 
 type Config struct {
+	*config.Manager
 	db map[string]config.Value
 	reg map[string]*string
 	Name string `json:"name,omitempty"`
@@ -29,13 +30,15 @@ type Config struct {
 }
 
 func newConfig() *Config {
+	c := config.New()
 	return &Config{
+		Manager: c,
 		db: make(map[string]config.Value),
 		reg: make(map[string]*string),
 		Name: "munbot",
-		Test: config.NewString("test", ""),
-		TestInt: config.NewInt("testint", 0),
-		TestBool: config.NewBool("testbool", false),
+		Test: c.NewString("test", ""),
+		TestInt: c.NewInt("testint", 0),
+		TestBool: c.NewBool("testbool", false),
 	}
 }
 

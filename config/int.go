@@ -13,10 +13,6 @@ type IntValue struct {
 	i int
 }
 
-func NewInt(name string, defval int) *IntValue {
-	return &IntValue{newValue("int", name), defval}
-}
-
 func (v *IntValue) String() string {
 	return strconv.Itoa(v.i)
 }

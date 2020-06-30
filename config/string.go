@@ -12,10 +12,6 @@ type StringValue struct {
 	s string
 }
 
-func NewString(name string, defval string) *StringValue {
-	return &StringValue{newValue("string", name), defval}
-}
-
 func (v *StringValue) String() string {
 	return v.s
 }
