@@ -5,6 +5,8 @@ package munbot
 
 import (
 	"encoding/json"
+	"errors"
+	"fmt"
 	"io"
 	"io/ioutil"
 	"os"
@@ -14,31 +16,23 @@ import (
 	"github.com/jrmsdev/munbot/log"
 )
 
+var fileOpen func(string) (*os.File, error) = os.Open
+
 type Config struct {
+	reg map[string]*string
 	Name string `json:"name,omitempty"`
 }
 
 func newConfig() *Config {
-	return &Config{Name: "munbot"}
+	return &Config{
+		reg: make(map[string]*string),
+		Name: "munbot",
+	}
 }
 
 func (c *Config) String() string {
 	return c.Name
 }
-
-func (c *Config) Read(fh io.ReadCloser) error {
-	defer fh.Close()
-	blob, err := ioutil.ReadAll(fh)
-	if err != nil {
-		return log.Error(err)
-	}
-	if err := json.Unmarshal(blob, c); err != nil {
-		return log.Error(err)
-	}
-	return nil
-}
-
-var fileOpen = os.Open
 
 func Configure() *Config {
 	dirs := []string{
@@ -64,5 +58,52 @@ func Configure() *Config {
 			}
 		}
 	}
+	cfg.register()
 	return cfg
+}
+
+func (c *Config) register() {
+	c.reg["name"] = &c.Name
+}
+
+func (c *Config) Read(fh io.ReadCloser) error {
+	defer fh.Close()
+	blob, err := ioutil.ReadAll(fh)
+	if err != nil {
+		return log.Error(err)
+	}
+	if err := json.Unmarshal(blob, c); err != nil {
+		return log.Error(err)
+	}
+	return nil
+}
+
+//~ func (c *Config) Write(fh io.WriteCloser) error {
+func (c *Config) Write(fh io.Writer) error {
+	//~ defer fh.Close()
+	blob, err := json.MarshalIndent(c, "", "\t")
+	if err != nil {
+		return log.Error(err)
+	}
+	fh.Write(blob)
+	fh.Write([]byte("\n"))
+	//~ if err := ioutil.WriteFile(filename, blob, 0644); err != nil {
+		//~ return log.Error(err)
+	//~ }
+	return nil
+}
+
+func (c *Config) Dump() {
+	log.Debug("dump")
+	for k, v := range c.reg {
+		fmt.Printf("%s=%s\n", k, *v)
+	}
+}
+
+func (c *Config) Update(key, newval string) error {
+	if _, ok := c.reg[key]; !ok {
+		return errors.New(fmt.Sprintf("invalid config key: %s", key))
+	}
+	*c.reg[key] = newval
+	return nil
 }
