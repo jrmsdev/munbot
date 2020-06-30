@@ -48,7 +48,8 @@ func (m *Manager) Write(obj interface{}, fh io.Writer) error {
 	if err != nil {
 		return err
 	}
-	fh.Write(blob)
-	fh.Write([]byte("\n"))
+	if _, err := fh.Write(blob); err != nil {
+		return err
+	}
 	return nil
 }
