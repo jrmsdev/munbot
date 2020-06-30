@@ -17,16 +17,6 @@ func (v *IntValue) String() string {
 	return strconv.Itoa(v.i)
 }
 
-func (v *IntValue) UnmarshalJSON(b []byte) error {
-	log.Debugf("json unmarshal %s:%s", v.Type(), v.Name())
-	return v.Update(string(b))
-}
-
-func (v *IntValue) MarshalJSON() ([]byte, error) {
-	log.Debugf("json marshal %s:%s", v.Type(), v.Name())
-	return []byte(v.String()), nil
-}
-
 func (v *IntValue) Value() int {
 	return v.i
 }
@@ -36,4 +26,14 @@ func (v *IntValue) Update(newval string) error {
 	var err error
 	v.i, err = strconv.Atoi(newval)
 	return err
+}
+
+func (v *IntValue) UnmarshalJSON(b []byte) error {
+	log.Debugf("json unmarshal %s:%s", v.Type(), v.Name())
+	return v.Update(string(b))
+}
+
+func (v *IntValue) MarshalJSON() ([]byte, error) {
+	log.Debugf("json marshal %s:%s", v.Type(), v.Name())
+	return []byte(v.String()), nil
 }

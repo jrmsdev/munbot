@@ -30,7 +30,7 @@ func (s *Section) Name() string {
 func (s *Section) Dump() {
 	for e := s.opt.Front(); e != nil; e = e.Next() {
 		v := e.Value.(Value)
-		fmt.Printf("%s.%s=%v\n", s.name, v.Name(), v.String())
+		fmt.Printf("%s.%s=%s\n", s.name, v.Name(), v.String())
 	}
 }
 

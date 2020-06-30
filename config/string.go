@@ -16,20 +16,6 @@ func (v *StringValue) String() string {
 	return v.s
 }
 
-func (v *StringValue) UnmarshalJSON(b []byte) error {
-	log.Debugf("json unmarshal %s:%s", v.Type(), v.Name())
-	v.s = string(b)
-	return nil
-}
-
-func (v *StringValue) MarshalJSON() ([]byte, error) {
-	log.Debugf("json marshal %s:%s", v.Type(), v.Name())
-	if v.s == "" {
-		v.s = `""`
-	}
-	return []byte(v.s), nil
-}
-
 func (v *StringValue) Value() string {
 	return v.s
 }
@@ -38,4 +24,17 @@ func (v *StringValue) Update(newval string) error {
 	log.Debugf("update %s:%s", v.Type(), v.Name())
 	v.s = newval
 	return nil
+}
+
+func (v *StringValue) UnmarshalJSON(b []byte) error {
+	log.Debugf("json unmarshal %s:%s", v.Type(), v.Name())
+	return v.Update(string(b))
+}
+
+func (v *StringValue) MarshalJSON() ([]byte, error) {
+	log.Debugf("json marshal %s:%s", v.Type(), v.Name())
+	if v.s == "" {
+		return []byte(`""`), nil
+	}
+	return []byte(v.s), nil
 }
