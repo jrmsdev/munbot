@@ -3,6 +3,12 @@
 
 package config
 
+import (
+	"encoding/json"
+	"io"
+	"io/ioutil"
+)
+
 type Manager struct {
 	*registry
 }
@@ -27,4 +33,25 @@ func (c *Manager) NewBool(name string, defval bool) *BoolValue {
 	v := &BoolValue{newValue("bool", name), defval}
 	c.registry.db[name] = v
 	return v
+}
+
+func (c *Manager) Read(obj interface{}, fh io.Reader) error {
+	blob, err := ioutil.ReadAll(fh)
+	if err != nil {
+		return err
+	}
+	if err := json.Unmarshal(blob, obj); err != nil {
+		return err
+	}
+	return nil
+}
+
+func (c *Manager) Write(obj interface{}, fh io.Writer) error {
+	blob, err := json.MarshalIndent(obj, "", "\t")
+	if err != nil {
+		return err
+	}
+	fh.Write(blob)
+	fh.Write([]byte("\n"))
+	return nil
 }

@@ -4,9 +4,7 @@
 package munbot
 
 import (
-	"encoding/json"
 	"io"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 
@@ -73,27 +71,10 @@ func Configure() *Config {
 
 func (c *Config) Read(fh io.ReadCloser) error {
 	defer fh.Close()
-	blob, err := ioutil.ReadAll(fh)
-	if err != nil {
-		return log.Error(err)
-	}
-	if err := json.Unmarshal(blob, c); err != nil {
-		return log.Error(err)
-	}
-	return nil
+	return c.Manager.Read(c, fh)
 }
 
-//~ func (c *Config) Write(fh io.WriteCloser) error {
-func (c *Config) Write(fh io.Writer) error {
-	//~ defer fh.Close()
-	blob, err := json.MarshalIndent(c, "", "\t")
-	if err != nil {
-		return log.Error(err)
-	}
-	fh.Write(blob)
-	fh.Write([]byte("\n"))
-	//~ if err := ioutil.WriteFile(filename, blob, 0644); err != nil {
-		//~ return log.Error(err)
-	//~ }
-	return nil
+func (c *Config) Write(fh io.WriteCloser) error {
+	defer fh.Close()
+	return c.Manager.Write(c, fh)
 }
