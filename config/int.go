@@ -19,9 +19,7 @@ func (v *IntValue) String() string {
 
 func (v *IntValue) UnmarshalJSON(b []byte) error {
 	log.Debugf("json unmarshal %s:%s", v.Type(), v.Name())
-	var err error
-	v.i, err = strconv.Atoi(string(b))
-	return err
+	return v.Update(string(b))
 }
 
 func (v *IntValue) MarshalJSON() ([]byte, error) {
@@ -34,5 +32,8 @@ func (v *IntValue) Value() int {
 }
 
 func (v *IntValue) Update(newval string) error {
-	return nil
+	log.Debugf("update %s:%s", v.Type(), v.Name())
+	var err error
+	v.i, err = strconv.Atoi(newval)
+	return err
 }

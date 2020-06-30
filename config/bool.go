@@ -19,9 +19,7 @@ func (v *BoolValue) String() string {
 
 func (v *BoolValue) UnmarshalJSON(b []byte) error {
 	log.Debugf("json unmarshal %s:%s", v.Type(), v.Name())
-	var err error
-	v.b, err = strconv.ParseBool(string(b))
-	return err
+	return v.Update(string(b))
 }
 
 func (v *BoolValue) MarshalJSON() ([]byte, error) {
@@ -34,5 +32,8 @@ func (v *BoolValue) Value() bool {
 }
 
 func (v *BoolValue) Update(newval string) error {
-	return nil
+	log.Debugf("update %s:%s", v.Type(), v.Name())
+	var err error
+	v.b, err = strconv.ParseBool(newval)
+	return err
 }
