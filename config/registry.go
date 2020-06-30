@@ -18,12 +18,6 @@ func newReg() *registry {
 	return &registry{make(map[string]Value), list.New()}
 }
 
-func (r *registry) Dump() {
-	for k, v := range r.db {
-		fmt.Printf("%s=%s\n", k, v)
-	}
-}
-
 func (r *registry) Update(key, newval string) error {
 	if _, ok := r.db[key]; !ok {
 		return errors.New(fmt.Sprintf("invalid config key: %s", key))

@@ -4,6 +4,7 @@
 package config
 
 import (
+	"container/list"
 	"encoding/json"
 	"io"
 	"io/ioutil"
@@ -11,34 +12,24 @@ import (
 
 type Manager struct {
 	*registry
+	sect *list.List
 }
 
 func New() *Manager {
-	return &Manager{newReg()}
+	return &Manager{newReg(), list.New()}
 }
 
 func (m *Manager) NewSection(name string) *Section {
 	s := newSection(name)
-	m.registry.sect.PushBack(s)
+	m.sect.PushBack(s)
 	return s
 }
 
-func (m *Manager) NewString(name string, defval string) *StringValue {
-	v := &StringValue{newValue("string", name), defval}
-	m.registry.db[name] = v
-	return v
-}
-
-func (m *Manager) NewInt(name string, defval int) *IntValue {
-	v := &IntValue{newValue("int", name), defval}
-	m.registry.db[name] = v
-	return v
-}
-
-func (m *Manager) NewBool(name string, defval bool) *BoolValue {
-	v := &BoolValue{newValue("bool", name), defval}
-	m.registry.db[name] = v
-	return v
+func (m *Manager) Dump() {
+	for e := m.sect.Front(); e != nil; e = e.Next() {
+		s := e.Value.(*Section)
+		s.Dump()
+	}
 }
 
 func (m *Manager) Read(obj interface{}, fh io.Reader) error {
