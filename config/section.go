@@ -28,10 +28,10 @@ func (s *Section) Name() string {
 	return s.name
 }
 
-func (s *Section) Dump(out io.Writer) {
+func (s *Section) Dump(out io.Writer, listAll bool) {
 	for e := s.opt.Front(); e != nil; e = e.Next() {
 		v := e.Value.(Value)
-		if v.modified() {
+		if listAll || v.modified() {
 			io.WriteString(out,
 				fmt.Sprintf("%s.%s=%s\n", s.name, v.Name(), v.String()))
 		}

@@ -28,10 +28,10 @@ func (m *Manager) NewSection(name string) *Section {
 	return s
 }
 
-func (m *Manager) Dump(out io.Writer) {
+func (m *Manager) Dump(out io.Writer, listAll bool) {
 	for e := m.sect.Front(); e != nil; e = e.Next() {
 		s := e.Value.(*Section)
-		s.Dump(out)
+		s.Dump(out, listAll)
 	}
 }
 
