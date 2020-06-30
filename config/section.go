@@ -5,16 +5,18 @@ package config
 
 import (
 	"container/list"
+	"errors"
 	"fmt"
 )
 
 type Section struct {
 	opt *list.List
+	idx map[string]Value
 	name string
 }
 
 func newSection(name string) *Section {
-	return &Section{list.New(), name}
+	return &Section{list.New(), make(map[string]Value), name}
 }
 
 func (s *Section) String() string {
@@ -32,20 +34,30 @@ func (s *Section) Dump() {
 	}
 }
 
+func (s *Section) Update(opt, newval string) error {
+	if _, ok := s.idx[opt]; !ok {
+		return errors.New(fmt.Sprintf("invalid config section %s option: %s", s.name, opt))
+	}
+	return s.idx[opt].Update(newval)
+}
+
 func (s *Section) NewString(name string, defval string) *StringValue {
 	v := &StringValue{newValue("string", name), defval}
 	s.opt.PushBack(v)
+	s.idx[name] = v
 	return v
 }
 
 func (s *Section) NewInt(name string, defval int) *IntValue {
 	v := &IntValue{newValue("int", name), defval}
 	s.opt.PushBack(v)
+	s.idx[name] = v
 	return v
 }
 
 func (s *Section) NewBool(name string, defval bool) *BoolValue {
 	v := &BoolValue{newValue("bool", name), defval}
 	s.opt.PushBack(v)
+	s.idx[name] = v
 	return v
 }

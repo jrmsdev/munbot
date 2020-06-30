@@ -74,7 +74,6 @@ func (c *Config) Read(fh io.ReadCloser) error {
 	return c.Manager.Read(c, fh)
 }
 
-func (c *Config) Write(fh io.WriteCloser) error {
-	defer fh.Close()
+func (c *Config) Write(fh io.Writer) error {
 	return c.Manager.Write(c, fh)
 }

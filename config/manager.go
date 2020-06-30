@@ -6,22 +6,25 @@ package config
 import (
 	"container/list"
 	"encoding/json"
+	"errors"
+	"fmt"
 	"io"
 	"io/ioutil"
 )
 
 type Manager struct {
-	*registry
 	sect *list.List
+	idx map[string]*Section
 }
 
 func New() *Manager {
-	return &Manager{newReg(), list.New()}
+	return &Manager{list.New(), make(map[string]*Section)}
 }
 
 func (m *Manager) NewSection(name string) *Section {
 	s := newSection(name)
 	m.sect.PushBack(s)
+	m.idx[name] = s
 	return s
 }
 
@@ -30,6 +33,13 @@ func (m *Manager) Dump() {
 		s := e.Value.(*Section)
 		s.Dump()
 	}
+}
+
+func (m *Manager) Update(section, opt, newval string) error {
+	if _, ok := m.idx[section]; !ok {
+		return errors.New(fmt.Sprintf("invalid config section: %s", section))
+	}
+	return m.idx[section].Update(opt, newval)
 }
 
 func (m *Manager) Read(obj interface{}, fh io.Reader) error {
