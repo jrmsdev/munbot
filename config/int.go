@@ -25,6 +25,7 @@ func (v *IntValue) Update(newval string) error {
 	log.Debugf("update %s:%s", v.Type(), v.Name())
 	var err error
 	v.i, err = strconv.Atoi(newval)
+	v.setDirty()
 	return err
 }
 

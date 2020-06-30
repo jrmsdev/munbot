@@ -7,6 +7,7 @@ import (
 	"container/list"
 	"errors"
 	"fmt"
+	"io"
 )
 
 type Section struct {
@@ -27,10 +28,13 @@ func (s *Section) Name() string {
 	return s.name
 }
 
-func (s *Section) Dump() {
+func (s *Section) Dump(out io.Writer) {
 	for e := s.opt.Front(); e != nil; e = e.Next() {
 		v := e.Value.(Value)
-		fmt.Printf("%s.%s=%s\n", s.name, v.Name(), v.String())
+		if v.modified() {
+			io.WriteString(out,
+				fmt.Sprintf("%s.%s=%s\n", s.name, v.Name(), v.String()))
+		}
 	}
 }
 

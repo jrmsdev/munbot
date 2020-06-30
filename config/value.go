@@ -14,15 +14,17 @@ type Value interface {
 	String() string
 	Type() string
 	Update(string) error
+	modified() bool
 }
 
 type baseValue struct {
 	t string
 	n string
+	dirty bool
 }
 
 func newValue(t, n string) *baseValue {
-	return &baseValue{t, n}
+	return &baseValue{t, n, false}
 }
 
 func (v *baseValue) Name() string {
@@ -31,4 +33,12 @@ func (v *baseValue) Name() string {
 
 func (v *baseValue) Type() string {
 	return v.t
+}
+
+func (v *baseValue) setDirty() {
+	v.dirty = true
+}
+
+func (v *baseValue) modified() bool {
+	return v.dirty
 }

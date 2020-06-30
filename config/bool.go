@@ -25,6 +25,7 @@ func (v *BoolValue) Update(newval string) error {
 	log.Debugf("update %s:%s", v.Type(), v.Name())
 	var err error
 	v.b, err = strconv.ParseBool(newval)
+	v.setDirty()
 	return err
 }
 
