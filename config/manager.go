@@ -17,25 +17,31 @@ func New() *Manager {
 	return &Manager{newReg()}
 }
 
-func (c *Manager) NewString(name string, defval string) *StringValue {
+func (m *Manager) NewSection(name string) *Section {
+	s := newSection(name)
+	m.registry.sect.PushBack(s)
+	return s
+}
+
+func (m *Manager) NewString(name string, defval string) *StringValue {
 	v := &StringValue{newValue("string", name), defval}
-	c.registry.db[name] = v
+	m.registry.db[name] = v
 	return v
 }
 
-func (c *Manager) NewInt(name string, defval int) *IntValue {
+func (m *Manager) NewInt(name string, defval int) *IntValue {
 	v := &IntValue{newValue("int", name), defval}
-	c.registry.db[name] = v
+	m.registry.db[name] = v
 	return v
 }
 
-func (c *Manager) NewBool(name string, defval bool) *BoolValue {
+func (m *Manager) NewBool(name string, defval bool) *BoolValue {
 	v := &BoolValue{newValue("bool", name), defval}
-	c.registry.db[name] = v
+	m.registry.db[name] = v
 	return v
 }
 
-func (c *Manager) Read(obj interface{}, fh io.Reader) error {
+func (m *Manager) Read(obj interface{}, fh io.Reader) error {
 	blob, err := ioutil.ReadAll(fh)
 	if err != nil {
 		return err
@@ -46,7 +52,7 @@ func (c *Manager) Read(obj interface{}, fh io.Reader) error {
 	return nil
 }
 
-func (c *Manager) Write(obj interface{}, fh io.Writer) error {
+func (m *Manager) Write(obj interface{}, fh io.Writer) error {
 	blob, err := json.MarshalIndent(obj, "", "\t")
 	if err != nil {
 		return err

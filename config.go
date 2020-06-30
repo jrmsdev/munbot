@@ -15,31 +15,31 @@ import (
 
 var fileOpen func(string) (*os.File, error) = os.Open
 
+type MasterConfig struct {
+	*config.Section
+	Name config.Value `json:"name,omitempty"`
+}
+
+func newMasterConfig(m *config.Manager) *MasterConfig {
+	s := m.NewSection("master")
+	return &MasterConfig{
+		Section: s,
+		Name: s.NewString("name", ""),
+	}
+}
+
 type Config struct {
 	*config.Manager
-	db map[string]config.Value
-	reg map[string]*string
-	Name string `json:"name,omitempty"`
-	Test config.Value `json:"test,omitempty"`
-	TestInt *config.IntValue `json:"testint,omitempty"`
-	TestBool *config.BoolValue `json:"testbool,omitempty"`
+	Master *MasterConfig `json:"master,omitempty"`
 }
 
 func newConfig() *Config {
 	c := config.New()
-	return &Config{
-		Manager: c,
-		db: make(map[string]config.Value),
-		reg: make(map[string]*string),
-		Name: "munbot",
-		Test: c.NewString("test", ""),
-		TestInt: c.NewInt("testint", 0),
-		TestBool: c.NewBool("testbool", false),
-	}
+	return &Config{c, newMasterConfig(c)}
 }
 
 func (c *Config) String() string {
-	return c.Name
+	return c.Master.Name.String()
 }
 
 func Configure() *Config {

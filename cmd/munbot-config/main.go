@@ -23,8 +23,6 @@ func main() {
 	//~ cfg.Dump()
 	//~ cfg.Write(os.Stdout)
 	//~ log.Debug(cfg.Update("lalala", "name"))
-	log.Printf("name: %s", cfg.Name)
-	log.Printf("testint: %d", cfg.TestInt.Value())
-	log.Printf("testbool: %v", cfg.TestBool.Value())
+	log.Printf("master.name: %s", cfg.Master.Name)
 	log.Debug("end")
 }

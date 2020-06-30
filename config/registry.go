@@ -4,16 +4,18 @@
 package config
 
 import (
+	"container/list"
 	"errors"
 	"fmt"
 )
 
 type registry struct {
 	db map[string]Value
+	sect *list.List
 }
 
 func newReg() *registry {
-	return &registry{make(map[string]Value)}
+	return &registry{make(map[string]Value), list.New()}
 }
 
 func (r *registry) Dump() {
