@@ -7,6 +7,7 @@ import (
 	"errors"
 	"fmt"
 	gol "log"
+	"os"
 )
 
 var (
@@ -14,6 +15,8 @@ var (
 	debug      bool = false
 	debugFlags int  = gol.Ldate | gol.Ltime | gol.Lmicroseconds | gol.Llongfile
 )
+
+var osExit func(int) = os.Exit
 
 func DebugEnable() {
 	debug = true
@@ -60,4 +63,14 @@ func Errorf(format string, v ...interface{}) error {
 	err := errors.New(fmt.Sprintf(format, v...))
 	gol.Output(cdepth, fmt.Sprintf("[ERROR] %s", err))
 	return err
+}
+
+func Fatal(v ...interface{}) {
+	gol.Output(cdepth, fmt.Sprintf("[FATAL] %s", fmt.Sprint(v...)))
+	osExit(2)
+}
+
+func Fatalf(format string, v ...interface{}) {
+	gol.Output(cdepth, fmt.Sprintf("[FATAL] %s", fmt.Sprintf(format, v...)))
+	osExit(2)
 }
