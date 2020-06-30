@@ -18,8 +18,8 @@ type Value interface {
 }
 
 type baseValue struct {
-	t string
-	n string
+	t     string
+	n     string
 	dirty bool
 }
 

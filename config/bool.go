@@ -4,8 +4,8 @@
 package config
 
 import (
-	"strconv"
 	"github.com/jrmsdev/munbot/log"
+	"strconv"
 )
 
 type BoolValue struct {

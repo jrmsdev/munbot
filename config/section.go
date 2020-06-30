@@ -11,8 +11,8 @@ import (
 )
 
 type Section struct {
-	opt *list.List
-	idx map[string]Value
+	opt  *list.List
+	idx  map[string]Value
 	name string
 }
 
@@ -32,7 +32,7 @@ func (s *Section) Dump(out io.Writer, listAll bool, section, opt string) {
 	for e := s.opt.Front(); e != nil; e = e.Next() {
 		v := e.Value.(Value)
 		f := s.filter(section, opt, s.name, v.Name())
-		if (listAll && f) || (v.modified() && f) || (f && section != "") {
+		if (listAll || v.modified() || section != "") && f {
 			io.WriteString(out,
 				fmt.Sprintf("%s.%s=%s\n", s.name, v.Name(), v.String()))
 		}

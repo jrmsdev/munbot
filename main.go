@@ -37,18 +37,18 @@ func (m *Master) Main() {
 	//~ conn := adaptor.New()
 	//~ dev := driver.New(conn)
 	//~ work := func() {
-		//~ dev.On(dev.Event(driver.Hello), func(data interface{}) {
-			//~ fmt.Println(data)
-		//~ })
-		//~ gobot.Every(3000*time.Millisecond, func() {
-			//~ fmt.Println(dev.Ping())
-		//~ })
+	//~ dev.On(dev.Event(driver.Hello), func(data interface{}) {
+	//~ fmt.Println(data)
+	//~ })
+	//~ gobot.Every(3000*time.Millisecond, func() {
+	//~ fmt.Println(dev.Ping())
+	//~ })
 	//~ }
 	//~ robot := gobot.NewRobot(
-		//~ "munbot",
-		//~ []gobot.Connection{conn},
-		//~ []gobot.Device{dev},
-		//~ work,
+	//~ "munbot",
+	//~ []gobot.Connection{conn},
+	//~ []gobot.Device{dev},
+	//~ work,
 	//~ )
 
 	//~ m.AddRobot(robot)

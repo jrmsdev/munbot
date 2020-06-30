@@ -17,14 +17,14 @@ var fileOpen func(string) (*os.File, error) = os.Open
 
 type MasterConfig struct {
 	*config.Section
-	Name config.Value `json:"name,omitempty"`
+	Name *config.StringValue `json:"name,omitempty"`
 }
 
 func newMasterConfig(m *config.Manager) *MasterConfig {
 	s := m.NewSection("master")
 	return &MasterConfig{
 		Section: s,
-		Name: s.NewString("name", ""),
+		Name:    s.NewString("name", ""),
 	}
 }
 

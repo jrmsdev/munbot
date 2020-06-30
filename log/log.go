@@ -10,9 +10,9 @@ import (
 )
 
 var (
-	cdepth int = 2
-	debug bool = false
-	debugFlags int = gol.Ldate | gol.Ltime | gol.Lmicroseconds | gol.Llongfile
+	cdepth     int  = 2
+	debug      bool = false
+	debugFlags int  = gol.Ldate | gol.Ltime | gol.Lmicroseconds | gol.Llongfile
 )
 
 func DebugEnable() {

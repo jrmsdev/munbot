@@ -15,7 +15,7 @@ import (
 
 type Manager struct {
 	sect *list.List
-	idx map[string]*Section
+	idx  map[string]*Section
 }
 
 func New() *Manager {
