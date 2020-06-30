@@ -13,6 +13,7 @@ type Value interface {
 	Name() string
 	String() string
 	Type() string
+	Update(string) error
 }
 
 type baseValue struct {

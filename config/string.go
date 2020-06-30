@@ -33,3 +33,7 @@ func (v *StringValue) MarshalJSON() ([]byte, error) {
 func (v *StringValue) Value() string {
 	return v.s
 }
+
+func (v *StringValue) Update(newval string) error {
+	return nil
+}

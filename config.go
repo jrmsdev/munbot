@@ -5,8 +5,6 @@ package munbot
 
 import (
 	"encoding/json"
-	"errors"
-	"fmt"
 	"io"
 	"io/ioutil"
 	"os"
@@ -46,13 +44,6 @@ func (c *Config) String() string {
 	return c.Name
 }
 
-func (c *Config) register() {
-	c.reg["name"] = &c.Name
-	c.db["test"] = c.Test
-	c.db["testint"] = c.TestInt
-	c.db["testbool"] = c.TestBool
-}
-
 func Configure() *Config {
 	dirs := []string{
 		flags.ConfigDistDir,
@@ -77,7 +68,6 @@ func Configure() *Config {
 			}
 		}
 	}
-	cfg.register()
 	return cfg
 }
 
@@ -105,13 +95,5 @@ func (c *Config) Write(fh io.Writer) error {
 	//~ if err := ioutil.WriteFile(filename, blob, 0644); err != nil {
 		//~ return log.Error(err)
 	//~ }
-	return nil
-}
-
-func (c *Config) Update(key, newval string) error {
-	if _, ok := c.reg[key]; !ok {
-		return errors.New(fmt.Sprintf("invalid config key: %s", key))
-	}
-	*c.reg[key] = newval
 	return nil
 }
