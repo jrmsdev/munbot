@@ -12,6 +12,7 @@ import (
 	"os"
 	"path/filepath"
 
+	"github.com/jrmsdev/munbot/config"
 	"github.com/jrmsdev/munbot/flags"
 	"github.com/jrmsdev/munbot/log"
 )
@@ -19,19 +20,34 @@ import (
 var fileOpen func(string) (*os.File, error) = os.Open
 
 type Config struct {
+	db map[string]config.Value
 	reg map[string]*string
 	Name string `json:"name,omitempty"`
+	Test config.Value `json:"test,omitempty"`
+	TestInt *config.IntValue `json:"testint,omitempty"`
+	TestBool *config.BoolValue `json:"testbool,omitempty"`
 }
 
 func newConfig() *Config {
 	return &Config{
+		db: make(map[string]config.Value),
 		reg: make(map[string]*string),
 		Name: "munbot",
+		Test: config.NewString("test", ""),
+		TestInt: config.NewInt("testint", 0),
+		TestBool: config.NewBool("testbool", false),
 	}
 }
 
 func (c *Config) String() string {
 	return c.Name
+}
+
+func (c *Config) register() {
+	c.reg["name"] = &c.Name
+	c.db["test"] = c.Test
+	c.db["testint"] = c.TestInt
+	c.db["testbool"] = c.TestBool
 }
 
 func Configure() *Config {
@@ -60,10 +76,6 @@ func Configure() *Config {
 	}
 	cfg.register()
 	return cfg
-}
-
-func (c *Config) register() {
-	c.reg["name"] = &c.Name
 }
 
 func (c *Config) Read(fh io.ReadCloser) error {
@@ -97,6 +109,9 @@ func (c *Config) Dump() {
 	log.Debug("dump")
 	for k, v := range c.reg {
 		fmt.Printf("%s=%s\n", k, *v)
+	}
+	for k, v := range c.db {
+		fmt.Printf("%s=%s\n", k, v)
 	}
 }
 
