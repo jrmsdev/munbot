@@ -4,12 +4,16 @@
 package main
 
 import (
+	"io/ioutil"
 	"os"
+	"path/filepath"
 
 	"github.com/jrmsdev/munbot"
 	"github.com/jrmsdev/munbot/flags"
 	"github.com/jrmsdev/munbot/log"
 )
+
+var fileOpen func(string) (*os.File, error) = os.Open
 
 var (
 	listAll bool
@@ -21,34 +25,33 @@ func main() {
 	flags.Parse(os.Args[1:])
 	log.Debug("start")
 	cfg := munbot.Configure()
-	cfg.Dump(os.Stdout, listAll, parser.Arg(0))
+
+	filter := parser.Arg(0)
+	args := parser.Arg(1)
+	if args != "" {
+		edit(cfg, filter, args)
+	} else {
+		log.Debug("dump...")
+		cfg.Dump(os.Stdout, listAll, filter)
+	}
 	log.Debug("end")
 }
 
-func debug() {
-	flags.Init("munbot-config")
-	flags.Parse(os.Args[1:])
-
-	log.Debug("start")
-	cfg := munbot.Configure()
-
-	//~ log.Print("dump1")
-	//~ cfg.Dump(os.Stdout, false)
-	//~ log.Printf("master.name=%s", cfg.Master.Name)
-
-	//~ log.Print("write1")
-	//~ log.Printf("%#v", cfg)
-	log.Printf("write1 error: %v", cfg.Write(os.Stdout))
-
-	log.Printf("update error status %v", cfg.Update("master", "name", "saskia"))
-
-	//~ log.Print("dump2")
-	//~ cfg.Dump(os.Stdout, false)
-	//~ log.Printf("master.name=%s", cfg.Master.Name)
-
-	//~ log.Print("write2")
-	//~ log.Printf("%#v", cfg)
-	log.Printf("write2 error: %v", cfg.Write(os.Stdout))
-
-	log.Debug("end")
+func edit(cfg *munbot.Config, filter, args string) {
+	log.Debug("edit...")
+	if err := cfg.Update(filter, args); err != nil {
+		log.Fatal(err)
+	}
+	fn := filepath.Join(flags.ConfigDir, flags.ConfigFile)
+	blob, err := cfg.Bytes()
+	if err != nil {
+		log.Fatal(err)
+	}
+	if err := os.MkdirAll(filepath.Dir(fn), 0770); err != nil {
+		log.Fatal(err)
+	}
+	if err := ioutil.WriteFile(fn, blob, 0660); err != nil {
+		log.Fatal(err)
+	}
+	log.Printf("%s saved", fn)
 }

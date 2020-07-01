@@ -74,6 +74,10 @@ func (c *Config) Read(fh io.ReadCloser) error {
 	return c.Manager.Read(c, fh)
 }
 
+func (c *Config) Bytes() ([]byte, error) {
+	return c.Manager.Bytes(c)
+}
+
 func (c *Config) Write(fh io.Writer) error {
 	return c.Manager.Write(c, fh)
 }

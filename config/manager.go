@@ -30,9 +30,9 @@ func (m *Manager) NewSection(name string) *Section {
 }
 
 func (m *Manager) Dump(out io.Writer, listAll bool, filter string) {
+	section, opt := m.filter(filter)
 	for e := m.sect.Front(); e != nil; e = e.Next() {
 		s := e.Value.(*Section)
-		section, opt := m.filter(filter)
 		s.Dump(out, listAll, section, opt)
 	}
 }
@@ -48,9 +48,10 @@ func (m *Manager) filter(f string) (string, string) {
 	return s, n
 }
 
-func (m *Manager) Update(section, opt, newval string) error {
+func (m *Manager) Update(filter, newval string) error {
+	section, opt := m.filter(filter)
 	if _, ok := m.idx[section]; !ok {
-		return errors.New(fmt.Sprintf("invalid config section: %s", section))
+		return errors.New(fmt.Sprintf("invalid config section: '%s'", section))
 	}
 	return m.idx[section].Update(opt, newval)
 }
@@ -66,8 +67,12 @@ func (m *Manager) Read(obj interface{}, fh io.Reader) error {
 	return nil
 }
 
+func (m *Manager) Bytes(obj interface{}) ([]byte, error) {
+	return json.MarshalIndent(obj, "", "\t")
+}
+
 func (m *Manager) Write(obj interface{}, fh io.Writer) error {
-	blob, err := json.MarshalIndent(obj, "", "\t")
+	blob, err := m.Bytes(obj)
 	if err != nil {
 		return err
 	}

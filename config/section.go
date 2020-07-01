@@ -50,7 +50,7 @@ func (s *Section) filter(sect, opt, xs, xn string) bool {
 
 func (s *Section) Update(opt, newval string) error {
 	if _, ok := s.idx[opt]; !ok {
-		return errors.New(fmt.Sprintf("invalid config section %s option: %s", s.name, opt))
+		return errors.New(fmt.Sprintf("invalid config section '%s' option: '%s'", s.name, opt))
 	}
 	return s.idx[opt].Update(newval)
 }
