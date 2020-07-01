@@ -48,6 +48,11 @@ func (s *Section) filter(sect, opt, xs, xn string) bool {
 	return false
 }
 
+func (s *Section) register(name string, v Value) {
+	s.idx[name] = v
+	s.opt.PushBack(v)
+}
+
 func (s *Section) Update(opt, newval string) error {
 	if _, ok := s.idx[opt]; !ok {
 		return errors.New(fmt.Sprintf("invalid config section '%s' option: '%s'", s.name, opt))
@@ -57,21 +62,18 @@ func (s *Section) Update(opt, newval string) error {
 
 func (s *Section) NewString(name string, defval string) *StringValue {
 	v := &StringValue{newValue("string", name), defval}
-	s.opt.PushBack(v)
-	s.idx[name] = v
+	s.register(name, v)
 	return v
 }
 
 func (s *Section) NewInt(name string, defval int) *IntValue {
 	v := &IntValue{newValue("int", name), defval}
-	s.opt.PushBack(v)
-	s.idx[name] = v
+	s.register(name, v)
 	return v
 }
 
 func (s *Section) NewBool(name string, defval bool) *BoolValue {
 	v := &BoolValue{newValue("bool", name), defval}
-	s.opt.PushBack(v)
-	s.idx[name] = v
+	s.register(name, v)
 	return v
 }
