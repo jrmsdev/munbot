@@ -39,9 +39,21 @@ func Start(m *gobot.Master, cfg *config.Api) {
 	a.Host = cfg.Host.String()
 	a.Port = cfg.Port.String()
 	a.Cert, a.Key = sslFiles(cfg)
+
+	protocol := "https"
 	sslCheck(a.Host, a.Port, a.Cert, a.Key)
+	if a.Cert == "" || a.Key == "" {
+		log.Print("api ssl check failed, forcing http on localhost...")
+		a.Host = "localhost"
+		protocol = "http"
+	}
 
 	//~ a.AddHandler(api.BasicAuth("munbot", "tobnum"))
+	h := a.Host
+	if h == "" {
+		h = "0.0.0.0"
+	}
+	log.Printf("start api %s://%s:%s/", protocol, h, a.Port)
 	a.Start()
 }
 
