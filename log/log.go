@@ -23,6 +23,10 @@ func DebugEnable() {
 	gol.SetFlags(debugFlags)
 }
 
+func SetPrefix(name string) {
+	gol.SetPrefix(fmt.Sprintf("[%s:%d] ", name, os.Getpid()))
+}
+
 func Panic(v ...interface{}) {
 	gol.Output(cdepth, fmt.Sprintf("[PANIC] %s", fmt.Sprint(v...)))
 	panic("oops!!")
