@@ -75,7 +75,7 @@ func sslCheck(host, port, cert, key string) {
 	s := &http.Server{Addr: host+":"+port}
 	go func() {
 		err := s.ListenAndServeTLS(cert, key)
-		if err != nil {
+		if err != nil && err != http.ErrServerClosed {
 			log.Fatal(err)
 		}
 	}()
