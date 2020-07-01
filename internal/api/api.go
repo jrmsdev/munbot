@@ -4,16 +4,15 @@
 package api
 
 import (
-	//~ "fmt"
-	//~ "html"
-	//~ "net/http"
-	//~ "time"
+	"os"
+	"path/filepath"
 
 	"gobot.io/x/gobot"
 	"gobot.io/x/gobot/api"
 
 	"github.com/jrmsdev/munbot/config"
 	"github.com/jrmsdev/munbot/flags"
+	"github.com/jrmsdev/munbot/log"
 )
 
 //~ func main() {
@@ -30,11 +29,34 @@ import (
 
 func Start(m *gobot.Master, cfg *config.Api) {
 	a := api.NewAPI(m)
-	a.Host = cfg.Host.String()
-	a.Port = cfg.Port.String()
 	if flags.Debug {
 		a.Debug()
 	}
+
+	a.Host = cfg.Host.String()
+	a.Port = cfg.Port.String()
+	a.Cert, a.Key = sslFiles(cfg)
+
 	//~ a.AddHandler(api.BasicAuth("munbot", "tobnum"))
 	a.Start()
+}
+
+func sslFiles(cfg *config.Api) (string, string) {
+	cert := filepath.Join(flags.ConfigDir, cfg.Cert.String())
+	key := filepath.Join(flags.ConfigDir, cfg.Key.String())
+	ok := true
+	_, err := os.Stat(cert)
+	if err != nil {
+		ok = false
+		log.Error(err)
+	}
+	_, err = os.Stat(key)
+	if err != nil {
+		ok = false
+		log.Error(err)
+	}
+	if ok {
+		return cert, key
+	}
+	return "", ""
 }
