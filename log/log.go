@@ -78,3 +78,15 @@ func Fatalf(format string, v ...interface{}) {
 	gol.Output(cdepth, fmt.Sprintf("[FATAL] %s", fmt.Sprintf(format, v...)))
 	osExit(2)
 }
+
+func Warn(v ...interface{}) error {
+	err := errors.New(fmt.Sprint(v...))
+	gol.Output(cdepth, fmt.Sprintf("[WARNING] %s", err))
+	return err
+}
+
+func Warnf(format string, v ...interface{}) error {
+	err := errors.New(fmt.Sprintf(format, v...))
+	gol.Output(cdepth, fmt.Sprintf("[WARNING] %s", err))
+	return err
+}
