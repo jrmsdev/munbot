@@ -10,6 +10,13 @@ import (
 	"github.com/jrmsdev/munbot/log"
 )
 
+func SetupInfo() {
+	log.Debug("setup info")
+	log.Printf("config dir %s", flags.ConfigDir)
+	log.Printf("cache dir %s", flags.CacheDir)
+	log.Printf("data dir %s", flags.DataDir)
+}
+
 func setup() {
 	log.Debug("setup")
 	if err := os.MkdirAll(flags.ConfigDir, 0770); err != nil {

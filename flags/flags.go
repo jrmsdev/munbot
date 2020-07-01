@@ -85,7 +85,6 @@ func Parse(args []string) {
 		log.DebugEnable()
 	}
 	log.SetPrefix(Name)
-	log.Printf("%s version %s", progname, version.String())
 	ConfigDir = filepath.Clean(filepath.Join(ConfigDir, Name))
 	CacheDir = filepath.Clean(filepath.Join(CacheDir, Name))
 	DataDir = filepath.Clean(filepath.Join(DataDir, Name))
