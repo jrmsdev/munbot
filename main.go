@@ -14,7 +14,9 @@ import (
 
 	//~ "github.com/jrmsdev/munbot/adaptor"
 	//~ "github.com/jrmsdev/munbot/driver"
+	"github.com/jrmsdev/munbot/config"
 	"github.com/jrmsdev/munbot/internal/api"
+	"github.com/jrmsdev/munbot/log"
 )
 
 //~ master.AddCommand("custom_gobot_command",
@@ -31,7 +33,8 @@ import (
 //~ master.Start()
 //~ }
 
-func (m *Master) Main() {
+func (m *Master) Main(cfg *config.Master) {
+	log.Debugf("master main %s", cfg.Name)
 	api.Start(m.Master)
 
 	//~ conn := adaptor.New()

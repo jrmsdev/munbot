@@ -13,6 +13,7 @@ import (
 func main() {
 	flags.Init("munbot")
 	flags.Parse(os.Args[1:])
+	cfg := munbot.Configure()
 	master := munbot.New()
-	master.Main()
+	master.Main(cfg.Master)
 }

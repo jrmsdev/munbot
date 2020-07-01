@@ -15,14 +15,9 @@ import (
 
 var fileOpen func(string) (*os.File, error) = os.Open
 
-type MasterConfig struct {
-	*config.Section
-	Name *config.StringValue `json:"name,omitempty"`
-}
-
-func newMasterConfig(m *config.Manager) *MasterConfig {
+func masterConfig(m *config.Manager) *config.Master {
 	s := m.NewSection("master")
-	return &MasterConfig{
+	return &config.Master{
 		Section: s,
 		Name:    s.NewString("name", ""),
 	}
@@ -30,12 +25,12 @@ func newMasterConfig(m *config.Manager) *MasterConfig {
 
 type Config struct {
 	*config.Manager
-	Master *MasterConfig `json:"master,omitempty"`
+	Master *config.Master `json:"master,omitempty"`
 }
 
 func newConfig() *Config {
 	c := config.New()
-	return &Config{c, newMasterConfig(c)}
+	return &Config{c, masterConfig(c)}
 }
 
 func (c *Config) String() string {

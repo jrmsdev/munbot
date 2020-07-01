@@ -21,7 +21,7 @@ var (
 
 func main() {
 	parser := flags.Init("munbot-config")
-	parser.BoolVar(&listAll, "a", false, "list all config options including default values")
+	parser.BoolVar(&listAll, "a", false, "list all options including default values")
 	flags.Parse(os.Args[1:])
 	log.Debug("start")
 	cfg := munbot.Configure()
