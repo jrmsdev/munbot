@@ -16,6 +16,7 @@ var (
 	progname      string = "munbot"
 	Debug         bool   = false
 	Version       bool   = false
+	Name          string = "master"
 	ConfigDir     string = filepath.FromSlash("~/.config/munbot")
 	configDirErr  error
 	ConfigDistDir string = filepath.FromSlash("/etc/munbot")
@@ -56,6 +57,7 @@ func Init(program string) *flag.FlagSet {
 
 	fs.BoolVar(&Debug, "debug", false, "enable debug")
 	fs.BoolVar(&Version, "version", false, "show version info and exit")
+	fs.StringVar(&Name, "name", Name, "profile name")
 
 	fs.StringVar(&ConfigDir, "cfg.dir", ConfigDir,
 		"config dir `path`")
@@ -82,6 +84,10 @@ func Parse(args []string) {
 	if Debug {
 		log.DebugEnable()
 	}
+	ConfigDir = filepath.Clean(filepath.Join(ConfigDir, Name))
+	CacheDir = filepath.Clean(filepath.Join(CacheDir, Name))
+	DataDir = filepath.Clean(filepath.Join(DataDir, Name))
+	// TODO: check and clean the other Config*Dirs and ConfigFile
 }
 
 func showVersion() {
