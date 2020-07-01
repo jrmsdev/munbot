@@ -22,6 +22,16 @@ RUN apk add --no-cache git && \
 	apk del --no-cache --purge git && \
 	rm -rf /root/go /root/.cache
 
+ADD ca/CA.pl.patch /tmp/CA.pl.patch
+
+RUN apk add --no-cache patch perl openssl && \
+	rm -vf  /etc/ssl/openssl.cnf && \
+	ln -vs /go/src/munbot/docker/devel/ca/openssl.cnf /etc/ssl/openssl.cnf && \
+	cp -va /etc/ssl/misc/CA.pl /etc/ssl/misc/CA.pl.orig && \
+	patch /etc/ssl/misc/CA.pl /tmp/CA.pl.patch && \
+	rm -vf /tmp/CA.pl.patch && \
+	apk del --no-cache --purge patch
+
 RUN printf '\n%%munbot ALL=(ALL) NOPASSWD: ALL\n' >>/etc/sudoers
 
 RUN ln -vs /usr/share/doc/go/doc /usr/lib/go/doc
@@ -37,15 +47,6 @@ RUN printf 'umask %s\n' "${MUNBOT_UMASK}" >>/home/munbot/.profile
 RUN printf 'export GOPATH=/go\n' >>/home/munbot/.profile
 
 ADD --chown=munbot bin/*.sh /usr/local/bin/
-ADD ca/CA.pl.patch /tmp/CA.pl.patch
-
-RUN apk add --no-cache patch perl openssl && \
-	rm -vf  /etc/ssl/openssl.cnf && \
-	ln -vs /go/src/munbot/docker/devel/ca/openssl.cnf /etc/ssl/openssl.cnf && \
-	cp -va /etc/ssl/misc/CA.pl /etc/ssl/misc/CA.pl.orig && \
-	patch /etc/ssl/misc/CA.pl /tmp/CA.pl.patch && \
-	rm -vf /tmp/CA.pl.patch && \
-	apk del --no-cache --purge patch
 
 USER munbot:munbot
 WORKDIR /go/src/munbot
