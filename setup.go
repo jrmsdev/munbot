@@ -18,4 +18,7 @@ func setup() {
 	if err := os.MkdirAll(flags.CacheDir, 0770); err != nil {
 		log.Fatal(err)
 	}
+	if err := os.MkdirAll(flags.DataDir, 0770); err != nil {
+		log.Fatal(err)
+	}
 }

@@ -23,6 +23,8 @@ var (
 	ConfigFile    string = "config.json"
 	CacheDir      string = filepath.FromSlash("~/.cache/munbot")
 	cacheDirErr   error
+	DataDir       string = filepath.FromSlash("~/.munbot")
+	dataDirErr    error
 )
 
 var fs *flag.FlagSet
@@ -30,6 +32,7 @@ var fs *flag.FlagSet
 func init() {
 	ConfigDir, configDirErr = os.UserConfigDir()
 	CacheDir, cacheDirErr = os.UserCacheDir()
+	DataDir, dataDirErr = os.UserHomeDir()
 }
 
 func Init(program string) *flag.FlagSet {
@@ -46,6 +49,11 @@ func Init(program string) *flag.FlagSet {
 	}
 	CacheDir = filepath.Join(CacheDir, "munbot")
 
+	if dataDirErr != nil {
+		log.Panic(dataDirErr)
+	}
+	DataDir = filepath.Join(DataDir, ".munbot")
+
 	fs.BoolVar(&Debug, "debug", false, "enable debug")
 	fs.BoolVar(&Version, "version", false, "show version info and exit")
 
@@ -58,6 +66,7 @@ func Init(program string) *flag.FlagSet {
 	fs.StringVar(&ConfigFile, "cfg", ConfigFile, "config file `name`")
 
 	fs.StringVar(&CacheDir, "cache.dir", CacheDir, "cache dir `path`")
+	fs.StringVar(&DataDir, "data.dir", DataDir, "data dir `path`")
 
 	return fs
 }
