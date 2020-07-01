@@ -4,11 +4,9 @@
 package api
 
 import (
-	"context"
-	"net/http"
+	"crypto/tls"
 	"os"
 	"path/filepath"
-	"time"
 
 	"gobot.io/x/gobot"
 	"gobot.io/x/gobot/api"
@@ -84,17 +82,7 @@ func sslCheck(host, port, cert, key string) {
 	if cert == "" && key == "" {
 		return
 	}
-	s := &http.Server{Addr: host + ":" + port}
-	go func() {
-		err := s.ListenAndServeTLS(cert, key)
-		if err != nil && err != http.ErrServerClosed {
-			log.Fatal(err)
-		}
-	}()
-	time.Sleep(time.Second)
-	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
-	defer cancel()
-	if err := s.Shutdown(ctx); err != nil {
+	if _, err := tls.LoadX509KeyPair(cert, key); err != nil {
 		log.Fatal(err)
 	}
 }
