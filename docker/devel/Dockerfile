@@ -15,9 +15,10 @@ ENV GOPATH /root/go
 ENV GOBIN /usr/local/bin
 
 RUN apk add --no-cache git && \
-	go get -v golang.org/x/tools/cmd/godoc && \
+	go get -u -v golang.org/x/tools/cmd/godoc && \
 	go generate -v golang.org/x/tools/godoc/static && \
 	go install -v -i golang.org/x/tools/cmd/godoc && \
+	go get -u -v github.com/go-bindata/go-bindata/... && \
 	apk del --no-cache --purge git && \
 	rm -rf /root/go /root/.cache
 
