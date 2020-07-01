@@ -12,6 +12,7 @@ import (
 	"gobot.io/x/gobot"
 	"gobot.io/x/gobot/api"
 
+	"github.com/jrmsdev/munbot/config"
 	"github.com/jrmsdev/munbot/flags"
 )
 
@@ -27,8 +28,10 @@ import (
 //~ })
 //~ a.Start()
 
-func Start(m *gobot.Master) {
+func Start(m *gobot.Master, cfg *config.Api) {
 	a := api.NewAPI(m)
+	a.Host = cfg.Host.String()
+	a.Port = cfg.Port.String()
 	if flags.Debug {
 		a.Debug()
 	}

@@ -26,11 +26,15 @@ func NewMaster(m *config.Manager) *Master {
 
 type Api struct {
 	Enable *config.BoolValue `json:"enable,omitempty"`
+	Host *config.StringValue `json:"host,omitempty"`
+	Port *config.IntValue `json:"port,omitempty"`
 }
 
 func newApi(s *config.Section, enable bool) *Api {
 	return &Api{
 		Enable: s.NewBool("api.enable", enable),
+		Host: s.NewString("api.host", ""),
+		Port: s.NewInt("api.port", 3000),
 	}
 }
 
