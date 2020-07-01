@@ -33,6 +33,7 @@ type Api struct {
 	Port   *config.IntValue      `json:"port,omitempty"`
 	Cert   *config.FilepathValue `json:"cert,omitempty"`
 	Key    *config.FilepathValue `json:"key,omitempty"`
+	Path   *config.PathValue     `json:"path,omitempty"`
 }
 
 func newApi(s *config.Section, enable bool) *Api {
@@ -44,6 +45,7 @@ func newApi(s *config.Section, enable bool) *Api {
 			filepath.FromSlash("ssl/api/cert.pem"), false),
 		Key:    s.NewFilepath("api.key",
 			filepath.FromSlash("ssl/api/key.pem"), false),
+		Path:   s.NewPath("api.path", "/api"),
 	}
 }
 
