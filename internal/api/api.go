@@ -4,8 +4,11 @@
 package api
 
 import (
+	"context"
+	"net/http"
 	"os"
 	"path/filepath"
+	"time"
 
 	"gobot.io/x/gobot"
 	"gobot.io/x/gobot/api"
@@ -36,6 +39,7 @@ func Start(m *gobot.Master, cfg *config.Api) {
 	a.Host = cfg.Host.String()
 	a.Port = cfg.Port.String()
 	a.Cert, a.Key = sslFiles(cfg)
+	sslCheck(a.Host, a.Port, a.Cert, a.Key)
 
 	//~ a.AddHandler(api.BasicAuth("munbot", "tobnum"))
 	a.Start()
@@ -61,4 +65,24 @@ func sslFiles(cfg *config.Api) (string, string) {
 		return cert, key
 	}
 	return "", ""
+}
+
+func sslCheck(host, port, cert, key string) {
+	log.Debug("ssl check")
+	if cert == "" && key == "" {
+		return
+	}
+	s := &http.Server{Addr: host+":"+port}
+	go func() {
+		err := s.ListenAndServeTLS(cert, key)
+		if err != nil {
+			log.Fatal(err)
+		}
+	}()
+	time.Sleep(time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
+	defer cancel()
+	if err := s.Shutdown(ctx); err != nil {
+		log.Fatal(err)
+	}
 }
