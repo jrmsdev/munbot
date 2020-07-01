@@ -40,8 +40,10 @@ func newApi(s *config.Section, enable bool) *Api {
 		Enable: s.NewBool("api.enable", enable),
 		Host:   s.NewString("api.host", ""),
 		Port:   s.NewInt("api.port", 3000),
-		Cert:   s.NewFilepath("api.cert", filepath.FromSlash("ssl/api/cert.pem")),
-		Key:    s.NewFilepath("api.key", filepath.FromSlash("ssl/api/key.pem")),
+		Cert:   s.NewFilepath("api.cert",
+			filepath.FromSlash("ssl/api/cert.pem"), false),
+		Key:    s.NewFilepath("api.key",
+			filepath.FromSlash("ssl/api/key.pem"), false),
 	}
 }
 

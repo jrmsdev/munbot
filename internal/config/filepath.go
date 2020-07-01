@@ -4,6 +4,7 @@
 package config
 
 import (
+	"fmt"
 	"path/filepath"
 	"strconv"
 
@@ -13,6 +14,7 @@ import (
 type FilepathValue struct {
 	*baseValue
 	p string
+	forceAbs bool
 }
 
 func (v *FilepathValue) String() string {
@@ -27,7 +29,7 @@ func (v *FilepathValue) Update(newval string) error {
 	log.Debugf("update %s:%s", v.Type(), v.Name())
 	v.setDirty()
 	v.p = filepath.Clean(filepath.FromSlash(newval))
-	return nil
+	return v.check(v.p)
 }
 
 func (v *FilepathValue) UnmarshalJSON(b []byte) error {
@@ -42,5 +44,31 @@ func (v *FilepathValue) UnmarshalJSON(b []byte) error {
 func (v *FilepathValue) MarshalJSON() ([]byte, error) {
 	log.Debugf("json marshal %s:%s", v.Type(), v.Name())
 	fp := filepath.Clean(filepath.ToSlash(v.p))
+	if err := v.check(fp); err != nil {
+		return nil, err
+	}
 	return []byte(strconv.Quote(fp)), nil
+}
+
+func (v *FilepathValue) check(p string) error {
+	if v.forceAbs {
+		return v.checkAbs(p)
+	}
+	return v.checkRel(p)
+}
+
+func (v *FilepathValue) checkAbs(p string) error {
+	if !filepath.IsAbs(p) {
+		return fmt.Errorf("%s option should be an absolute filepath: %s",
+			v.Name(), p)
+	}
+	return nil
+}
+
+func (v *FilepathValue) checkRel(p string) error {
+	if filepath.IsAbs(p) {
+		return fmt.Errorf("%s option should be a relative filepath: %s",
+			v.Name(), p)
+	}
+	return nil
 }
