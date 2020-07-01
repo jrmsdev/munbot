@@ -16,14 +16,6 @@ import (
 
 var fileOpen func(string) (*os.File, error) = os.Open
 
-func masterConfig(m *config.Manager) *cfg.Master {
-	s := m.NewSection("master")
-	return &cfg.Master{
-		Section: s,
-		Name:    s.NewString("name", ""),
-	}
-}
-
 type Config struct {
 	*config.Manager
 	Master *cfg.Master `json:"master,omitempty"`
@@ -31,7 +23,7 @@ type Config struct {
 
 func newConfig() *Config {
 	c := config.New()
-	return &Config{c, masterConfig(c)}
+	return &Config{c, cfg.NewMaster(c)}
 }
 
 func (c *Config) String() string {

@@ -38,3 +38,11 @@ func (v *BoolValue) MarshalJSON() ([]byte, error) {
 	log.Debugf("json marshal %s:%s", v.Type(), v.Name())
 	return []byte(v.String()), nil
 }
+
+func (v *BoolValue) IsTrue() bool {
+	return v.b == true
+}
+
+func (v *BoolValue) IsFalse() bool {
+	return v.b == false
+}

@@ -35,7 +35,12 @@ import (
 
 func (m *Master) Main(cfg *config.Master) {
 	log.Debugf("master main %s", cfg.Name)
-	api.Start(m.Master)
+
+	if cfg.Api.Enable.IsTrue() {
+		api.Start(m.Master)
+	} else {
+		log.Debug("master api is disabled")
+	}
 
 	//~ conn := adaptor.New()
 	//~ dev := driver.New(conn)
