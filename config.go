@@ -8,16 +8,17 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/jrmsdev/munbot/config"
+	cfg "github.com/jrmsdev/munbot/config"
 	"github.com/jrmsdev/munbot/flags"
+	"github.com/jrmsdev/munbot/internal/config"
 	"github.com/jrmsdev/munbot/log"
 )
 
 var fileOpen func(string) (*os.File, error) = os.Open
 
-func masterConfig(m *config.Manager) *config.Master {
+func masterConfig(m *config.Manager) *cfg.Master {
 	s := m.NewSection("master")
-	return &config.Master{
+	return &cfg.Master{
 		Section: s,
 		Name:    s.NewString("name", ""),
 	}
@@ -25,7 +26,7 @@ func masterConfig(m *config.Manager) *config.Master {
 
 type Config struct {
 	*config.Manager
-	Master *config.Master `json:"master,omitempty"`
+	Master *cfg.Master `json:"master,omitempty"`
 }
 
 func newConfig() *Config {

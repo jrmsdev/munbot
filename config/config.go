@@ -3,7 +3,11 @@
 
 package config
 
+import (
+	"github.com/jrmsdev/munbot/internal/config"
+)
+
 type Master struct {
-	*Section
-	Name *StringValue `json:"name,omitempty"`
+	*config.Section
+	Name *config.StringValue `json:"name,omitempty"`
 }
