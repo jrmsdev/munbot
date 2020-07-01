@@ -26,10 +26,6 @@ func newConfig() *Config {
 	return &Config{c, cfg.NewMaster(c)}
 }
 
-func (c *Config) String() string {
-	return c.Master.Name.String()
-}
-
 func Configure() *Config {
 	dirs := []string{
 		flags.ConfigDistDir,

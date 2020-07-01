@@ -6,6 +6,7 @@ package config
 import (
 	"path/filepath"
 
+	"github.com/jrmsdev/munbot/flags"
 	"github.com/jrmsdev/munbot/internal/config"
 )
 
@@ -20,9 +21,9 @@ func NewMaster(m *config.Manager) *Master {
 	s := m.NewSection("master")
 	return &Master{
 		Section: s,
-		Name:    s.NewString("name", "munbot"),
+		Name:    s.NewString("name", flags.Name),
 		Api:     newApi(s, true),
-		Robot:   newRobot(s, "munbot", true),
+		Robot:   newRobot(s, flags.Name, true),
 	}
 }
 
