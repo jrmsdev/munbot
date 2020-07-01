@@ -4,6 +4,8 @@
 package config
 
 import (
+	"path/filepath"
+
 	"github.com/jrmsdev/munbot/internal/config"
 )
 
@@ -28,6 +30,8 @@ type Api struct {
 	Enable *config.BoolValue `json:"enable,omitempty"`
 	Host *config.StringValue `json:"host,omitempty"`
 	Port *config.IntValue `json:"port,omitempty"`
+	Cert *config.FilepathValue `json:"cert,omitempty"`
+	Key *config.FilepathValue `json:"key,omitempty"`
 }
 
 func newApi(s *config.Section, enable bool) *Api {
@@ -35,6 +39,8 @@ func newApi(s *config.Section, enable bool) *Api {
 		Enable: s.NewBool("api.enable", enable),
 		Host: s.NewString("api.host", ""),
 		Port: s.NewInt("api.port", 3000),
+		Cert: s.NewFilepath("api.cert", filepath.FromSlash("api/cert.pem")),
+		Key: s.NewFilepath("api.key", filepath.FromSlash("api/key.pem")),
 	}
 }
 
