@@ -13,8 +13,6 @@ import (
 	"github.com/jrmsdev/munbot/log"
 )
 
-var fileOpen func(string) (*os.File, error) = os.Open
-
 var (
 	listAll bool
 )
@@ -45,9 +43,6 @@ func edit(cfg *munbot.Config, filter, args string) {
 	fn := filepath.Join(flags.ConfigDir, flags.ConfigFile)
 	blob, err := cfg.Bytes()
 	if err != nil {
-		log.Fatal(err)
-	}
-	if err := os.MkdirAll(filepath.Dir(fn), 0770); err != nil {
 		log.Fatal(err)
 	}
 	if err := ioutil.WriteFile(fn, blob, 0660); err != nil {

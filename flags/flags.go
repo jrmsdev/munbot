@@ -21,12 +21,15 @@ var (
 	ConfigDistDir string = filepath.FromSlash("/etc/munbot")
 	ConfigSysDir  string = filepath.FromSlash("/usr/local/etc/munbot")
 	ConfigFile    string = "config.json"
+	CacheDir      string = filepath.FromSlash("~/.cache/munbot")
+	cacheDirErr   error
 )
 
 var fs *flag.FlagSet
 
 func init() {
 	ConfigDir, configDirErr = os.UserConfigDir()
+	CacheDir, cacheDirErr = os.UserCacheDir()
 }
 
 func Init(program string) *flag.FlagSet {
@@ -38,16 +41,23 @@ func Init(program string) *flag.FlagSet {
 	}
 	ConfigDir = filepath.Join(ConfigDir, "munbot")
 
+	if cacheDirErr != nil {
+		log.Panic(cacheDirErr)
+	}
+	CacheDir = filepath.Join(CacheDir, "munbot")
+
 	fs.BoolVar(&Debug, "debug", false, "enable debug")
 	fs.BoolVar(&Version, "version", false, "show version info and exit")
 
-	fs.StringVar(&ConfigDir, "cfgdir", ConfigDir,
+	fs.StringVar(&ConfigDir, "cfg.dir", ConfigDir,
 		"config dir `path`")
-	fs.StringVar(&ConfigDistDir, "cfgdistdir", ConfigDistDir,
+	fs.StringVar(&ConfigDistDir, "cfg.distdir", ConfigDistDir,
 		"dist config dir `path`")
-	fs.StringVar(&ConfigSysDir, "cfgsysdir", ConfigSysDir,
+	fs.StringVar(&ConfigSysDir, "cfg.sysdir", ConfigSysDir,
 		"system config dir `path`")
 	fs.StringVar(&ConfigFile, "cfg", ConfigFile, "config file `name`")
+
+	fs.StringVar(&CacheDir, "cache.dir", CacheDir, "cache dir `path`")
 
 	return fs
 }

@@ -54,6 +54,7 @@ func Configure() *Config {
 			}
 		}
 	}
+	setup()
 	return cfg
 }
 
