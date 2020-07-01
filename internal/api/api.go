@@ -43,7 +43,7 @@ func Start(m *gobot.Master, cfg *config.Api) {
 	protocol := "https"
 	sslCheck(a.Host, a.Port, a.Cert, a.Key)
 	if a.Cert == "" || a.Key == "" {
-		log.Print("api ssl check failed, forcing http on localhost...")
+		log.Warn("api ssl check failed, forcing http on localhost...")
 		a.Host = "localhost"
 		protocol = "http"
 	}
@@ -84,7 +84,7 @@ func sslCheck(host, port, cert, key string) {
 	if cert == "" && key == "" {
 		return
 	}
-	s := &http.Server{Addr: host+":"+port}
+	s := &http.Server{Addr: host + ":" + port}
 	go func() {
 		err := s.ListenAndServeTLS(cert, key)
 		if err != nil && err != http.ErrServerClosed {
