@@ -60,8 +60,6 @@ ENV GOENV /go/src/munbot/go.env
 
 RUN go env && go version
 
-RUN mkdir -vp -m 0750 ~/.config/munbot/master/api && \
-	ln -vsf /etc/ssl/munbot/certs/munbot.devel.pem ~/.config/munbot/master/api/cert.pem && \
-	ln -vsf /etc/ssl/munbot/private/munbot.devel.pem ~/.config/munbot/master/api/key.pem
+RUN mkdir -vp -m 0750 ~/.config/munbot/master/ssl
 
 ENTRYPOINT /usr/local/bin/entrypoint.sh

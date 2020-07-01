@@ -11,7 +11,7 @@
 
 # This definition stops the following lines choking if HOME isn't
 # defined.
-HOME			= /go/src/munbot/docker/devel/ca/db
+HOME			= /var/tmp/munbot/ca
 
 # Extra OBJECT IDENTIFIER info:
 #oid_file		= $ENV::HOME/.oid
@@ -44,7 +44,7 @@ default_ca	= CA_default		# The default ca section
 ####################################################################
 [ CA_default ]
 
-dir		= /go/src/munbot/docker/devel/ca/db	# Where everything is kept
+dir		= /var/tmp/munbot/ca	# Where everything is kept
 certs		= $dir/certs		# Where the issued certs are kept
 crl_dir		= $dir/crl		# Where the issued crl are kept
 database	= $dir/index.txt	# database index file.
@@ -330,7 +330,7 @@ default_tsa = tsa_config1	# the default TSA section
 [ tsa_config1 ]
 
 # These are used by the TSA reply generation only.
-dir		= /go/src/munbot/docker/devel/ca/db	# TSA root directory
+dir		= /var/tmp/munbot/ca	# TSA root directory
 serial		= $dir/tsaserial	# The current serial number (mandatory)
 crypto_device	= builtin		# OpenSSL engine to use for signing
 signer_cert	= $dir/tsacert.pem 	# The TSA signing certificate

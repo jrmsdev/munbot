@@ -1,5 +1,5 @@
 #!/bin/sh
 set -eu
-export OPENSSL_CATOP=/go/src/munbot/docker/devel/ca/db
-export OPENSSL_CONFIG=/go/src/munbot/docker/devel/ca/openssl.cnf
+export OPENSSL_CATOP=/var/tmp/munbot/ca
+export OPENSSL_CONFIG=./openssl.cnf
 exec /etc/ssl/misc/CA.pl $@
