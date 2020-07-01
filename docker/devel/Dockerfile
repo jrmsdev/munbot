@@ -25,7 +25,7 @@ RUN apk add --no-cache git && \
 ADD ca/CA.pl.patch /tmp/CA.pl.patch
 
 RUN apk add --no-cache patch perl openssl && \
-	rm -vf  /etc/ssl/openssl.cnf && \
+	mv -v /etc/ssl/openssl.cnf /etc/ssl/openssl.cnf.orig && \
 	ln -vs /go/src/munbot/docker/devel/ca/openssl.cnf /etc/ssl/openssl.cnf && \
 	cp -va /etc/ssl/misc/CA.pl /etc/ssl/misc/CA.pl.orig && \
 	patch /etc/ssl/misc/CA.pl /tmp/CA.pl.patch && \
@@ -59,5 +59,9 @@ ENV GOPATH /go
 ENV GOENV /go/src/munbot/go.env
 
 RUN go env && go version
+
+RUN mkdir -vp -m 0750 ~/.config/munbot/master/api && \
+	ln -vsf /etc/ssl/munbot/certs/munbot.devel.pem ~/.config/munbot/master/api/cert.pem && \
+	ln -vsf /etc/ssl/munbot/private/munbot.devel.pem ~/.config/munbot/master/api/key.pem
 
 ENTRYPOINT /usr/local/bin/entrypoint.sh

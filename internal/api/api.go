@@ -56,6 +56,8 @@ func sslFiles(cfg *config.Api) (string, string) {
 		log.Error(err)
 	}
 	if ok {
+		log.Debugf("cert file %s", cert)
+		log.Debugf("key file %s", key)
 		return cert, key
 	}
 	return "", ""
