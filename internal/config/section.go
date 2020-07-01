@@ -77,3 +77,9 @@ func (s *Section) NewBool(name string, defval bool) *BoolValue {
 	s.register(name, v)
 	return v
 }
+
+func (s *Section) NewFilepath(name string, defval string) *FilepathValue {
+	v := &FilepathValue{newValue("filepath", name), defval}
+	s.register(name, v)
+	return v
+}
