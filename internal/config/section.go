@@ -9,6 +9,7 @@ import (
 	"fmt"
 	"io"
 	"path"
+	"path/filepath"
 )
 
 type Section struct {
@@ -79,7 +80,8 @@ func (s *Section) NewBool(name string, defval bool) *BoolValue {
 	return v
 }
 
-func (s *Section) NewFilepath(name string, defval string, forceAbs bool) *FilepathValue {
+func (s *Section) NewFilepath(name string, defval string) *FilepathValue {
+	forceAbs := filepath.IsAbs(defval)
 	v := &FilepathValue{newValue("filepath", name), defval, forceAbs}
 	s.register(name, v)
 	return v
