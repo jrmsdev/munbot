@@ -16,6 +16,14 @@ import (
 	"github.com/jrmsdev/munbot/log"
 )
 
+type Api struct {
+	ctl *api.API
+}
+
+func New(m *gobot.Master) *Api {
+	return &Api{api.NewAPI(m)}
+}
+
 //~ func main() {
 //~ master := gobot.NewMaster()
 
@@ -28,31 +36,30 @@ import (
 //~ })
 //~ a.Start()
 
-func Start(m *gobot.Master, cfg *config.Api) {
-	a := api.NewAPI(m)
+func (a *Api) Start(cfg *config.Api) {
 	if flags.Debug {
-		a.Debug()
+		a.ctl.Debug()
 	}
-
-	a.Host = cfg.Host.String()
-	a.Port = cfg.Port.String()
-	a.Cert, a.Key = sslFiles(cfg)
+	a.ctl.Host = cfg.Host.String()
+	a.ctl.Port = cfg.Port.String()
+	a.ctl.Cert, a.ctl.Key = sslFiles(cfg)
 
 	protocol := "https"
-	sslCheck(a.Host, a.Port, a.Cert, a.Key)
-	if a.Cert == "" || a.Key == "" {
+	sslCheck(a.ctl.Host, a.ctl.Port, a.ctl.Cert, a.ctl.Key)
+	if a.ctl.Cert == "" || a.ctl.Key == "" {
 		log.Warn("api ssl check failed, forcing http on localhost...")
-		a.Host = "localhost"
+		a.ctl.Host = "localhost"
 		protocol = "http"
 	}
 
-	//~ a.AddHandler(api.BasicAuth("munbot", "tobnum"))
-	h := a.Host
+	//~ a.ctl.AddHandler(api.BasicAuth("munbot", "tobnum"))
+
+	h := a.ctl.Host
 	if h == "" {
 		h = "0.0.0.0"
 	}
-	log.Printf("start api %s://%s:%s/", protocol, h, a.Port)
-	a.Start()
+	log.Printf("start api %s://%s:%s/", protocol, h, a.ctl.Port)
+	a.ctl.Start()
 }
 
 func sslFiles(cfg *config.Api) (string, string) {

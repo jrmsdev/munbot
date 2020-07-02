@@ -15,7 +15,6 @@ import (
 	//~ "github.com/jrmsdev/munbot/adaptor"
 	//~ "github.com/jrmsdev/munbot/driver"
 	"github.com/jrmsdev/munbot/config"
-	"github.com/jrmsdev/munbot/internal/master/api"
 	"github.com/jrmsdev/munbot/log"
 )
 
@@ -37,7 +36,7 @@ func (m *Master) Main(cfg *config.Master) {
 	log.Debugf("master main %s", cfg.Name)
 
 	if cfg.Api.Enable.IsTrue() {
-		api.Start(m.Master, cfg.Api)
+		m.api.Start(cfg.Api)
 	} else {
 		log.Debug("master api is disabled")
 	}
