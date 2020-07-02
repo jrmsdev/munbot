@@ -27,9 +27,11 @@ func (v *PathValue) Value() string {
 
 func (v *PathValue) Update(newval string) error {
 	log.Debugf("update %s:%s", v.Type(), v.Name())
-	v.setDirty()
-	v.p = path.Clean(newval)
-	return v.check(v.p)
+	if v.setDirty(v.p, newval) {
+		v.p = path.Clean(newval)
+		return v.check(v.p)
+	}
+	return nil
 }
 
 func (v *PathValue) UnmarshalJSON(b []byte) error {

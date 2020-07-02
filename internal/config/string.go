@@ -24,8 +24,9 @@ func (v *StringValue) Value() string {
 
 func (v *StringValue) Update(newval string) error {
 	log.Debugf("update %s:%s", v.Type(), v.Name())
-	v.s = newval
-	v.setDirty()
+	if v.setDirty(v.s, newval) {
+		v.s = newval
+	}
 	return nil
 }
 

@@ -23,10 +23,12 @@ func (v *BoolValue) Value() bool {
 
 func (v *BoolValue) Update(newval string) error {
 	log.Debugf("update %s:%s", v.Type(), v.Name())
-	var err error
-	v.b, err = strconv.ParseBool(newval)
-	v.setDirty()
-	return err
+	if v.setDirty(v.String(), newval) {
+		var err error
+		v.b, err = strconv.ParseBool(newval)
+		return err
+	}
+	return nil
 }
 
 func (v *BoolValue) UnmarshalJSON(b []byte) error {

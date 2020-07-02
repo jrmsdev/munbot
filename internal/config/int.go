@@ -23,10 +23,12 @@ func (v *IntValue) Value() int {
 
 func (v *IntValue) Update(newval string) error {
 	log.Debugf("update %s:%s", v.Type(), v.Name())
-	var err error
-	v.i, err = strconv.Atoi(newval)
-	v.setDirty()
-	return err
+	if v.setDirty(v.String(), newval) {
+		var err error
+		v.i, err = strconv.Atoi(newval)
+		return err
+	}
+	return nil
 }
 
 func (v *IntValue) UnmarshalJSON(b []byte) error {

@@ -35,8 +35,14 @@ func (v *baseValue) Type() string {
 	return v.t
 }
 
-func (v *baseValue) setDirty() {
-	v.dirty = true
+func (v *baseValue) setDirty(old, new string) bool {
+	if new == "null" {
+		return false
+	}
+	if new != old {
+		v.dirty = true
+	}
+	return v.dirty
 }
 
 func (v *baseValue) modified() bool {

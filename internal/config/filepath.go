@@ -27,9 +27,12 @@ func (v *FilepathValue) Value() string {
 
 func (v *FilepathValue) Update(newval string) error {
 	log.Debugf("update %s:%s", v.Type(), v.Name())
-	v.setDirty()
-	v.p = filepath.Clean(filepath.FromSlash(newval))
-	return v.check(v.p)
+	fp := filepath.Clean(filepath.FromSlash(newval))
+	if v.setDirty(v.p, fp) {
+		v.p = fp
+		return v.check(v.p)
+	}
+	return nil
 }
 
 func (v *FilepathValue) UnmarshalJSON(b []byte) error {
