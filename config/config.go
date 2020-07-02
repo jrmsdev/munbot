@@ -12,20 +12,20 @@ import (
 
 type Master struct {
 	*config.Section
-	Name  *config.StringValue `json:"name,omitempty"`
-	Hostname  *config.StringValue `json:"hostname,omitempty"`
-	Api   *Api                `json:"api,omitempty"`
-	Robot *Robot              `json:"robot,omitempty"`
+	Name     *config.StringValue `json:"name,omitempty"`
+	Hostname *config.StringValue `json:"hostname,omitempty"`
+	Api      *Api                `json:"api,omitempty"`
+	Robot    *Robot              `json:"robot,omitempty"`
 }
 
 func NewMaster(m *config.Manager) *Master {
 	s := m.NewSection("master")
 	return &Master{
-		Section: s,
-		Name:    s.NewString("name", flags.Name),
-		Hostname:    s.NewString("hostname", "localhost"),
-		Api:     newApi(s, true),
-		Robot:   newRobot(s, flags.Name, true),
+		Section:  s,
+		Name:     s.NewString("name", flags.Name),
+		Hostname: s.NewString("hostname", "localhost"),
+		Api:      newApi(s, true),
+		Robot:    newRobot(s, flags.Name, true),
 	}
 }
 

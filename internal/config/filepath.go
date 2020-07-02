@@ -13,7 +13,7 @@ import (
 
 type FilepathValue struct {
 	*baseValue
-	p string
+	p        string
 	forceAbs bool
 }
 

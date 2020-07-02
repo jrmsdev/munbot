@@ -7,8 +7,8 @@ import (
 	"gobot.io/x/gobot"
 
 	"github.com/jrmsdev/munbot/config"
-	"github.com/jrmsdev/munbot/log"
 	"github.com/jrmsdev/munbot/internal/master/api"
+	"github.com/jrmsdev/munbot/log"
 )
 
 type Master struct {
