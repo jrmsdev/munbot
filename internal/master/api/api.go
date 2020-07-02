@@ -38,7 +38,7 @@ func New(m *gobot.Master) *Api {
 
 func (a *Api) Start(cfg *config.Api) {
 	log.Debug("start")
-	if flags.Debug {
+	if flags.DebugApi {
 		a.ctl.Debug()
 	}
 	a.ctl.Host = cfg.Host.String()

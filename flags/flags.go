@@ -15,6 +15,7 @@ import (
 var (
 	progname      string = "munbot"
 	Debug         bool   = false
+	DebugApi      bool   = false
 	Version       bool   = false
 	Name          string = "master"
 	ConfigDir     string = filepath.FromSlash("~/.config/munbot")
@@ -56,8 +57,9 @@ func Init(program string) *flag.FlagSet {
 	DataDir = filepath.Join(DataDir, ".munbot")
 
 	fs.BoolVar(&Debug, "debug", false, "enable debug")
+
 	fs.BoolVar(&Version, "version", false, "show version info and exit")
-	fs.StringVar(&Name, "name", Name, "profile name")
+	fs.StringVar(&Name, "name", Name, "master robot name")
 
 	fs.StringVar(&ConfigDir, "cfg.dir", ConfigDir,
 		"config dir `path`")
