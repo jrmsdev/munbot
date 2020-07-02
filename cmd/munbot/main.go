@@ -16,12 +16,8 @@ func main() {
 	fs := flags.Init("munbot")
 	fs.BoolVar(&flags.DebugApi, "debug.api", false, "enable api debug")
 	flags.Parse(os.Args[1:])
-
 	log.Printf("munbot version %s", version.String())
-
 	cfg := munbot.Configure()
-	munbot.SetupInfo()
-
 	master := munbot.New()
 	master.Main(cfg.Master)
 }

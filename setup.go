@@ -10,7 +10,7 @@ import (
 	"github.com/jrmsdev/munbot/log"
 )
 
-func SetupInfo() {
+func setupInfo() {
 	log.Printf("Config dir %s", flags.ConfigDir)
 	log.Printf("Cache dir %s", flags.CacheDir)
 	log.Printf("Data dir %s", flags.DataDir)
