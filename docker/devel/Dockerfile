@@ -48,7 +48,7 @@ RUN printf 'export GOPATH=/go\n' >>/home/munbot/.profile
 
 ADD --chown=munbot bin/*.sh /usr/local/bin/
 
-RUN mkdir -vp -m 0750 /godoc && chown munbot:munbot /godoc
+RUN mkdir -vp -m 0750 /godoc/vendor && chown -vR munbot:munbot /godoc
 
 USER munbot:munbot
 WORKDIR /go/src/munbot
