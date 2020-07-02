@@ -38,28 +38,14 @@ func NewDriver(a *Adaptor) *Driver {
 	return d
 }
 
+// gobot interface methods
+
 func (d *Driver) Name() string { return d.name }
 
 func (d *Driver) SetName(name string) { d.name = name }
 
-func (d *Driver) Connection() gobot.Connection {
-	return d.connection
-}
-
-func (d *Driver) adaptor() *Adaptor {
-	return d.Connection().(*Adaptor)
-}
-
-func (d *Driver) Hello() string {
-	return "hello from " + d.Name() + "!"
-}
-
-func (d *Driver) Ping() string {
-	return d.adaptor().Ping()
-}
-
 func (d *Driver) Start() error {
-	log.Print("Start driver", d.name, "...")
+	log.Print("Start driver ", d.name, "...")
 	go func() {
 		for {
 			d.Publish(d.Event(Hello), d.Hello())
@@ -74,7 +60,25 @@ func (d *Driver) Start() error {
 }
 
 func (d *Driver) Halt() error {
-	log.Print("Halt driver", d.name, "...")
+	log.Print("Halt driver ", d.name, "...")
 	d.halt <- true
 	return nil
+}
+
+func (d *Driver) Connection() gobot.Connection {
+	return d.connection
+}
+
+// custom methods
+
+func (d *Driver) adaptor() *Adaptor {
+	return d.Connection().(*Adaptor)
+}
+
+func (d *Driver) Hello() string {
+	return "hello from " + d.Name() + "!"
+}
+
+func (d *Driver) Ping() string {
+	return d.adaptor().Ping()
 }

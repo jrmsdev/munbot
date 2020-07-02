@@ -13,13 +13,36 @@ import (
 type Robot struct {
 	*gobot.Robot
 	name string
+	conn gobot.Connection
+	dev gobot.Device
 }
+
+//~ conn := adaptor.New()
+//~ dev := driver.New(conn)
+//~ work := func() {
+//~ 	dev.On(dev.Event(driver.Hello), func(data interface{}) {
+//~ 		fmt.Println(data)
+//~ 	})
+//~ 	gobot.Every(3000*time.Millisecond, func() {
+//~ 		fmt.Println(dev.Ping())
+//~ 	})
+//~ }
+//~ robot := gobot.NewRobot(
+//~ 	"munbot",
+//~ 	[]gobot.Connection{conn},
+//~ 	[]gobot.Device{dev},
+//~ 	work,
+//~ )
 
 func NewRobot(cfg *config.Robot) *Robot {
 	name := cfg.Name.String()
 	bot := gobot.NewRobot(name)
 	bot.AutoRun = cfg.AutoRun.Value()
-	r := &Robot{bot, name}
+	conn := NewAdaptor(name)
+	bot.AddConnection(conn)
+	dev := NewDriver(conn)
+	bot.AddDevice(dev)
+	r := &Robot{bot, name, conn, dev}
 	bot.Work = r.Work
 	return r
 }

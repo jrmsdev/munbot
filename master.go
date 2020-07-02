@@ -38,13 +38,11 @@ func New() *Master {
 func (m *Master) Main(cfg *config.Master) {
 	log.Printf("Name %s", cfg.Name)
 	setupInfo()
-
 	if cfg.Api.Enable.IsTrue() {
 		m.api.Start(cfg.Api)
 	} else {
 		log.Warn("master api is disabled")
 	}
-
 	if cfg.Robot.Enable.IsTrue() {
 		log.Printf("Add robot %s", cfg.Robot.Name)
 		bot := NewRobot(cfg.Robot)
@@ -52,24 +50,5 @@ func (m *Master) Main(cfg *config.Master) {
 	} else {
 		log.Warn("master robot is disabled")
 	}
-
-	//~ conn := adaptor.New()
-	//~ dev := driver.New(conn)
-	//~ work := func() {
-	//~ dev.On(dev.Event(driver.Hello), func(data interface{}) {
-	//~ fmt.Println(data)
-	//~ })
-	//~ gobot.Every(3000*time.Millisecond, func() {
-	//~ fmt.Println(dev.Ping())
-	//~ })
-	//~ }
-	//~ robot := gobot.NewRobot(
-	//~ "munbot",
-	//~ []gobot.Connection{conn},
-	//~ []gobot.Device{dev},
-	//~ work,
-	//~ )
-
-	//~ m.AddRobot(robot)
 	m.Start()
 }
