@@ -4,16 +4,6 @@
 package munbot
 
 import (
-	//~ "fmt"
-	//~ "html"
-	//~ "net/http"
-	//~ "time"
-
-	//~ "gobot.io/x/gobot"
-	//~ "gobot.io/x/gobot/api"
-
-	//~ "github.com/jrmsdev/munbot/adaptor"
-	//~ "github.com/jrmsdev/munbot/driver"
 	"github.com/jrmsdev/munbot/config"
 	"github.com/jrmsdev/munbot/log"
 )
@@ -33,12 +23,20 @@ import (
 //~ }
 
 func (m *Master) Main(cfg *config.Master) {
-	log.Debugf("master main %s", cfg.Name)
+	log.Debug(cfg.Name)
 
 	if cfg.Api.Enable.IsTrue() {
 		m.api.Start(cfg.Api)
 	} else {
-		log.Debug("master api is disabled")
+		log.Warn("master api is disabled")
+	}
+
+	if cfg.Robot.Enable.IsTrue() {
+		log.Printf("Add robot %s", cfg.Robot.Name)
+		bot := NewRobot(cfg.Robot)
+		m.AddRobot(bot.Robot)
+	} else {
+		log.Warn("master robot is disabled")
 	}
 
 	//~ conn := adaptor.New()

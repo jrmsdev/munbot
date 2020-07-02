@@ -11,9 +11,9 @@ import (
 )
 
 func SetupInfo() {
-	log.Printf("config dir %s", flags.ConfigDir)
-	log.Printf("cache dir %s", flags.CacheDir)
-	log.Printf("data dir %s", flags.DataDir)
+	log.Printf("Config dir %s", flags.ConfigDir)
+	log.Printf("Cache dir %s", flags.CacheDir)
+	log.Printf("Data dir %s", flags.DataDir)
 }
 
 func setup() {

@@ -25,5 +25,5 @@ func NewRobot(cfg *config.Robot) *Robot {
 }
 
 func (r *Robot) Work() {
-	log.Debugf("%s work", r.name)
+	log.Printf("Robot %s work", r.name)
 }

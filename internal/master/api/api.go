@@ -37,6 +37,7 @@ func New(m *gobot.Master) *Api {
 //~ a.Start()
 
 func (a *Api) Start(cfg *config.Api) {
+	log.Debug("start")
 	if flags.Debug {
 		a.ctl.Debug()
 	}
@@ -58,7 +59,7 @@ func (a *Api) Start(cfg *config.Api) {
 	if h == "" {
 		h = "0.0.0.0"
 	}
-	log.Printf("start api %s://%s:%s/", protocol, h, a.ctl.Port)
+	log.Printf("Start api %s://%s:%s/", protocol, h, a.ctl.Port)
 	a.ctl.Start()
 }
 
@@ -92,6 +93,6 @@ func tlsCheck(host, port, cert, key string) {
 	if _, err := tls.LoadX509KeyPair(cert, key); err != nil {
 		log.Fatal(err)
 	}
-	log.Printf("tls x509 cert %s", cert)
-	log.Printf("tls x509 key %s", key)
+	log.Printf("TLS x509 cert %s", cert)
+	log.Printf("TLS x509 key %s", key)
 }
