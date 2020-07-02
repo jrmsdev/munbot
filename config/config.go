@@ -13,6 +13,7 @@ import (
 type Master struct {
 	*config.Section
 	Name  *config.StringValue `json:"name,omitempty"`
+	Hostname  *config.StringValue `json:"hostname,omitempty"`
 	Api   *Api                `json:"api,omitempty"`
 	Robot *Robot              `json:"robot,omitempty"`
 }
@@ -22,6 +23,7 @@ func NewMaster(m *config.Manager) *Master {
 	return &Master{
 		Section: s,
 		Name:    s.NewString("name", flags.Name),
+		Hostname:    s.NewString("hostname", "localhost"),
 		Api:     newApi(s, true),
 		Robot:   newRobot(s, flags.Name, true),
 	}
@@ -29,7 +31,7 @@ func NewMaster(m *config.Manager) *Master {
 
 type Api struct {
 	Enable *config.BoolValue     `json:"enable,omitempty"`
-	Host   *config.StringValue   `json:"host,omitempty"`
+	Addr   *config.StringValue   `json:"addr,omitempty"`
 	Port   *config.IntValue      `json:"port,omitempty"`
 	Cert   *config.FilepathValue `json:"cert,omitempty"`
 	Key    *config.FilepathValue `json:"key,omitempty"`
@@ -39,7 +41,7 @@ type Api struct {
 func newApi(s *config.Section, enable bool) *Api {
 	return &Api{
 		Enable: s.NewBool("api.enable", enable),
-		Host:   s.NewString("api.host", ""),
+		Addr:   s.NewString("api.addr", "0.0.0.0"),
 		Port:   s.NewInt("api.port", 3000),
 		Cert:   s.NewFilepath("api.cert", filepath.FromSlash("ssl/api/cert.pem")),
 		Key:    s.NewFilepath("api.key", filepath.FromSlash("ssl/api/key.pem")),

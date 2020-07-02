@@ -41,7 +41,7 @@ func (a *Api) Start(cfg *config.Api) {
 	if flags.DebugApi {
 		a.ctl.Debug()
 	}
-	a.ctl.Host = cfg.Host.String()
+	a.ctl.Host = cfg.Addr.String()
 	a.ctl.Port = cfg.Port.String()
 	a.ctl.Cert, a.ctl.Key = tlsFiles(cfg)
 
