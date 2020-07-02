@@ -4,6 +4,8 @@
 package munbot
 
 import (
+	"time"
+
 	"gobot.io/x/gobot"
 
 	"github.com/jrmsdev/munbot/config"
@@ -12,9 +14,10 @@ import (
 
 type Robot struct {
 	*gobot.Robot
+	cfg *config.Robot
 	name string
-	conn gobot.Connection
-	dev gobot.Device
+	conn *Adaptor
+	dev *Driver
 }
 
 //~ conn := adaptor.New()
@@ -42,11 +45,18 @@ func NewRobot(cfg *config.Robot) *Robot {
 	bot.AddConnection(conn)
 	dev := NewDriver(conn)
 	bot.AddDevice(dev)
-	r := &Robot{bot, name, conn, dev}
+	r := &Robot{bot, cfg, name, conn, dev}
 	bot.Work = r.Work
 	return r
 }
 
 func (r *Robot) Work() {
 	log.Printf("Robot %s work", r.name)
+	//~ TODO: create new config value TimeDuration and use time.ParseDuration
+	//~ gobot.Every(cfg.Ping.EverySecond.Value()*time.Second, r.ping)
+	gobot.Every(15*time.Second, r.ping)
+}
+
+func (r *Robot) ping() {
+	log.Debugf("%s ping<->%s", r.name, r.dev.Ping())
 }
