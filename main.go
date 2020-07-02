@@ -15,7 +15,7 @@ import (
 	//~ "github.com/jrmsdev/munbot/adaptor"
 	//~ "github.com/jrmsdev/munbot/driver"
 	"github.com/jrmsdev/munbot/config"
-	"github.com/jrmsdev/munbot/internal/api"
+	"github.com/jrmsdev/munbot/internal/master/api"
 	"github.com/jrmsdev/munbot/log"
 )
 
