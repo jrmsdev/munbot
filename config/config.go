@@ -48,13 +48,15 @@ func newApi(s *config.Section, enable bool) *Api {
 }
 
 type Robot struct {
+	Enable  *config.BoolValue   `json:"enable,omitempty"`
 	Name    *config.StringValue `json:"name,omitempty"`
 	AutoRun *config.BoolValue   `json:"autorun,omitempty"`
 }
 
-func newRobot(s *config.Section, name string, autoRun bool) *Robot {
+func newRobot(s *config.Section, name string, enable bool) *Robot {
 	return &Robot{
+		Enable:  s.NewBool("robot.enable", enable),
 		Name:    s.NewString("robot.name", name),
-		AutoRun: s.NewBool("robot.autorun", autoRun),
+		AutoRun: s.NewBool("robot.autorun", true),
 	}
 }

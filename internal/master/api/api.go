@@ -42,10 +42,10 @@ func (a *Api) Start(cfg *config.Api) {
 	}
 	a.ctl.Host = cfg.Host.String()
 	a.ctl.Port = cfg.Port.String()
-	a.ctl.Cert, a.ctl.Key = sslFiles(cfg)
+	a.ctl.Cert, a.ctl.Key = tlsFiles(cfg)
 
 	protocol := "https"
-	sslCheck(a.ctl.Host, a.ctl.Port, a.ctl.Cert, a.ctl.Key)
+	tlsCheck(a.ctl.Host, a.ctl.Port, a.ctl.Cert, a.ctl.Key)
 	if a.ctl.Cert == "" || a.ctl.Key == "" {
 		log.Warn("api ssl check failed, forcing http on localhost...")
 		a.ctl.Host = "localhost"
@@ -62,7 +62,7 @@ func (a *Api) Start(cfg *config.Api) {
 	a.ctl.Start()
 }
 
-func sslFiles(cfg *config.Api) (string, string) {
+func tlsFiles(cfg *config.Api) (string, string) {
 	cert := filepath.Join(flags.ConfigDir, cfg.Cert.String())
 	key := filepath.Join(flags.ConfigDir, cfg.Key.String())
 	ok := true
@@ -84,12 +84,14 @@ func sslFiles(cfg *config.Api) (string, string) {
 	return "", ""
 }
 
-func sslCheck(host, port, cert, key string) {
-	log.Debug("ssl check")
+func tlsCheck(host, port, cert, key string) {
+	log.Debug("check tls load x509 key pair")
 	if cert == "" && key == "" {
 		return
 	}
 	if _, err := tls.LoadX509KeyPair(cert, key); err != nil {
 		log.Fatal(err)
 	}
+	log.Printf("tls x509 cert %s", cert)
+	log.Printf("tls x509 key %s", key)
 }

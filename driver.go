@@ -1,14 +1,13 @@
 // Copyright (c) Jeremías Casteglione <jrmsdev@gmail.com>
 // See LICENSE file.
 
-package driver
+package munbot
 
 import (
 	"time"
 
 	"gobot.io/x/gobot"
 
-	"github.com/jrmsdev/munbot/adaptor"
 	"github.com/jrmsdev/munbot/log"
 )
 
@@ -23,7 +22,7 @@ type Driver struct {
 	gobot.Commander
 }
 
-func New(a *adaptor.Adaptor) *Driver {
+func NewDriver(a *Adaptor) *Driver {
 	d := &Driver{
 		name:       a.Name(),
 		connection: a,
@@ -47,8 +46,8 @@ func (d *Driver) Connection() gobot.Connection {
 	return d.connection
 }
 
-func (d *Driver) adaptor() *adaptor.Adaptor {
-	return d.Connection().(*adaptor.Adaptor)
+func (d *Driver) adaptor() *Adaptor {
+	return d.Connection().(*Adaptor)
 }
 
 func (d *Driver) Hello() string {
@@ -60,7 +59,7 @@ func (d *Driver) Ping() string {
 }
 
 func (d *Driver) Start() error {
-	log.Println("Start driver", d.name, "...")
+	log.Print("Start driver", d.name, "...")
 	go func() {
 		for {
 			d.Publish(d.Event(Hello), d.Hello())
@@ -75,7 +74,7 @@ func (d *Driver) Start() error {
 }
 
 func (d *Driver) Halt() error {
-	log.Println("Halt driver", d.name, "...")
+	log.Print("Halt driver", d.name, "...")
 	d.halt <- true
 	return nil
 }

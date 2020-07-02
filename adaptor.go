@@ -1,7 +1,7 @@
 // Copyright (c) Jeremías Casteglione <jrmsdev@gmail.com>
 // See LICENSE file.
 
-package adaptor
+package munbot
 
 import (
 	"github.com/jrmsdev/munbot/log"
@@ -11,7 +11,7 @@ type Adaptor struct {
 	name string
 }
 
-func New() *Adaptor {
+func NewAdaptor() *Adaptor {
 	return &Adaptor{
 		name: "munbot",
 	}
@@ -26,12 +26,12 @@ func (a *Adaptor) SetName(name string) {
 }
 
 func (a *Adaptor) Connect() error {
-	log.Println("Connect adaptor", a.name, "...")
+	log.Print("Connect adaptor", a.name, "...")
 	return nil
 }
 
 func (a *Adaptor) Finalize() error {
-	log.Println("Finalize adaptor", a.name, "...")
+	log.Print("Finalize adaptor", a.name, "...")
 	return nil
 }
 

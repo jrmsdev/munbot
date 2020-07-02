@@ -11,7 +11,6 @@ import (
 )
 
 func SetupInfo() {
-	log.Debug("setup info")
 	log.Printf("config dir %s", flags.ConfigDir)
 	log.Printf("cache dir %s", flags.CacheDir)
 	log.Printf("data dir %s", flags.DataDir)

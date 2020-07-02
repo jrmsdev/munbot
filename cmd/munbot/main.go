@@ -16,8 +16,8 @@ func main() {
 	flags.Init("munbot")
 	flags.Parse(os.Args[1:])
 	log.Printf("munbot version %s", version.String())
-	munbot.SetupInfo()
 	cfg := munbot.Configure()
+	munbot.SetupInfo()
 	master := munbot.New()
 	master.Main(cfg.Master)
 }
