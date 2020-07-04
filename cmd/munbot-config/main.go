@@ -4,6 +4,7 @@
 package main
 
 import (
+	"io"
 	"io/ioutil"
 	"os"
 	"path/filepath"
@@ -15,24 +16,31 @@ import (
 
 var (
 	listAll bool
+	cmdNew bool
 )
 
 func main() {
-	parser := flags.Init("munbot-config")
-	parser.BoolVar(&listAll, "a", false, "list all options including default values")
+	fs := flags.Init("munbot-config")
+	fs.BoolVar(&listAll, "a", false, "list all options including default values")
 	flags.Parse(os.Args[1:])
+
 	log.Debug("start")
 	cfg := munbot.Configure()
 
-	filter := parser.Arg(0)
-	args := parser.Arg(1)
+	filter := fs.Arg(0)
+	args := fs.Arg(1)
+	dumpOrEdit(os.Stdout, cfg, filter, args)
+
+	log.Debug("end")
+}
+
+func dumpOrEdit(out io.Writer, cfg *munbot.Config, filter, args string) {
 	if args != "" {
 		edit(cfg, filter, args)
 	} else {
 		log.Debug("dump...")
 		cfg.Dump(os.Stdout, listAll, filter)
 	}
-	log.Debug("end")
 }
 
 func edit(cfg *munbot.Config, filter, args string) {
