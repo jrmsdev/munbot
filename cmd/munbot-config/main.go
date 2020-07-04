@@ -12,7 +12,7 @@ import (
 )
 
 var (
-	listAll bool
+	listAll     bool
 	newUserName string
 )
 
@@ -26,7 +26,7 @@ func main() {
 	cfg := munbot.Configure()
 
 	if newUserName != "" {
-		newUser(newUserName)
+		newUser(cfg, newUserName)
 	} else {
 		filter := fs.Arg(0)
 		args := fs.Arg(1)

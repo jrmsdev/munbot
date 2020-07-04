@@ -8,11 +8,11 @@ import (
 )
 
 type User struct {
-	Enable *config.BoolValue     `json:"enable,omitempty"`
-	Name   *config.StringValue   `json:"name,omitempty"`
+	Enable *config.BoolValue   `json:"enable,omitempty"`
+	Name   *config.StringValue `json:"name,omitempty"`
 }
 
-func newUser(s *config.Section, name string) *User {
+func NewUser(s *config.Section, name string) *User {
 	return &User{
 		Enable: s.NewBool(name+".enable", true),
 		Name:   s.NewString(name+".name", name),

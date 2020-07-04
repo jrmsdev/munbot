@@ -4,9 +4,11 @@
 package main
 
 import (
+	"github.com/jrmsdev/munbot"
 	"github.com/jrmsdev/munbot/log"
 )
 
-func newUser(name string) {
+func newUser(cfg *munbot.Config, name string) {
 	log.Debugf("new name %s", name)
+	munbot.NewUser(cfg.NewUser(name))
 }
