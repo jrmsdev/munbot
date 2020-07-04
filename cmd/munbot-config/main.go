@@ -4,10 +4,7 @@
 package main
 
 import (
-	"io"
-	"io/ioutil"
 	"os"
-	"path/filepath"
 
 	"github.com/jrmsdev/munbot"
 	"github.com/jrmsdev/munbot/flags"
@@ -16,45 +13,29 @@ import (
 
 var (
 	listAll bool
-	cmdNew bool
+	newUserName string
 )
 
 func main() {
 	fs := flags.Init("munbot-config")
 	fs.BoolVar(&listAll, "a", false, "list all options including default values")
+	fs.StringVar(&newUserName, "new.user", "", "create a new user `name`")
 	flags.Parse(os.Args[1:])
 
 	log.Debug("start")
 	cfg := munbot.Configure()
 
-	filter := fs.Arg(0)
-	args := fs.Arg(1)
-	dumpOrEdit(os.Stdout, cfg, filter, args)
+	if newUserName != "" {
+		newUser(newUserName)
+	} else {
+		filter := fs.Arg(0)
+		args := fs.Arg(1)
+		if args != "" {
+			edit(cfg, filter, args)
+		} else {
+			dump(cfg, os.Stdout, listAll, filter)
+		}
+	}
 
 	log.Debug("end")
-}
-
-func dumpOrEdit(out io.Writer, cfg *munbot.Config, filter, args string) {
-	if args != "" {
-		edit(cfg, filter, args)
-	} else {
-		log.Debug("dump...")
-		cfg.Dump(os.Stdout, listAll, filter)
-	}
-}
-
-func edit(cfg *munbot.Config, filter, args string) {
-	log.Debug("edit...")
-	if err := cfg.Update(filter, args); err != nil {
-		log.Fatal(err)
-	}
-	fn := filepath.Join(flags.ConfigDir, flags.ConfigFile)
-	blob, err := cfg.Bytes()
-	if err != nil {
-		log.Fatal(err)
-	}
-	if err := ioutil.WriteFile(fn, blob, 0660); err != nil {
-		log.Fatal(err)
-	}
-	log.Printf("%s saved", fn)
 }
