@@ -5,6 +5,7 @@ package munbot
 
 import (
 	"io"
+	"io/ioutil"
 	"os"
 	"path/filepath"
 
@@ -66,6 +67,20 @@ func (c *Config) Bytes() ([]byte, error) {
 
 func (c *Config) Write(fh io.Writer) error {
 	return c.Manager.Write(c, fh)
+}
+
+func (c *Config) Save() error {
+	log.Debug("save...")
+	fn := filepath.Join(flags.ConfigDir, flags.ConfigFile)
+	blob, err := c.Bytes()
+	if err != nil {
+		return log.Error(err)
+	}
+	if err := ioutil.WriteFile(fn, blob, 0660); err != nil {
+		return log.Error(err)
+	}
+	log.Printf("%s saved", fn)
+	return nil
 }
 
 func (c *Config) NewUser(name string) *config.User {
