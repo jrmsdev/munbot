@@ -5,18 +5,30 @@ package version
 
 import (
 	"fmt"
+	"strings"
 )
 
 var (
-	buildDate string = " "
-	buildOS   string = " "
-	buildArch string = " "
-	buildTags string = " "
+	buildDate string = "nodate"
+	buildOS   string = "noos"
+	buildArch string = "noarch"
+	buildTags string = "notags"
 )
 
-func buildInfo() string {
-	if buildDate != " " {
-		return fmt.Sprintf(" (%s %s/%s)", buildDate, buildOS, buildArch)
+type Build struct {
+	Date string
+	OS string
+	Arch string
+	Tags []string
+}
+
+func BuildInfo() *Build {
+	return &Build{buildDate, buildOS, buildArch, strings.Split(buildTags, ",")}
+}
+
+func (b *Build) String() string {
+	if b.Date != "nodate" {
+		return fmt.Sprintf(" (%s %s/%s %v)", b.Date, b.OS, b.Arch, b.Tags)
 	}
 	return ""
 }

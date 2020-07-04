@@ -20,7 +20,7 @@ func String() string {
 	} else {
 		v = fmt.Sprintf("%d.%d", Major, Minor)
 	}
-	return fmt.Sprintf("%s%s", v, buildInfo())
+	return fmt.Sprintf("%s%s", v, BuildInfo())
 }
 
 func Print(progname string) {

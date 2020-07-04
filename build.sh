@@ -14,7 +14,7 @@ fi
 # STATIC="-tags 'osusergo netgo'"
 TAGS='munbot'
 if test 'static' = "${1:-'default'}"; then
-	TAGS='munbot static osusergo netgo'
+	TAGS='munbot,static,osusergo,netgo'
 fi
 imp="github.com/jrmsdev/munbot/version"
 BUILD_DATE="-X ${imp}.buildDate=$(date -u '+%Y%m%d.%H%M%S')"
