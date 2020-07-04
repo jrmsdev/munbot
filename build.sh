@@ -10,4 +10,4 @@ else
 	SRC="munbot-${SRC}"
 	shift
 fi
-exec go build -mod=vendor -i -o ./_build/cmd/${SRC}.bin ./cmd/${SRC}
+exec go build -v -mod vendor -i -o ./_build/cmd/${SRC}.bin ./cmd/${SRC}

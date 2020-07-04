@@ -1,7 +1,7 @@
-FROM jrmsdev/munbot:base
+FROM jrmsdev/munbot:build
 
 LABEL maintainer="Jeremías Casteglione <jrmsdev@gmail.com>"
-LABEL version="2020.07.01"
+LABEL version="2020.07.03"
 
 USER root:root
 WORKDIR /root
@@ -9,46 +9,40 @@ WORKDIR /root
 ENV USER root
 ENV HOME /root
 
-RUN apk --no-cache add sudo go go-doc
+RUN apk update --no-cache \
+	&& apk add --no-cache sudo go-doc patch perl openssl ca-certificates
+
+ADD ca/CA.pl.patch /tmp/CA.pl.patch
+RUN mv -v /etc/ssl/openssl.cnf /etc/ssl/openssl.cnf.orig \
+	&& ln -vs /go/src/munbot/docker/devel/ca/openssl.cnf /etc/ssl/openssl.cnf \
+	&& cp -va /etc/ssl/misc/CA.pl /etc/ssl/misc/CA.pl.orig \
+	&& patch /etc/ssl/misc/CA.pl /tmp/CA.pl.patch \
+	&& rm -vf /tmp/CA.pl.patch
 
 ENV GOPATH /root/go
 ENV GOBIN /usr/local/bin
 
-RUN apk add --no-cache git && \
-	go get -u -v golang.org/x/tools/cmd/godoc && \
-	go generate -v golang.org/x/tools/godoc/static && \
-	go install -v -i golang.org/x/tools/cmd/godoc && \
-	go get -u -v github.com/go-bindata/go-bindata/... && \
-	apk del --no-cache --purge git && \
-	rm -rf /root/go /root/.cache
-
-ADD ca/CA.pl.patch /tmp/CA.pl.patch
-
-RUN apk add --no-cache patch perl openssl && \
-	mv -v /etc/ssl/openssl.cnf /etc/ssl/openssl.cnf.orig && \
-	ln -vs /go/src/munbot/docker/devel/ca/openssl.cnf /etc/ssl/openssl.cnf && \
-	cp -va /etc/ssl/misc/CA.pl /etc/ssl/misc/CA.pl.orig && \
-	patch /etc/ssl/misc/CA.pl /tmp/CA.pl.patch && \
-	rm -vf /tmp/CA.pl.patch && \
-	apk del --no-cache --purge patch
+RUN apk add --no-cache git \
+	&& go get -u -v golang.org/x/tools/cmd/godoc \
+	&& go generate -v golang.org/x/tools/godoc/static \
+	&& go install -v -i golang.org/x/tools/cmd/godoc \
+	&& apk del --no-cache --purge git \
+	&& rm -rf ${GOPATH} /root/.cache
 
 RUN printf '\n%%munbot ALL=(ALL) NOPASSWD: ALL\n' >>/etc/sudoers
 
 RUN ln -vs /usr/share/doc/go/doc /usr/lib/go/doc
+RUN mkdir -vp -m 0750 /godoc/vendor/src /godoc/src/github.com/jrmsdev/munbot \
+	&& chown -vR munbot:munbot /godoc
 
-RUN mkdir -vp -m 0750 /go && mkdir -vp -m 0750 /go/src && \
-	mkdir -vp -m 0750 /go/src/munbot && chown -vR munbot:munbot /go
+VOLUME /godoc/vendor/src
+VOLUME /godoc/src/github.com/jrmsdev/munbot
 
-VOLUME /go/src/munbot
-
-ARG MUNBOT_UMASK
-
-RUN printf 'umask %s\n' "${MUNBOT_UMASK}" >>/home/munbot/.profile
-RUN printf 'export GOPATH=/go\n' >>/home/munbot/.profile
+EXPOSE 9090
+EXPOSE 6060
+EXPOSE 3000
 
 ADD --chown=munbot bin/*.sh /usr/local/bin/
-
-RUN mkdir -vp -m 0750 /godoc/vendor && chown -vR munbot:munbot /godoc
 
 USER munbot:munbot
 WORKDIR /go/src/munbot
@@ -62,6 +56,15 @@ ENV GOENV /go/src/munbot/go.env
 
 RUN go env && go version
 
-RUN mkdir -vp -m 0750 ~/.config/munbot/master/ssl
+ADD --chown=munbot tmp/go.mod .
+ADD --chown=munbot tmp/go.sum .
+RUN go mod download && rm -vf go.mod go.sum
+
+RUN printf "export PS1='%s '\n" '\u@devel:\W\$' >>/home/munbot/.profile
+
+RUN mkdir -vp -m 0750 /home/munbot/.config/munbot/master/ssl
+VOLUME /home/munbot/.config/munbot/master/ssl
+
+# maybe? go get -u -v github.com/go-bindata/go-bindata/...
 
 ENTRYPOINT /usr/local/bin/entrypoint.sh

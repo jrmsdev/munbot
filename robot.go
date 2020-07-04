@@ -14,10 +14,10 @@ import (
 
 type Robot struct {
 	*gobot.Robot
-	cfg *config.Robot
+	cfg  *config.Robot
 	name string
 	conn *Adaptor
-	dev *Driver
+	dev  *Driver
 }
 
 //~ conn := adaptor.New()

@@ -1,6 +1,8 @@
 #!/bin/sh
 set -eu
 
+# main port should be 6492 (pioji messages)
+
 docker run -it --rm --name munbot-devel --hostname munbot-devel -u munbot \
 	-p 127.0.0.1:6060:6060 \
 	-p 127.0.0.1:9090:9090 \
