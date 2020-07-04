@@ -16,4 +16,12 @@ TAGS='munbot'
 if test 'static' = "${1:-'default'}"; then
 	TAGS='munbot osusergo netgo static_build'
 fi
-exec go build -v -mod vendor -i -o ./_build/cmd/${SRC}.bin -tags "${TAGS}" ./cmd/${SRC}
+imp="github.com/jrmsdev/munbot/version"
+BUILD_DATE="-X ${imp}.buildDate=$(date -u '+%Y%m%d.%H%M%S')"
+BUILD_INFO="-X ${imp}.buildOS=$(go env GOOS)"
+BUILD_INFO="${BUILD_INFO} -X ${imp}.buildArch=$(go env GOARCH)"
+BUILD_INFO="${BUILD_INFO} -X ${imp}.buildUser=$(id -un)"
+BUILD_INFO="${BUILD_INFO} -X ${imp}.buildHost=$(hostname -s)"
+exec go build -v -mod vendor -i -o ./_build/cmd/${SRC}.bin -tags "${TAGS}" \
+	-ldflags "${BUILD_DATE} ${BUILD_INFO}" \
+	./cmd/${SRC}
