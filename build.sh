@@ -1,19 +1,10 @@
 #!/bin/sh
 set -eu
-SRC=${1:-''}
-if test '' = "${SRC}"; then
-	SRC='munbot'
-elif test 'munbot' = "${SRC}"; then
-	SRC='munbot'
-	shift
-else
-	SRC="munbot-${SRC}"
-	shift
-fi
+SRC=${1:-'munbot'}
 # https://github.com/golang/go/issues/26492#issuecomment-635563222
 # STATIC="-tags 'osusergo netgo'"
 TAGS='munbot'
-if test 'static' = "${1:-'default'}"; then
+if test 'static' = "${2:-'default'}"; then
 	TAGS='munbot,static,osusergo,netgo'
 fi
 imp="github.com/jrmsdev/munbot/version"

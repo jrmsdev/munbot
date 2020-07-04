@@ -1,4 +1,2 @@
 #!/bin/sh
-set -eu
-gofmt -w -l -s .
-exit 0
+exec gofmt -w -l -s .

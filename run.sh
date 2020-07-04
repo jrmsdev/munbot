@@ -1,14 +1,5 @@
 #!/bin/sh
 set -eu
-SRC=${1:-''}
+SRC=${1:-'munbot'}
 ./build.sh ${SRC}
-if test '' = "${SRC}"; then
-	SRC='munbot'
-elif test 'munbot' = "${SRC}"; then
-	SRC='munbot'
-	shift
-else
-	SRC="munbot-${SRC}"
-	shift
-fi
 exec ./_build/cmd/${SRC}.bin $@
