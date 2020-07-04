@@ -1,8 +1,21 @@
 #!/bin/sh
 set -eu
-export GOPATH=${PWD}/_build
+SRC=${1:-''}
+NAME='munbot'
+if test '' = "${SRC}"; then
+	SRC='munbot'
+elif test 'munbot' = "${SRC}"; then
+	SRC='munbot'
+	shift
+else
+	NAME=${SRC}
+	SRC="munbot-${SRC}"
+	shift
+fi
+set -x
 ./clean.sh
-mkdir -vp ${GOPATH}
-echo '--- munbot build'
 go env
-exec ./build.sh
+sh -x ./build.sh ${NAME} $@
+set +x
+echo "$(ls ./_build/cmd/${SRC}.bin) created"
+exit 0
