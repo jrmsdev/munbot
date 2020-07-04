@@ -11,4 +11,5 @@ import (
 func newUser(cfg *munbot.Config, name string) {
 	log.Debugf("new name %s", name)
 	munbot.NewUser(cfg.NewUser(name))
+	save(cfg)
 }
