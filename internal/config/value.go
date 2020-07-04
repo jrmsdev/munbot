@@ -5,6 +5,8 @@ package config
 
 import (
 	"encoding/json"
+
+	"github.com/jrmsdev/munbot/log"
 )
 
 type Value interface {
@@ -47,4 +49,14 @@ func (v *baseValue) setDirty(old, new string) bool {
 
 func (v *baseValue) modified() bool {
 	return v.dirty
+}
+
+func (v *baseValue) jsonUnmarshal(blob []byte, dst interface{}) error {
+	log.Debugf("json unmarshal %s %s", v.t, v.n)
+	return json.Unmarshal(blob, dst)
+}
+
+func (v *baseValue) jsonMarshal(src interface{}) ([]byte, error) {
+	log.Debugf("json marshal %s %s", v.t, v.n)
+	return json.Marshal(src)
 }

@@ -4,8 +4,6 @@
 package config
 
 import (
-	"strconv"
-
 	"github.com/jrmsdev/munbot/log"
 )
 
@@ -23,7 +21,6 @@ func (v *StringValue) Value() string {
 }
 
 func (v *StringValue) Update(newval string) error {
-	log.Debugf("update %s:%s", v.Type(), v.Name())
 	if v.setDirty(v.s, newval) {
 		v.s = newval
 	}
@@ -31,9 +28,8 @@ func (v *StringValue) Update(newval string) error {
 }
 
 func (v *StringValue) UnmarshalJSON(b []byte) error {
-	log.Debugf("json unmarshal %s:%s", v.Type(), v.Name())
-	s, err := strconv.Unquote(string(b))
-	if err != nil {
+	var s string
+	if err := v.jsonUnmarshal(b, &s); err != nil {
 		return err
 	}
 	return v.Update(s)
@@ -41,5 +37,5 @@ func (v *StringValue) UnmarshalJSON(b []byte) error {
 
 func (v *StringValue) MarshalJSON() ([]byte, error) {
 	log.Debugf("json marshal %s:%s", v.Type(), v.Name())
-	return []byte(strconv.Quote(v.s)), nil
+	return v.jsonMarshal(&v.s)
 }
