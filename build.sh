@@ -12,5 +12,13 @@ BUILD_DATE="-X ${imp}.buildDate=$(date -u '+%Y%m%d.%H%M%S')"
 BUILD_INFO="-X ${imp}.buildOS=$(go env GOOS)"
 BUILD_INFO="${BUILD_INFO} -X ${imp}.buildArch=$(go env GOARCH)"
 BUILD_INFO="${BUILD_INFO} -X ${imp}.buildTags=${TAGS}"
-exec go build -v -mod vendor -i -o ./_build/cmd/${SRC}.bin -tags "${TAGS}" \
-	-ldflags "${BUILD_DATE} ${BUILD_INFO}" ./cmd/${SRC}
+build_cmds=${SRC}
+if test 'all' = "${build_cmds}"; then
+	build_cmds='munbot munbot-config'
+fi
+for cmd in ${build_cmds}; do
+	go build -v -mod vendor -i -o ./_build/cmd/${cmd}.bin -tags "${TAGS}" \
+		-ldflags "${BUILD_DATE} ${BUILD_INFO}" ./cmd/${cmd} || exit 1
+	echo "--- build $(ls ./_build/cmd/${cmd}.bin) done!"
+done
+exit 0
