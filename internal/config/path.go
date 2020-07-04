@@ -6,9 +6,6 @@ package config
 import (
 	"fmt"
 	"path"
-	"strconv"
-
-	"github.com/jrmsdev/munbot/log"
 )
 
 type PathValue struct {
@@ -26,7 +23,6 @@ func (v *PathValue) Value() string {
 }
 
 func (v *PathValue) Update(newval string) error {
-	log.Debugf("update %s:%s", v.Type(), v.Name())
 	if v.setDirty(v.p, newval) {
 		v.p = path.Clean(newval)
 		return v.check(v.p)
@@ -35,21 +31,19 @@ func (v *PathValue) Update(newval string) error {
 }
 
 func (v *PathValue) UnmarshalJSON(b []byte) error {
-	log.Debugf("json unmarshal %s:%s", v.Type(), v.Name())
-	s, err := strconv.Unquote(string(b))
-	if err != nil {
+	var s string
+	if err := v.jsonUnmarshal(b, &s); err != nil {
 		return err
 	}
 	return v.Update(s)
 }
 
 func (v *PathValue) MarshalJSON() ([]byte, error) {
-	log.Debugf("json marshal %s:%s", v.Type(), v.Name())
 	p := path.Clean(v.p)
 	if err := v.check(p); err != nil {
 		return nil, err
 	}
-	return []byte(strconv.Quote(p)), nil
+	return v.jsonMarshal(&p)
 }
 
 func (v *PathValue) check(p string) error {

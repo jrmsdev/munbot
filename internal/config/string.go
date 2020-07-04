@@ -3,10 +3,6 @@
 
 package config
 
-import (
-	"github.com/jrmsdev/munbot/log"
-)
-
 type StringValue struct {
 	*baseValue
 	s string
@@ -36,6 +32,5 @@ func (v *StringValue) UnmarshalJSON(b []byte) error {
 }
 
 func (v *StringValue) MarshalJSON() ([]byte, error) {
-	log.Debugf("json marshal %s:%s", v.Type(), v.Name())
 	return v.jsonMarshal(&v.s)
 }

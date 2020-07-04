@@ -4,7 +4,6 @@
 package config
 
 import (
-	"github.com/jrmsdev/munbot/log"
 	"strconv"
 )
 
@@ -22,7 +21,6 @@ func (v *IntValue) Value() int {
 }
 
 func (v *IntValue) Update(newval string) error {
-	log.Debugf("update %s:%s", v.Type(), v.Name())
 	if v.setDirty(v.String(), newval) {
 		var err error
 		v.i, err = strconv.Atoi(newval)
@@ -32,11 +30,13 @@ func (v *IntValue) Update(newval string) error {
 }
 
 func (v *IntValue) UnmarshalJSON(b []byte) error {
-	log.Debugf("json unmarshal %s:%s", v.Type(), v.Name())
-	return v.Update(string(b))
+	var i int
+	if err := v.jsonUnmarshal(b, &i); err != nil {
+		return err
+	}
+	return v.Update(strconv.Itoa(i))
 }
 
 func (v *IntValue) MarshalJSON() ([]byte, error) {
-	log.Debugf("json marshal %s:%s", v.Type(), v.Name())
-	return []byte(v.String()), nil
+	return v.jsonMarshal(&v.i)
 }
