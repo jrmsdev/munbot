@@ -14,12 +14,15 @@ const (
 )
 
 func String() string {
+	v := ""
 	if Patch > 0 {
-		return fmt.Sprintf("%d.%d.%d", Major, Minor, Patch)
+		v = fmt.Sprintf("%d.%d.%d", Major, Minor, Patch)
+	} else {
+		v = fmt.Sprintf("%d.%d", Major, Minor)
 	}
-	return fmt.Sprintf("%d.%d", Major, Minor)
+	return fmt.Sprintf("%s%s", v, buildInfo())
 }
 
 func Print(progname string) {
-	fmt.Printf("%s version %s%s\n", progname, String(), buildInfo())
+	fmt.Printf("%s version %s\n", progname, String())
 }

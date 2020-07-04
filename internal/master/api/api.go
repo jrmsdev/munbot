@@ -77,6 +77,8 @@ func tlsFiles(cfg *config.Api) (string, string) {
 		ok = false
 		log.Error(err)
 	}
+	// TODO: check key file permissions are not too open?
+	//       refuse to start if not 600 at least or even 400
 	if ok {
 		log.Debugf("cert file %s", cert)
 		log.Debugf("key file %s", key)

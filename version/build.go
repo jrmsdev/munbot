@@ -11,20 +11,12 @@ var (
 	buildDate string = " "
 	buildOS   string = " "
 	buildArch string = " "
-	buildUser string = " "
-	buildHost string = " "
+	buildTags string = " "
 )
 
 func buildInfo() string {
 	if buildDate != " " {
-		return fmt.Sprintf(" (%s)", &Build{})
+		return fmt.Sprintf(" (%s %s/%s)", buildDate, buildOS, buildArch)
 	}
 	return ""
-}
-
-type Build struct{}
-
-func (b *Build) String() string {
-	return fmt.Sprintf("%s %s/%s %s@%s",
-		buildDate, buildOS, buildArch, buildUser, buildHost)
 }
