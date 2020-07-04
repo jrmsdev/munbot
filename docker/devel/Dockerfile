@@ -1,4 +1,4 @@
-FROM jrmsdev/munbot:build
+FROM jrmsdev/munbot:base
 
 LABEL maintainer="Jeremías Casteglione <jrmsdev@gmail.com>"
 LABEL version="2020.07.03"
