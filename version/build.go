@@ -17,7 +17,7 @@ var (
 
 type Build struct {
 	Date string
-	OS string
+	OS   string
 	Arch string
 	Tags []string
 }

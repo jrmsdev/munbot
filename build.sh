@@ -19,6 +19,5 @@ fi
 for cmd in ${build_cmds}; do
 	go build -v -mod vendor -i -o ./_build/cmd/${cmd}.bin -tags "${TAGS}" \
 		-ldflags "${BUILD_DATE} ${BUILD_INFO}" ./cmd/${cmd} || exit 1
-	echo "--- build $(ls ./_build/cmd/${cmd}.bin) done!"
 done
 exit 0
