@@ -10,6 +10,6 @@ docker run -it --rm --name munbot-devel --hostname munbot-devel -u munbot \
 	-v ${PWD}/docker/devel/ca/files:/home/munbot/.config/munbot/master/ssl \
 	-v ${PWD}:/godoc/src/github.com/jrmsdev/munbot \
 	-v ${PWD}/vendor:/godoc/vendor/src \
-	-v ${PWD}:/go/src/munbot jrmsdev/munbot:devel
+	-v ${PWD}:/go/src/munbot jrmsdev/munbot:devel $@
 
 exit 0

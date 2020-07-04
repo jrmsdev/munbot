@@ -60,11 +60,9 @@ ADD --chown=munbot tmp/go.mod .
 ADD --chown=munbot tmp/go.sum .
 RUN go mod download && rm -vf go.mod go.sum
 
-RUN printf "export PS1='%s '\n" '\u@devel:\W\$' >>/home/munbot/.profile
-
 RUN mkdir -vp -m 0750 /home/munbot/.config/munbot/master/ssl
 VOLUME /home/munbot/.config/munbot/master/ssl
 
 # maybe? go get -u -v github.com/go-bindata/go-bindata/...
 
-ENTRYPOINT /usr/local/bin/entrypoint.sh
+CMD /usr/local/bin/entrypoint.sh
