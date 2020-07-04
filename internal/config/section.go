@@ -31,12 +31,17 @@ func (s *Section) Name() string {
 }
 
 func (s *Section) Dump(out io.Writer, listAll bool, section, opt string) {
+	prefix := section == ""
 	for e := s.opt.Front(); e != nil; e = e.Next() {
 		v := e.Value.(Value)
 		f := s.filter(section, opt, s.name, v.Name())
 		if (listAll || v.modified() || section != "") && f {
+			p := ""
+			if prefix {
+				p = fmt.Sprintf("%s.%s=", s.name, v.Name())
+			}
 			io.WriteString(out,
-				fmt.Sprintf("%s.%s=%s\n", s.name, v.Name(), v.String()))
+				fmt.Sprintf("%s%s\n", p, v.String()))
 		}
 	}
 }
