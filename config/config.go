@@ -84,7 +84,7 @@ func Save(c *Munbot) error {
 }
 
 func NewUser(c *Munbot, name string) (*User, error) {
-	// TODO: check that name does not exists already
+	// TODO: check that name does not exists already and that c.User is not nil
 	u := &User{Enable: true, Name: name}
 	c.User[name] = u
 	return c.User[name], nil

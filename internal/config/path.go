@@ -26,7 +26,7 @@ func (p *AbsPath) UnmarshalJSON(b []byte) error {
 }
 
 func (p *AbsPath) MarshalJSON() ([]byte, error) {
-	return marshalPath(&p.Value, absPath)
+	return marshalPath(p.Value, absPath)
 }
 
 type RelPath struct {
@@ -42,7 +42,7 @@ func (p *RelPath) UnmarshalJSON(b []byte) error {
 }
 
 func (p *RelPath) MarshalJSON() ([]byte, error) {
-	return marshalPath(&p.Value, relPath)
+	return marshalPath(p.Value, relPath)
 }
 
 func unmarshalPath(p interface{}, b []byte, pt pathType) error {

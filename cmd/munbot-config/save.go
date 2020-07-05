@@ -4,13 +4,11 @@
 package main
 
 import (
-	"github.com/jrmsdev/munbot"
+	"github.com/jrmsdev/munbot/config"
 	"github.com/jrmsdev/munbot/log"
 )
 
-func save(cfg *munbot.Config) {
+func save(cfg *config.Munbot) error {
 	log.Debug("save...")
-	if err := cfg.Save(); err != nil {
-		log.Fatal("config save failed!")
-	}
+	return config.Save(cfg)
 }

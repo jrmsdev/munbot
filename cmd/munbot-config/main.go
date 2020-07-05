@@ -9,8 +9,6 @@ import (
 	"github.com/jrmsdev/munbot"
 	"github.com/jrmsdev/munbot/flags"
 	"github.com/jrmsdev/munbot/log"
-
-	"github.com/jrmsdev/munbot/config"
 )
 
 var (
@@ -24,25 +22,25 @@ func main() {
 	fs.StringVar(&newUserName, "new.user", "", "create a new user `name`")
 	flags.Parse(os.Args[1:])
 
-	cfg := config.New()
-	config.SetDefaults(cfg)
-	config.Save(cfg)
-	os.Exit(9)
-
 	log.Debug("start")
-	cfg := munbot.Configure()
+	munbot.Configure()
+	cfg := munbot.Config
 
+	var err error
 	if newUserName != "" {
-		newUser(cfg, newUserName)
+		err = newUser(cfg, newUserName)
 	} else {
 		filter := fs.Arg(0)
 		args := fs.Arg(1)
 		if args != "" {
-			edit(cfg, filter, args)
+			err = edit(cfg, filter, args)
 		} else {
 			dump(cfg, os.Stdout, listAll, filter)
 		}
 	}
-
+	if err != nil {
+		log.Debugf("exit error: %s", err)
+		os.Exit(2)
+	}
 	log.Debug("end")
 }

@@ -4,12 +4,14 @@
 package main
 
 import (
-	"github.com/jrmsdev/munbot"
+	"github.com/jrmsdev/munbot/config"
 	"github.com/jrmsdev/munbot/log"
 )
 
-func newUser(cfg *munbot.Config, name string) {
+func newUser(cfg *config.Munbot, name string) error {
 	log.Debugf("new name %s", name)
-	munbot.NewUser(cfg.NewUser(name))
-	save(cfg)
+	if _, err := config.NewUser(cfg, name); err != nil {
+		return err
+	}
+	return save(cfg)
 }

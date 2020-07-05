@@ -4,14 +4,14 @@
 package main
 
 import (
-	"github.com/jrmsdev/munbot"
+	"github.com/jrmsdev/munbot/config"
 	"github.com/jrmsdev/munbot/log"
 )
 
-func edit(cfg *munbot.Config, filter, args string) {
+func edit(cfg *config.Munbot, filter, args string) error {
 	log.Debug("edit...")
-	if err := cfg.Update(filter, args); err != nil {
-		log.Fatal(err)
-	}
-	save(cfg)
+	//~ if err := cfg.Update(filter, args); err != nil {
+		//~ return log.Error(err)
+	//~ }
+	return save(cfg)
 }
