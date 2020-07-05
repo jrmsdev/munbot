@@ -8,17 +8,17 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/jrmsdev/munbot/config2"
+	"github.com/jrmsdev/munbot/config"
 	"github.com/jrmsdev/munbot/flags"
 	"github.com/jrmsdev/munbot/log"
 )
 
-var Config *config2.Munbot
+var Config *config.Munbot
 var fileOpen func(string) (*os.File, error)
 
 func init() {
-	Config = config2.New()
-	config2.SetDefaults(Config)
+	Config = config.New()
+	config.SetDefaults(Config)
 	fileOpen = os.Open
 }
 
@@ -40,7 +40,7 @@ func Configure() error {
 			}
 		} else {
 			log.Debugf("read %s", fn)
-			if err := config2.Read(Config, fh); err != nil {
+			if err := config.Read(Config, fh); err != nil {
 				return fmt.Errorf("%s: %s", fn, err)
 			}
 		}

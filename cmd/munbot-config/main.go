@@ -10,7 +10,7 @@ import (
 	"github.com/jrmsdev/munbot/flags"
 	"github.com/jrmsdev/munbot/log"
 
-	"github.com/jrmsdev/munbot/config2"
+	"github.com/jrmsdev/munbot/config"
 )
 
 var (
@@ -24,9 +24,9 @@ func main() {
 	fs.StringVar(&newUserName, "new.user", "", "create a new user `name`")
 	flags.Parse(os.Args[1:])
 
-	cfg2 := config2.New()
-	config2.SetDefaults(cfg2)
-	config2.Save(cfg2)
+	cfg := config.New()
+	config.SetDefaults(cfg)
+	config.Save(cfg)
 	os.Exit(9)
 
 	log.Debug("start")

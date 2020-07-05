@@ -6,7 +6,7 @@ package munbot
 import (
 	"gobot.io/x/gobot"
 
-	"github.com/jrmsdev/munbot/config2"
+	"github.com/jrmsdev/munbot/config"
 	"github.com/jrmsdev/munbot/internal/master/api"
 	"github.com/jrmsdev/munbot/log"
 )
@@ -35,7 +35,7 @@ func New() *Master {
 //~ master.Start()
 //~ }
 
-func (m *Master) Main(cfg *config2.Master) {
+func (m *Master) Main(cfg *config.Master) {
 	log.Printf("Name %s", cfg.Name)
 	setupInfo()
 	if cfg.Api.Enable {

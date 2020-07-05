@@ -1,7 +1,7 @@
 // Copyright (c) Jeremías Casteglione <jrmsdev@gmail.com>
 // See LICENSE file.
 
-package config2
+package config
 
 import (
 	"encoding/json"
@@ -68,7 +68,7 @@ func Write(c *Munbot, fh io.Writer) error {
 
 func Save(c *Munbot) error {
 	log.Debug("save...")
-	fn := filepath.Join(flags.ConfigDir, flags.ConfigFile + ".cfg2")
+	fn := filepath.Join(flags.ConfigDir, flags.ConfigFile)
 	blob, err := Bytes(c)
 	if err != nil {
 		return log.Error(err)

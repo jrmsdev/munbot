@@ -1,7 +1,7 @@
 // Copyright (c) Jeremías Casteglione <jrmsdev@gmail.com>
 // See LICENSE file.
 
-package config2
+package config
 
 type Api struct {
 	Enable bool   `json:"enable,omitempty"`
