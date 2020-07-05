@@ -3,11 +3,15 @@
 
 package config
 
+import (
+	"github.com/jrmsdev/munbot/internal/config"
+)
+
 type Api struct {
 	Enable bool   `json:"enable,omitempty"`
 	Addr   string `json:"addr,omitempty"`
 	Port   int    `json:"port,omitempty"`
-	Cert   string `json:"cert,omitempty"`
-	Key    string `json:"key,omitempty"`
-	Path   string `json:"path,omitempty"`
+	Cert   *config.RelFilepath `json:"cert,omitempty"`
+	Key    *config.RelFilepath `json:"key,omitempty"`
+	Path   *config.AbsPath `json:"path,omitempty"`
 }

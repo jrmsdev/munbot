@@ -4,67 +4,85 @@
 package config
 
 import (
+	"encoding/json"
 	"fmt"
 	"path"
 )
 
-type PathValue struct {
-	*baseValue
-	p        string
-	forceAbs bool
+type pathType int
+const absPath pathType = 1
+const relPath pathType = 2
+
+type AbsPath struct {
+	Value string `json:"-"`
 }
 
-func (v *PathValue) String() string {
-	return v.p
+func (p *AbsPath) String() string {
+	return p.Value
 }
 
-func (v *PathValue) Value() string {
-	return v.p
+func (p *AbsPath) UnmarshalJSON(b []byte) error {
+	return unmarshalPath(&p.Value, b, absPath)
 }
 
-func (v *PathValue) Update(newval string) error {
-	if v.setDirty(v.p, newval) {
-		v.p = path.Clean(newval)
-		return v.check(v.p)
-	}
-	return nil
+func (p *AbsPath) MarshalJSON() ([]byte, error) {
+	return marshalPath(&p.Value, absPath)
 }
 
-func (v *PathValue) UnmarshalJSON(b []byte) error {
+type RelPath struct {
+	Value string `json:"-"`
+}
+
+func (p *RelPath) String() string {
+	return p.Value
+}
+
+func (p *RelPath) UnmarshalJSON(b []byte) error {
+	return unmarshalPath(&p.Value, b, relPath)
+}
+
+func (p *RelPath) MarshalJSON() ([]byte, error) {
+	return marshalPath(&p.Value, relPath)
+}
+
+func unmarshalPath(p interface{}, b []byte, pt pathType) error {
 	var s string
-	if err := v.jsonUnmarshal(b, &s); err != nil {
-		return err
+	if err := json.Unmarshal(b, s); err != nil {
+		return fmt.Errorf("path: %s", err)
 	}
-	return v.Update(s)
+	p = path.Clean(s)
+	return checkPath(pt, p.(string))
 }
 
-func (v *PathValue) MarshalJSON() ([]byte, error) {
-	p := path.Clean(v.p)
-	if err := v.check(p); err != nil {
+func marshalPath(p interface{}, pt pathType) ([]byte, error) {
+	s := path.Clean(p.(string))
+	if err := checkPath(pt, s); err != nil {
 		return nil, err
 	}
-	return v.jsonMarshal(&p)
-}
-
-func (v *PathValue) check(p string) error {
-	if v.forceAbs {
-		return v.checkAbs(p)
+	blob, err := json.Marshal(&s)
+	if err != nil {
+		return nil, fmt.Errorf("path: %s", err)
 	}
-	return v.checkRel(p)
+	return blob, nil
 }
 
-func (v *PathValue) checkAbs(p string) error {
+func checkPath(pt pathType, p string) error {
+	if pt == absPath {
+		return checkAbsPath(p)
+	}
+	return checkRelPath(p)
+}
+
+func checkAbsPath(p string) error {
 	if !path.IsAbs(p) {
-		return fmt.Errorf("%s option should be an absolute path: %s",
-			v.Name(), p)
+		return fmt.Errorf("%s: should be an absolute path", p)
 	}
 	return nil
 }
 
-func (v *PathValue) checkRel(p string) error {
+func checkRelPath(p string) error {
 	if path.IsAbs(p) {
-		return fmt.Errorf("%s option should be a relative path: %s",
-			v.Name(), p)
+		return fmt.Errorf("%s: should be a relative path", p)
 	}
 	return nil
 }

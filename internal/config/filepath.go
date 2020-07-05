@@ -4,68 +4,81 @@
 package config
 
 import (
+	"encoding/json"
 	"fmt"
 	"path/filepath"
 )
 
-type FilepathValue struct {
-	*baseValue
-	p        string
-	forceAbs bool
+type AbsFilepath struct {
+	Value string `json:"-"`
 }
 
-func (v *FilepathValue) String() string {
-	return v.p
+func (p *AbsFilepath) String() string {
+	return p.Value
 }
 
-func (v *FilepathValue) Value() string {
-	return v.p
+func (p *AbsFilepath) UnmarshalJSON(b []byte) error {
+	return unmarshalFilepath(&p.Value, b, absPath)
 }
 
-func (v *FilepathValue) Update(newval string) error {
-	fp := filepath.Clean(filepath.FromSlash(newval))
-	if v.setDirty(v.p, fp) {
-		v.p = fp
-		return v.check(v.p)
-	}
-	return nil
+func (p *AbsFilepath) MarshalJSON() ([]byte, error) {
+	return marshalFilepath(&p.Value, absPath)
 }
 
-func (v *FilepathValue) UnmarshalJSON(b []byte) error {
+type RelFilepath struct {
+	Value string `json:"-"`
+}
+
+func (p *RelFilepath) String() string {
+	return p.Value
+}
+
+func (p *RelFilepath) UnmarshalJSON(b []byte) error {
+	return unmarshalFilepath(&p.Value, b, relPath)
+}
+
+func (p *RelFilepath) MarshalJSON() ([]byte, error) {
+	return marshalFilepath(&p.Value, relPath)
+}
+
+func unmarshalFilepath(p interface{}, b []byte, pt pathType) error {
 	var s string
-	if err := v.jsonUnmarshal(b, &s); err != nil {
-		return err
+	if err := json.Unmarshal(b, s); err != nil {
+		return fmt.Errorf("filepath: %s", err)
 	}
-	return v.Update(s)
+	p = filepath.Clean(filepath.FromSlash(s))
+	return checkFilepath(pt, p.(string))
 }
 
-func (v *FilepathValue) MarshalJSON() ([]byte, error) {
-	fp := filepath.Clean(filepath.ToSlash(v.p))
-	if err := v.check(fp); err != nil {
+func marshalFilepath(p interface{}, pt pathType) ([]byte, error) {
+	fp := filepath.Clean(filepath.ToSlash(p.(string)))
+	if err := checkFilepath(pt, fp); err != nil {
 		return nil, err
 	}
-	return v.jsonMarshal(&fp)
-}
-
-func (v *FilepathValue) check(p string) error {
-	if v.forceAbs {
-		return v.checkAbs(p)
+	blob, err := json.Marshal(&fp)
+	if err != nil {
+		return nil, fmt.Errorf("filepath: %s", err)
 	}
-	return v.checkRel(p)
+	return blob, nil
 }
 
-func (v *FilepathValue) checkAbs(p string) error {
+func checkFilepath(pt pathType, p string) error {
+	if pt == absPath {
+		return checkAbsFilepath(p)
+	}
+	return checkRelFilepath(p)
+}
+
+func checkAbsFilepath(p string) error {
 	if !filepath.IsAbs(p) {
-		return fmt.Errorf("%s option should be an absolute filepath: %s",
-			v.Name(), p)
+		return fmt.Errorf("%s: should be an absolute filepath", p)
 	}
 	return nil
 }
 
-func (v *FilepathValue) checkRel(p string) error {
+func checkRelFilepath(p string) error {
 	if filepath.IsAbs(p) {
-		return fmt.Errorf("%s option should be a relative filepath: %s",
-			v.Name(), p)
+		return fmt.Errorf("%s: should be a relative filepath", p)
 	}
 	return nil
 }

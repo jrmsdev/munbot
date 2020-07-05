@@ -64,8 +64,8 @@ func (a *Api) Start(cfg *config.Api) {
 }
 
 func tlsFiles(cfg *config.Api) (string, string) {
-	cert := filepath.Join(flags.ConfigDir, cfg.Cert)
-	key := filepath.Join(flags.ConfigDir, cfg.Key)
+	cert := filepath.Join(flags.ConfigDir, cfg.Cert.String())
+	key := filepath.Join(flags.ConfigDir, cfg.Key.String())
 	ok := true
 	_, err := os.Stat(cert)
 	if err != nil {

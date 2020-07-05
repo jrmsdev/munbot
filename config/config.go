@@ -10,6 +10,7 @@ import (
 	"path/filepath"
 
 	"github.com/jrmsdev/munbot/flags"
+	"github.com/jrmsdev/munbot/internal/config"
 	"github.com/jrmsdev/munbot/log"
 )
 
@@ -18,15 +19,17 @@ func New() *Munbot {
 }
 
 func SetDefaults(c *Munbot) {
+	cert := config.RelFilepath{filepath.FromSlash("ssl/api/cert.pem")}
+	key := config.RelFilepath{filepath.FromSlash("ssl/api/key.pem")}
 	c.Master = &Master{
 		Name: "munbot",
 		Api: &Api{
 			Enable: true,
 			Addr: "0.0.0.0",
 			Port: 3000,
-			Cert: filepath.FromSlash("ssl/api/cert.pem"),
-			Key: filepath.FromSlash("ssl/api/key.pem"),
-			Path: "/api",
+			Cert: &cert,
+			Key: &key,
+			Path: &config.AbsPath{"/api"},
 		},
 		Robot: &Robot{
 			Enable: true,
