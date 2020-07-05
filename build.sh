@@ -1,10 +1,20 @@
 #!/bin/sh
 set -eu
-SRC=${1:-'munbot'}
-# https://github.com/golang/go/issues/26492#issuecomment-635563222
-# STATIC="-tags 'osusergo netgo'"
+SRC=${1:-''}
+BUILD=${2:-''}
+if test '' = "${SRC}"; then
+	SRC='munbot'
+else
+	shift
+fi
+if test '' = "${BUILD}"; then
+	BUILD='default'
+else
+	shift
+fi
 TAGS='munbot'
-if test 'static' = "${2:-'default'}"; then
+if test 'static' = "${BUILD}"; then
+	# https://github.com/golang/go/issues/26492#issuecomment-635563222
 	TAGS='munbot,static,osusergo,netgo'
 fi
 imp="github.com/jrmsdev/munbot/version"
@@ -17,7 +27,7 @@ if test 'all' = "${build_cmds}"; then
 	build_cmds='munbot munbot-config'
 fi
 for cmd in ${build_cmds}; do
-	go build -v -mod vendor -i -o ./_build/cmd/${cmd}.bin -tags "${TAGS}" \
+	go build -v -mod vendor -i -o ./_build/cmd/${cmd}.bin $@ -tags "${TAGS}" \
 		-ldflags "${BUILD_DATE} ${BUILD_INFO}" ./cmd/${cmd} || exit 1
 done
 exit 0
