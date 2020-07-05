@@ -16,15 +16,19 @@ func setupInfo() {
 	log.Printf("Data dir %s", flags.DataDir)
 }
 
-func setup() {
+func setup() error {
 	log.Debug("setup")
-	if err := os.MkdirAll(flags.ConfigDir, 0770); err != nil {
-		log.Fatal(err)
+	err := os.MkdirAll(flags.ConfigDir, 0770)
+	if err != nil {
+		return err
 	}
-	if err := os.MkdirAll(flags.CacheDir, 0770); err != nil {
-		log.Fatal(err)
+	err = os.MkdirAll(flags.CacheDir, 0770)
+	if err != nil {
+		return err
 	}
-	if err := os.MkdirAll(flags.DataDir, 0770); err != nil {
-		log.Fatal(err)
+	err = os.MkdirAll(flags.DataDir, 0770)
+	if err != nil {
+		return err
 	}
+	return nil
 }

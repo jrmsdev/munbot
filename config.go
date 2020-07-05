@@ -4,38 +4,31 @@
 package munbot
 
 import (
-	"io"
-	"io/ioutil"
+	"fmt"
 	"os"
 	"path/filepath"
 
-	cfg "github.com/jrmsdev/munbot/internal/config"
-
-	"github.com/jrmsdev/munbot/config"
+	"github.com/jrmsdev/munbot/config2"
 	"github.com/jrmsdev/munbot/flags"
 	"github.com/jrmsdev/munbot/log"
 )
 
-var fileOpen func(string) (*os.File, error) = os.Open
+var Config *config2.Munbot
+var fileOpen func(string) (*os.File, error)
 
-type Config struct {
-	*cfg.Manager
-	Master *config.Master `json:"master,omitempty"`
+func init() {
+	Config = config2.New()
+	config2.SetDefaults(Config)
+	fileOpen = os.Open
 }
 
-func newConfig() *Config {
-	c := cfg.New()
-	return &Config{c, config.NewMaster(c)}
-}
-
-func Configure() *Config {
+func Configure() error {
 	dirs := []string{
 		flags.ConfigDistDir,
 		flags.ConfigSysDir,
 		flags.ConfigDir,
 	}
 	log.Debugf("configure %s %v", flags.ConfigFile, dirs)
-	cfg := newConfig()
 	for _, dn := range dirs {
 		fn := filepath.Join(dn, flags.ConfigFile)
 		fh, err := fileOpen(fn)
@@ -43,46 +36,14 @@ func Configure() *Config {
 			if os.IsNotExist(err) {
 				log.Debug(err)
 			} else {
-				log.Panicf("%s: %s", fn, err)
+				return fmt.Errorf("%s: %s", fn, err)
 			}
 		} else {
 			log.Debugf("read %s", fn)
-			if err := cfg.Read(fh); err != nil {
-				log.Panicf("%s: %s", fn, err)
+			if err := config2.Read(Config, fh); err != nil {
+				return fmt.Errorf("%s: %s", fn, err)
 			}
 		}
 	}
-	setup()
-	return cfg
-}
-
-func (c *Config) Read(fh io.ReadCloser) error {
-	defer fh.Close()
-	return c.Manager.Read(c, fh)
-}
-
-func (c *Config) Bytes() ([]byte, error) {
-	return c.Manager.Bytes(c)
-}
-
-func (c *Config) Write(fh io.Writer) error {
-	return c.Manager.Write(c, fh)
-}
-
-func (c *Config) Save() error {
-	log.Debug("save...")
-	fn := filepath.Join(flags.ConfigDir, flags.ConfigFile)
-	blob, err := c.Bytes()
-	if err != nil {
-		return log.Error(err)
-	}
-	if err := ioutil.WriteFile(fn, blob, 0660); err != nil {
-		return log.Error(err)
-	}
-	log.Printf("%s saved", fn)
-	return nil
-}
-
-func (c *Config) NewUser(name string) *config.User {
-	return config.NewUser(c.Master.Section, name)
+	return setup()
 }

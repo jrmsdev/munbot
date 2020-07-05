@@ -6,7 +6,7 @@ package munbot
 import (
 	"gobot.io/x/gobot"
 
-	"github.com/jrmsdev/munbot/config"
+	"github.com/jrmsdev/munbot/config2"
 	"github.com/jrmsdev/munbot/internal/master/api"
 	"github.com/jrmsdev/munbot/log"
 )
@@ -35,15 +35,15 @@ func New() *Master {
 //~ master.Start()
 //~ }
 
-func (m *Master) Main(cfg *config.Master) {
+func (m *Master) Main(cfg *config2.Master) {
 	log.Printf("Name %s", cfg.Name)
 	setupInfo()
-	if cfg.Api.Enable.IsTrue() {
+	if cfg.Api.Enable {
 		m.api.Start(cfg.Api)
 	} else {
 		log.Warn("master api is disabled")
 	}
-	if cfg.Robot.Enable.IsTrue() {
+	if cfg.Robot.Enable {
 		log.Printf("Add robot %s", cfg.Robot.Name)
 		bot := NewRobot(cfg.Robot)
 		m.AddRobot(bot.Robot)

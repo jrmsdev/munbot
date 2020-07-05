@@ -8,13 +8,13 @@ import (
 
 	"gobot.io/x/gobot"
 
-	"github.com/jrmsdev/munbot/config"
+	"github.com/jrmsdev/munbot/config2"
 	"github.com/jrmsdev/munbot/log"
 )
 
 type Robot struct {
 	*gobot.Robot
-	cfg  *config.Robot
+	cfg  *config2.Robot
 	name string
 	conn *Adaptor
 	dev  *Driver
@@ -37,10 +37,10 @@ type Robot struct {
 //~ 	work,
 //~ )
 
-func NewRobot(cfg *config.Robot) *Robot {
-	name := cfg.Name.String()
+func NewRobot(cfg *config2.Robot) *Robot {
+	name := cfg.Name
 	bot := gobot.NewRobot(name)
-	bot.AutoRun = cfg.AutoRun.Value()
+	bot.AutoRun = cfg.AutoRun
 	conn := NewAdaptor(name)
 	bot.AddConnection(conn)
 	dev := NewDriver(conn)

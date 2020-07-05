@@ -11,7 +11,7 @@ import (
 	"gobot.io/x/gobot"
 	"gobot.io/x/gobot/api"
 
-	"github.com/jrmsdev/munbot/config"
+	"github.com/jrmsdev/munbot/config2"
 	"github.com/jrmsdev/munbot/flags"
 	"github.com/jrmsdev/munbot/log"
 )
@@ -36,13 +36,13 @@ func New(m *gobot.Master) *Api {
 //~ })
 //~ a.Start()
 
-func (a *Api) Start(cfg *config.Api) {
+func (a *Api) Start(cfg *config2.Api) {
 	log.Debug("start")
 	if flags.DebugApi {
 		a.ctl.Debug()
 	}
-	a.ctl.Host = cfg.Addr.String()
-	a.ctl.Port = cfg.Port.String()
+	a.ctl.Host = cfg.Addr
+	a.ctl.Port = config2.Itoa(cfg.Port)
 	a.ctl.Cert, a.ctl.Key = tlsFiles(cfg)
 
 	protocol := "https"
@@ -63,9 +63,9 @@ func (a *Api) Start(cfg *config.Api) {
 	a.ctl.Start()
 }
 
-func tlsFiles(cfg *config.Api) (string, string) {
-	cert := filepath.Join(flags.ConfigDir, cfg.Cert.String())
-	key := filepath.Join(flags.ConfigDir, cfg.Key.String())
+func tlsFiles(cfg *config2.Api) (string, string) {
+	cert := filepath.Join(flags.ConfigDir, cfg.Cert)
+	key := filepath.Join(flags.ConfigDir, cfg.Key)
 	ok := true
 	_, err := os.Stat(cert)
 	if err != nil {
