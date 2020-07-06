@@ -18,6 +18,8 @@ var (
 )
 
 func main() {
+	log.SetQuiet()
+
 	fs := flags.Init("munbot-config")
 	fs.BoolVar(&listAll, "a", false, "list all options including default values")
 	fs.BoolVar(&jsonFormat, "json", false, "json format")
