@@ -90,10 +90,11 @@ func Parse(args []string) {
 		}
 	}
 	log.SetPrefix(flags.Profile)
+	flags.ConfigDistDir = filepath.Clean(flags.ConfigDistDir)
+	flags.ConfigSysDir = filepath.Clean(flags.ConfigSysDir)
 	flags.ConfigDir = filepath.Clean(filepath.Join(flags.ConfigDir, flags.Profile))
 	flags.CacheDir = filepath.Clean(filepath.Join(flags.CacheDir, flags.Profile))
 	flags.DataDir = filepath.Clean(filepath.Join(flags.DataDir, flags.Profile))
-	// TODO: check and clean the other Config*Dirs and ConfigFile
 }
 
 func printVersion() {

@@ -31,6 +31,12 @@ func Configure(fs *flag.FlagSet) error {
 	if err := tryDir(flags.ConfigSysDir); err != nil {
 		return err
 	}
+	if err := tryDir(filepath.Join(flags.ConfigDistDir, flags.Profile)); err != nil {
+		return err
+	}
+	if err := tryDir(filepath.Join(flags.ConfigSysDir, flags.Profile)); err != nil {
+		return err
+	}
 	if err := tryDir(flags.ConfigDir); err != nil {
 		return err
 	}
