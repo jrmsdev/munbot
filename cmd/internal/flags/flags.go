@@ -55,7 +55,7 @@ func Init(program string) *flag.FlagSet {
 	fs.BoolVar(&logVerbose, "v", false, "verbose mode")
 
 	fs.BoolVar(&showVersion, "version", false, "show version info and exit")
-	fs.StringVar(&flags.Name, "name", flags.Name, "master robot name")
+	fs.StringVar(&flags.Profile, "profile", flags.Profile, "config profile `name`")
 
 	fs.StringVar(&flags.ConfigDir, "cfg.dir", flags.ConfigDir,
 		"config dir `path`")
@@ -89,10 +89,10 @@ func Parse(args []string) {
 			log.SetVerbose()
 		}
 	}
-	log.SetPrefix(flags.Name)
-	flags.ConfigDir = filepath.Clean(filepath.Join(flags.ConfigDir, flags.Name))
-	flags.CacheDir = filepath.Clean(filepath.Join(flags.CacheDir, flags.Name))
-	flags.DataDir = filepath.Clean(filepath.Join(flags.DataDir, flags.Name))
+	log.SetPrefix(flags.Profile)
+	flags.ConfigDir = filepath.Clean(filepath.Join(flags.ConfigDir, flags.Profile))
+	flags.CacheDir = filepath.Clean(filepath.Join(flags.CacheDir, flags.Profile))
+	flags.DataDir = filepath.Clean(filepath.Join(flags.DataDir, flags.Profile))
 	// TODO: check and clean the other Config*Dirs and ConfigFile
 }
 
