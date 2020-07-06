@@ -25,15 +25,15 @@ func SetDefaults(c *Munbot) {
 		Name: "munbot",
 		Api: &Api{
 			Enable: true,
-			Addr: "0.0.0.0",
-			Port: 3000,
-			Cert: &cert,
-			Key: &key,
-			Path: &config.AbsPath{"/api"},
+			Addr:   "0.0.0.0",
+			Port:   3000,
+			Cert:   &cert,
+			Key:    &key,
+			Path:   &config.AbsPath{"/api"},
 		},
 		Robot: &Robot{
-			Enable: true,
-			Name:   "munbot",
+			Enable:  true,
+			Name:    "munbot",
 			AutoRun: true,
 		},
 	}
@@ -56,6 +56,10 @@ func Read(c *Munbot, fh io.ReadCloser) error {
 func Bytes(c *Munbot) ([]byte, error) {
 	return json.MarshalIndent(c, "", "\t")
 }
+
+//~ func Load(c *Munbot, b []byte) error {
+	//~ return json.Unmarshal(b, c)
+//~ }
 
 func Write(c *Munbot, fh io.Writer) error {
 	log.Debug("write...")

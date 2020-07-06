@@ -10,6 +10,7 @@ import (
 )
 
 type pathType int
+
 const absPath pathType = 1
 const relPath pathType = 2
 

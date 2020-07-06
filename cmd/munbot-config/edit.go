@@ -11,7 +11,7 @@ import (
 func edit(cfg *config.Munbot, filter, args string) error {
 	log.Debug("edit...")
 	//~ if err := cfg.Update(filter, args); err != nil {
-		//~ return log.Error(err)
+	//~ return log.Error(err)
 	//~ }
 	return save(cfg)
 }
