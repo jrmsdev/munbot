@@ -43,7 +43,7 @@ func (p *RelFilepath) MarshalJSON() ([]byte, error) {
 
 func unmarshalFilepath(p interface{}, b []byte, pt pathType) error {
 	var s string
-	if err := json.Unmarshal(b, s); err != nil {
+	if err := json.Unmarshal(b, &s); err != nil {
 		return fmt.Errorf("filepath: %s", err)
 	}
 	p = filepath.Clean(filepath.FromSlash(s))
