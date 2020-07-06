@@ -14,13 +14,25 @@ var (
 	cdepth     int  = 2
 	debug      bool = false
 	debugFlags int  = gol.Ldate | gol.Ltime | gol.Lmicroseconds | gol.Llongfile
+	verbose    bool = true
 )
 
 var osExit func(int) = os.Exit
 
 func DebugEnable() {
 	debug = true
+	verbose = true
 	gol.SetFlags(debugFlags)
+}
+
+func SetQuiet() {
+	if !debug {
+		verbose = false
+	}
+}
+
+func SetVerbose() {
+	verbose = true
 }
 
 func SetPrefix(name string) {
@@ -38,11 +50,15 @@ func Panicf(format string, v ...interface{}) {
 }
 
 func Print(v ...interface{}) {
-	gol.Output(cdepth, fmt.Sprint(v...))
+	if verbose {
+		gol.Output(cdepth, fmt.Sprint(v...))
+	}
 }
 
 func Printf(format string, v ...interface{}) {
-	gol.Output(cdepth, fmt.Sprintf(format, v...))
+	if verbose {
+		gol.Output(cdepth, fmt.Sprintf(format, v...))
+	}
 }
 
 func Debug(v ...interface{}) {
@@ -79,14 +95,14 @@ func Fatalf(format string, v ...interface{}) {
 	osExit(2)
 }
 
-func Warn(v ...interface{}) error {
-	err := errors.New(fmt.Sprint(v...))
-	gol.Output(cdepth, fmt.Sprintf("[WARNING] %s", err))
-	return err
+func Warn(v ...interface{}) {
+	if verbose {
+		gol.Output(cdepth, fmt.Sprintf("[WARNING] %s", fmt.Sprint(v...)))
+	}
 }
 
-func Warnf(format string, v ...interface{}) error {
-	err := errors.New(fmt.Sprintf(format, v...))
-	gol.Output(cdepth, fmt.Sprintf("[WARNING] %s", err))
-	return err
+func Warnf(format string, v ...interface{}) {
+	if verbose {
+		gol.Output(cdepth, fmt.Sprintf("[WARNING] %s", fmt.Sprintf(format, v...)))
+	}
 }

@@ -14,11 +14,13 @@ import (
 )
 
 var (
-	progname      string = "munbot"
-	showVersion   bool   = false
 	configDirErr  error
 	cacheDirErr   error
 	dataDirErr    error
+	progname      string = "munbot"
+	showVersion   bool   = false
+	logVerbose    bool   = true
+	logQuiet      bool   = false
 )
 
 var fs *flag.FlagSet
@@ -49,6 +51,8 @@ func Init(program string) *flag.FlagSet {
 	flags.DataDir = filepath.Join(flags.DataDir, ".munbot")
 
 	fs.BoolVar(&flags.Debug, "debug", false, "enable debug")
+	fs.BoolVar(&logQuiet, "q", false, "quiet mode")
+	fs.BoolVar(&logVerbose, "v", false, "verbose mode")
 
 	fs.BoolVar(&showVersion, "version", false, "show version info and exit")
 	fs.StringVar(&flags.Name, "name", flags.Name, "master robot name")
@@ -77,6 +81,13 @@ func Parse(args []string) {
 	}
 	if flags.Debug {
 		log.DebugEnable()
+	} else {
+		if logQuiet {
+			log.SetQuiet()
+		}
+		if logVerbose {
+			log.SetVerbose()
+		}
 	}
 	log.SetPrefix(flags.Name)
 	flags.ConfigDir = filepath.Clean(filepath.Join(flags.ConfigDir, flags.Name))
