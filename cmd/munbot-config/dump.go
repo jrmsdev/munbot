@@ -26,7 +26,21 @@ func dump(cfg *config.Munbot, out io.Writer, listAll, jsonFormat bool, filter st
 		}
 		return parseFilter(cfg, out, filter)
 	}
-	return nil
+	def := config.New()
+	config.SetDefaults(def)
+	if jsonFormat {
+		return jsonDiff(def, cfg, out)
+	}
+	return parseDiff(def, cfg, out)
+}
+
+func list(m map[string]string) []string {
+	l := make([]string, 0)
+	for k := range m {
+		l = append(l, k)
+	}
+	sort.Strings(l)
+	return l
 }
 
 func jsonDump(cfg *config.Munbot, out io.Writer) error {
@@ -34,6 +48,12 @@ func jsonDump(cfg *config.Munbot, out io.Writer) error {
 }
 
 func jsonFilter(cfg *config.Munbot, out io.Writer, filter string) error {
+	// FIXME: implement jsonFilter
+	return nil
+}
+
+func jsonDiff(def *config.Munbot, cfg *config.Munbot, out io.Writer) error {
+	// FIXME: implement jsonDiff
 	return nil
 }
 
@@ -65,11 +85,21 @@ func parseFilter(cfg *config.Munbot, out io.Writer, filter string) error {
 	return nil
 }
 
-func list(m map[string]string) []string {
-	l := make([]string, 0)
-	for k := range m {
-		l = append(l, k)
+func parseDiff(def *config.Munbot, cfg *config.Munbot, out io.Writer) error {
+	defm, deferr := config.Parse(def)
+	if deferr != nil {
+		return deferr
 	}
-	sort.Strings(l)
-	return l
+	m, err := config.Parse(cfg)
+	if err != nil {
+		return err
+	}
+	for _, k := range list(m) {
+		defv, ok := defm[k]
+		v := m[k]
+		if !ok || v != defv {
+			fmt.Fprintf(out, "%s=%v\n", k, v)
+		}
+	}
+	return nil
 }
