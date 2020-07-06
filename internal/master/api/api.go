@@ -41,31 +41,30 @@ func (a *Api) Start(cfg *config.Api) {
 	if flags.DebugApi {
 		a.ctl.Debug()
 	}
-	a.ctl.Host = cfg.Addr
-	a.ctl.Port = config.Itoa(cfg.Port)
-	a.ctl.Cert, a.ctl.Key = tlsFiles(cfg)
+	a.ctl.Host = flags.ApiAddr
+	a.ctl.Port = config.Itoa(flags.ApiPort)
+	a.ctl.Cert, a.ctl.Key = tlsFiles()
 
 	protocol := "https"
-	tlsCheck(a.ctl.Host, a.ctl.Port, a.ctl.Cert, a.ctl.Key)
 	if a.ctl.Cert == "" || a.ctl.Key == "" {
 		log.Warn("api ssl check failed, forcing http on localhost...")
+		a.ctl.Cert = ""
+		a.ctl.Key = ""
 		a.ctl.Host = "localhost"
 		protocol = "http"
+	} else {
+		tlsCheck(a.ctl.Cert, a.ctl.Key)
 	}
 
 	//~ a.ctl.AddHandler(api.BasicAuth("munbot", "tobnum"))
 
-	h := a.ctl.Host
-	if h == "" {
-		h = "0.0.0.0"
-	}
-	log.Printf("Start api %s://%s:%s/", protocol, h, a.ctl.Port)
+	log.Printf("Start api %s://%s:%s/", protocol, a.ctl.Host, a.ctl.Port)
 	a.ctl.Start()
 }
 
-func tlsFiles(cfg *config.Api) (string, string) {
-	cert := filepath.Join(flags.ConfigDir, cfg.Cert.String())
-	key := filepath.Join(flags.ConfigDir, cfg.Key.String())
+func tlsFiles() (string, string) {
+	cert := filepath.Join(flags.ConfigDir, flags.ApiCert)
+	key := filepath.Join(flags.ConfigDir, flags.ApiKey)
 	ok := true
 	_, err := os.Stat(cert)
 	if err != nil {
@@ -87,11 +86,8 @@ func tlsFiles(cfg *config.Api) (string, string) {
 	return "", ""
 }
 
-func tlsCheck(host, port, cert, key string) {
+func tlsCheck(cert, key string) {
 	log.Debug("check tls load x509 key pair")
-	if cert == "" && key == "" {
-		return
-	}
 	if _, err := tls.LoadX509KeyPair(cert, key); err != nil {
 		log.Fatal(err)
 	}

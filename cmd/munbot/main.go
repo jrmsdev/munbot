@@ -17,11 +17,15 @@ import (
 func main() {
 	fs := flags.Init("munbot")
 	fs.BoolVar(&cf.DebugApi, "debug.api", false, "enable api debug")
+	fs.StringVar(&cf.ApiAddr, "api.addr", cf.ApiAddr, "api network `address`")
+	fs.IntVar(&cf.ApiPort, "api.port", cf.ApiPort, "api tcp port `number`")
+	fs.StringVar(&cf.ApiCert, "api.cert", cf.ApiCert, "api tls cert file")
+	fs.StringVar(&cf.ApiKey, "api.key", cf.ApiKey, "api tls key file")
 	flags.Parse(os.Args[1:])
+
 	log.Printf("munbot version %s", version.String())
-	err := munbot.Configure()
-	if err != nil {
-		log.Panic(err)
+	if err := munbot.Configure(); err != nil {
+		log.Fatal(err)
 	}
 	master := munbot.New()
 	master.Main(munbot.Config.Master)

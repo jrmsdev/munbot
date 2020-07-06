@@ -38,7 +38,6 @@ func Configure() error {
 
 func tryDir(dn string) error {
 	fn := filepath.Join(dn, flags.ConfigFile)
-	log.Debugf("try config file %s", fn)
 	fh, err := fileOpen(fn)
 	if err != nil {
 		if os.IsNotExist(err) {
@@ -47,7 +46,6 @@ func tryDir(dn string) error {
 			return fmt.Errorf("%s: %s", fn, err)
 		}
 	} else {
-		log.Debugf("read %s", fn)
 		if err := config.Read(Config, fh); err != nil {
 			return fmt.Errorf("%s: %s", fn, err)
 		}
