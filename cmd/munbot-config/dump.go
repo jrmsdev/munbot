@@ -6,6 +6,7 @@ package main
 import (
 	"fmt"
 	"io"
+	"sort"
 
 	"github.com/jrmsdev/munbot/config"
 	"github.com/jrmsdev/munbot/log"
@@ -31,8 +32,17 @@ func parseDump(cfg *config.Munbot, out io.Writer) error {
 	if err != nil {
 		return err
 	}
-	for k, v := range m {
-		fmt.Printf("%s=%v\n", k, v)
+	for _, k := range list(m) {
+		fmt.Printf("%s=%v\n", k, m[k])
 	}
 	return nil
+}
+
+func list(m map[string]string) []string {
+	l := make([]string, 0)
+	for k := range m {
+		l = append(l, k)
+	}
+	sort.Strings(l)
+	return l
 }
