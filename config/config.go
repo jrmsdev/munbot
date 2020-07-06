@@ -9,7 +9,7 @@ import (
 	"io/ioutil"
 	"path/filepath"
 
-	"github.com/jrmsdev/munbot/flags"
+	"github.com/jrmsdev/munbot/config/flags"
 	"github.com/jrmsdev/munbot/internal/config"
 	"github.com/jrmsdev/munbot/log"
 )

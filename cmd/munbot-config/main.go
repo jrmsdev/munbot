@@ -7,7 +7,7 @@ import (
 	"os"
 
 	"github.com/jrmsdev/munbot"
-	"github.com/jrmsdev/munbot/flags"
+	"github.com/jrmsdev/munbot/cmd/internal/flags"
 	"github.com/jrmsdev/munbot/log"
 )
 

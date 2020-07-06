@@ -9,7 +9,7 @@ import (
 	"path/filepath"
 
 	"github.com/jrmsdev/munbot/config"
-	"github.com/jrmsdev/munbot/flags"
+	"github.com/jrmsdev/munbot/config/flags"
 	"github.com/jrmsdev/munbot/log"
 )
 
