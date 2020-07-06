@@ -5,6 +5,7 @@ package config
 
 import (
 	"encoding/json"
+	"flag"
 	"io"
 	"io/ioutil"
 	"path/filepath"
@@ -36,6 +37,26 @@ func SetDefaults(c *Munbot) {
 		},
 	}
 	c.User = make(map[string]*User)
+}
+
+func Flags(c *Munbot, fs *flag.FlagSet) {
+	var f *flag.Flag
+	f = fs.Lookup("api.addr")
+	if f == nil || f.Value.String() == f.DefValue {
+		flags.ApiAddr = c.Master.Api.Addr
+	}
+	f = fs.Lookup("api.port")
+	if f == nil || f.Value.String() == f.DefValue {
+		flags.ApiPort = c.Master.Api.Port
+	}
+	f = fs.Lookup("api.cert")
+	if f == nil || f.Value.String() == f.DefValue {
+		flags.ApiCert = c.Master.Api.Cert.String()
+	}
+	f = fs.Lookup("api.key")
+	if f == nil || f.Value.String() == f.DefValue {
+		flags.ApiKey = c.Master.Api.Key.String()
+	}
 }
 
 func Read(c *Munbot, fh io.ReadCloser) error {

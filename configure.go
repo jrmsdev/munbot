@@ -4,6 +4,7 @@
 package munbot
 
 import (
+	"flag"
 	"fmt"
 	"os"
 	"path/filepath"
@@ -22,8 +23,8 @@ func init() {
 	fileOpen = os.Open
 }
 
-func Configure() error {
-	log.Debug("configure...")
+func Configure(fs *flag.FlagSet) error {
+	log.Debugf("configure %s ...", fs.Name())
 	if err := tryDir(flags.ConfigDistDir); err != nil {
 		return err
 	}
@@ -33,6 +34,7 @@ func Configure() error {
 	if err := tryDir(flags.ConfigDir); err != nil {
 		return err
 	}
+	config.Flags(Config, fs)
 	return setup()
 }
 
