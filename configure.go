@@ -23,27 +23,35 @@ func init() {
 }
 
 func Configure() error {
-	dirs := []string{
-		flags.ConfigDistDir,
-		flags.ConfigSysDir,
-		flags.ConfigDir,
+	log.Debug("configure...")
+	if err := tryDir(flags.ConfigDistDir); err != nil {
+		return err
 	}
-	log.Debugf("configure %s %v", flags.ConfigFile, dirs)
-	for _, dn := range dirs {
-		fn := filepath.Join(dn, flags.ConfigFile)
-		fh, err := fileOpen(fn)
-		if err != nil {
-			if os.IsNotExist(err) {
-				log.Debug(err)
-			} else {
-				return fmt.Errorf("%s: %s", fn, err)
-			}
-		} else {
-			log.Debugf("read %s", fn)
-			if err := config.Read(Config, fh); err != nil {
-				return fmt.Errorf("%s: %s", fn, err)
-			}
-		}
+	if err := tryDir(flags.ConfigSysDir); err != nil {
+		return err
+	}
+	if err := tryDir(flags.ConfigDir); err != nil {
+		return err
 	}
 	return setup()
+}
+
+func tryDir(dn string) error {
+	fn := filepath.Join(dn, flags.ConfigFile)
+	log.Debugf("try config file %s", fn)
+	fh, err := fileOpen(fn)
+	if err != nil {
+		if os.IsNotExist(err) {
+			log.Debug(err)
+		} else {
+			return fmt.Errorf("%s: %s", fn, err)
+		}
+	} else {
+		log.Debugf("read %s", fn)
+		if err := config.Read(Config, fh); err != nil {
+			return fmt.Errorf("%s: %s", fn, err)
+		}
+		log.Printf("Config loaded %s", fn)
+	}
+	return nil
 }
