@@ -13,17 +13,21 @@ import (
 
 var (
 	listAll     bool
+	jsonFormat  bool
 	newUserName string
 )
 
 func main() {
 	fs := flags.Init("munbot-config")
 	fs.BoolVar(&listAll, "a", false, "list all options including default values")
+	fs.BoolVar(&jsonFormat, "json", false, "json format")
 	fs.StringVar(&newUserName, "new.user", "", "create a new user `name`")
 	flags.Parse(os.Args[1:])
 
 	log.Debug("start")
-	munbot.Configure()
+	if err := munbot.Configure(); err != nil {
+		log.Fatal(err)
+	}
 	cfg := munbot.Config
 
 	var err error
@@ -35,7 +39,7 @@ func main() {
 		if args != "" {
 			err = edit(cfg, filter, args)
 		} else {
-			dump(cfg, os.Stdout, listAll, filter)
+			dump(cfg, os.Stdout, listAll, jsonFormat, filter)
 		}
 	}
 	if err != nil {

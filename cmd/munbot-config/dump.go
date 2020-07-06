@@ -10,7 +10,14 @@ import (
 	"github.com/jrmsdev/munbot/log"
 )
 
-func dump(cfg *config.Munbot, out io.Writer, listAll bool, filter string) {
-	log.Debugf("dump all=%v", listAll)
-	//~ cfg.Dump(out, listAll, filter)
+func dump(cfg *config.Munbot, out io.Writer, listAll, jsonFormat bool, filter string) error {
+	log.Debugf("dump all=%v json=%v", listAll, jsonFormat)
+	if jsonFormat {
+		return jsonDump(cfg, out)
+	}
+	return nil
+}
+
+func jsonDump(cfg *config.Munbot, out io.Writer) error {
+	return config.Write(cfg, out)
 }
