@@ -11,9 +11,9 @@ import (
 	"gobot.io/x/gobot"
 	"gobot.io/x/gobot/api"
 
-	"github.com/jrmsdev/munbot/config"
-	"github.com/jrmsdev/munbot/config/flags"
-	"github.com/jrmsdev/munbot/log"
+	"github.com/munbot/master/config"
+	"github.com/munbot/master/config/flags"
+	"github.com/munbot/master/log"
 )
 
 type Api struct {

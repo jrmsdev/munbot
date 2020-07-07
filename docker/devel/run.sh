@@ -8,8 +8,8 @@ docker run -it --rm --name munbot-devel --hostname munbot-devel -u munbot \
 	-p 127.0.0.1:9090:9090 \
 	-p 127.0.0.1:3000:3000 \
 	-v ${PWD}/docker/devel/ca/files:/home/munbot/.config/munbot/master/ssl \
-	-v ${PWD}:/godoc/src/github.com/jrmsdev/munbot \
+	-v ${PWD}:/godoc/src/github.com/munbot/master \
 	-v ${PWD}/vendor:/godoc/vendor/src \
-	-v ${PWD}:/go/src/munbot jrmsdev/munbot:devel $@
+	-v ${PWD}:/go/src/munbot munbot/master:devel $@
 
 exit 0

@@ -9,8 +9,8 @@ import (
 	"sort"
 	"strings"
 
-	"github.com/jrmsdev/munbot/config"
-	"github.com/jrmsdev/munbot/log"
+	"github.com/munbot/master/config"
+	"github.com/munbot/master/log"
 )
 
 func dump(cfg *config.Munbot, out io.Writer, listAll, jsonFormat bool, filter string) error {

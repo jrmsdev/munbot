@@ -10,7 +10,7 @@ import (
 	"gobot.io/x/gobot"
 	"gobot.io/x/gobot/gobottest"
 
-	"github.com/jrmsdev/munbot/adaptor"
+	"github.com/munbot/master/adaptor"
 )
 
 var _ gobot.Driver = (*Driver)(nil)

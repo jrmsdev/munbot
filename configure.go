@@ -9,9 +9,9 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/jrmsdev/munbot/config"
-	"github.com/jrmsdev/munbot/config/flags"
-	"github.com/jrmsdev/munbot/log"
+	"github.com/munbot/master/config"
+	"github.com/munbot/master/config/flags"
+	"github.com/munbot/master/log"
 )
 
 var Config *config.Munbot

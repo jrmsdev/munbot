@@ -10,9 +10,9 @@ import (
 	"io/ioutil"
 	"path/filepath"
 
-	"github.com/jrmsdev/munbot/config/flags"
-	"github.com/jrmsdev/munbot/internal/config"
-	"github.com/jrmsdev/munbot/log"
+	"github.com/munbot/master/config/flags"
+	"github.com/munbot/master/internal/config"
+	"github.com/munbot/master/log"
 )
 
 func New() *Munbot {

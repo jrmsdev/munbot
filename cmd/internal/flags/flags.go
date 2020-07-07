@@ -8,9 +8,9 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/jrmsdev/munbot/log"
-	"github.com/jrmsdev/munbot/config/flags"
-	"github.com/jrmsdev/munbot/version"
+	"github.com/munbot/master/log"
+	"github.com/munbot/master/config/flags"
+	"github.com/munbot/master/version"
 )
 
 var (

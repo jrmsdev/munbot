@@ -6,12 +6,12 @@ package main
 import (
 	"os"
 
-	"github.com/jrmsdev/munbot"
-	"github.com/jrmsdev/munbot/cmd/internal/flags"
-	"github.com/jrmsdev/munbot/log"
-	"github.com/jrmsdev/munbot/version"
+	"github.com/munbot/master"
+	"github.com/munbot/master/cmd/internal/flags"
+	"github.com/munbot/master/log"
+	"github.com/munbot/master/version"
 
-	cf "github.com/jrmsdev/munbot/config/flags"
+	cf "github.com/munbot/master/config/flags"
 )
 
 func main() {

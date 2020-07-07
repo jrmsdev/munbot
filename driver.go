@@ -8,7 +8,7 @@ import (
 
 	"gobot.io/x/gobot"
 
-	"github.com/jrmsdev/munbot/log"
+	"github.com/munbot/master/log"
 )
 
 const Hello string = "hello"

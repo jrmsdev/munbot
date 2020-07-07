@@ -4,7 +4,7 @@
 package config
 
 import (
-	"github.com/jrmsdev/munbot/internal/config"
+	"github.com/munbot/master/internal/config"
 )
 
 type Api struct {

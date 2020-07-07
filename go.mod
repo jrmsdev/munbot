@@ -1,4 +1,4 @@
-module github.com/jrmsdev/munbot
+module github.com/munbot/master
 
 go 1.13
 

@@ -17,7 +17,7 @@ if test 'static' = "${BUILD}"; then
 	# https://github.com/golang/go/issues/26492#issuecomment-635563222
 	TAGS='munbot,static,osusergo,netgo'
 fi
-imp="github.com/jrmsdev/munbot/version"
+imp="github.com/munbot/master/version"
 BUILD_DATE="-X ${imp}.buildDate=$(date -u '+%Y%m%d.%H%M%S')"
 BUILD_INFO="-X ${imp}.buildOS=$(go env GOOS)"
 BUILD_INFO="${BUILD_INFO} -X ${imp}.buildArch=$(go env GOARCH)"

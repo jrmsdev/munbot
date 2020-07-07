@@ -7,7 +7,7 @@ import (
 	"encoding/json"
 	"fmt"
 
-	"github.com/jrmsdev/munbot/log"
+	"github.com/munbot/master/log"
 )
 
 func Parse(c *Munbot) (map[string]string, error) {

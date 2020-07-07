@@ -6,9 +6,9 @@ package munbot
 import (
 	"gobot.io/x/gobot"
 
-	"github.com/jrmsdev/munbot/config"
-	"github.com/jrmsdev/munbot/internal/master/api"
-	"github.com/jrmsdev/munbot/log"
+	"github.com/munbot/master/config"
+	"github.com/munbot/master/internal/master/api"
+	"github.com/munbot/master/log"
 )
 
 type Master struct {

@@ -4,7 +4,7 @@
 package munbot
 
 import (
-	"github.com/jrmsdev/munbot/version"
+	"github.com/munbot/master/version"
 )
 
 func Version() *version.Info {

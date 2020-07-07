@@ -1,4 +1,4 @@
-FROM jrmsdev/munbot:base
+FROM munbot/master:base
 
 LABEL maintainer="Jeremías Casteglione <jrmsdev@gmail.com>"
 LABEL version="2020.07.03"
@@ -32,11 +32,11 @@ RUN apk add --no-cache git \
 RUN printf '\n%%munbot ALL=(ALL) NOPASSWD: ALL\n' >>/etc/sudoers
 
 RUN ln -vs /usr/share/doc/go/doc /usr/lib/go/doc
-RUN mkdir -vp -m 0750 /godoc/vendor/src /godoc/src/github.com/jrmsdev/munbot \
+RUN mkdir -vp -m 0750 /godoc/vendor/src /godoc/src/github.com/munbot/master \
 	&& chown -vR munbot:munbot /godoc
 
 VOLUME /godoc/vendor/src
-VOLUME /godoc/src/github.com/jrmsdev/munbot
+VOLUME /godoc/src/github.com/munbot/master
 
 EXPOSE 9090
 EXPOSE 6060

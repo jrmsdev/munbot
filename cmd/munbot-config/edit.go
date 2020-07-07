@@ -4,8 +4,8 @@
 package main
 
 import (
-	"github.com/jrmsdev/munbot/config"
-	"github.com/jrmsdev/munbot/log"
+	"github.com/munbot/master/config"
+	"github.com/munbot/master/log"
 )
 
 func edit(cfg *config.Munbot, filter, args string) error {

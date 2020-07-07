@@ -6,8 +6,8 @@ package munbot
 import (
 	"os"
 
-	"github.com/jrmsdev/munbot/config/flags"
-	"github.com/jrmsdev/munbot/log"
+	"github.com/munbot/master/config/flags"
+	"github.com/munbot/master/log"
 )
 
 func setupInfo() {
