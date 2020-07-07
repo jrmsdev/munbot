@@ -4,10 +4,10 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"io"
 	"sort"
-	"strings"
 
 	"github.com/munbot/master/config"
 	"github.com/munbot/master/log"
@@ -48,7 +48,15 @@ func jsonDump(cfg *config.Munbot, out io.Writer) error {
 }
 
 func jsonFilter(cfg *config.Munbot, out io.Writer, filter string) error {
-	// FIXME: implement jsonFilter
+	m, err := config.ParseJSON(cfg, filter)
+	if err != nil {
+		return err
+	}
+	if blob, err := json.MarshalIndent(m, "", "\t"); err != nil {
+		return err
+	} else {
+		out.Write(blob)
+	}
 	return nil
 }
 
@@ -58,7 +66,7 @@ func jsonDiff(def *config.Munbot, cfg *config.Munbot, out io.Writer) error {
 }
 
 func parseDump(cfg *config.Munbot, out io.Writer) error {
-	m, err := config.Parse(cfg)
+	m, err := config.Parse(cfg, "")
 	if err != nil {
 		return err
 	}
@@ -69,7 +77,7 @@ func parseDump(cfg *config.Munbot, out io.Writer) error {
 }
 
 func parseFilter(cfg *config.Munbot, out io.Writer, filter string) error {
-	m, err := config.Parse(cfg)
+	m, err := config.Parse(cfg, filter)
 	if err != nil {
 		return err
 	}
@@ -77,20 +85,18 @@ func parseFilter(cfg *config.Munbot, out io.Writer, filter string) error {
 		fmt.Fprintf(out, "%s\n", m[filter])
 	} else {
 		for _, k := range list(m) {
-			if strings.HasPrefix(k, filter) {
-				fmt.Fprintf(out, "%s=%v\n", k, m[k])
-			}
+			fmt.Fprintf(out, "%s=%v\n", k, m[k])
 		}
 	}
 	return nil
 }
 
 func parseDiff(def *config.Munbot, cfg *config.Munbot, out io.Writer) error {
-	defm, deferr := config.Parse(def)
+	defm, deferr := config.Parse(def, "")
 	if deferr != nil {
 		return deferr
 	}
-	m, err := config.Parse(cfg)
+	m, err := config.Parse(cfg, "")
 	if err != nil {
 		return err
 	}
