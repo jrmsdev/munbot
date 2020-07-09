@@ -17,7 +17,7 @@ func setupInfo() {
 	log.Printf("Cache dir %s", flags.CacheDir)
 }
 
-func setup() error {
+func Setup() error {
 	log.Debug("setup")
 	var err error
 	err = os.MkdirAll(flags.DataDir, 0770)

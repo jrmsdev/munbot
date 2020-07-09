@@ -28,7 +28,7 @@ func main() {
 	flags.Parse(os.Args[1:])
 
 	log.Debug("start")
-	if err := munbot.Configure(fs); err != nil {
+	if err := munbot.Setup(); err != nil {
 		log.Fatal(err)
 	}
 

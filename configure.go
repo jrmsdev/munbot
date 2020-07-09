@@ -18,10 +18,13 @@ func init() {
 }
 
 func Configure(fs *flag.FlagSet) error {
+	if err := Setup(); err != nil {
+		return log.Error(err)
+	}
 	log.Debugf("configure %s ...", fs.Name())
 	if err := config.ReadFiles(Config); err != nil {
 		return err
 	}
 	config.Flags(Config, fs)
-	return setup()
+	return nil
 }
