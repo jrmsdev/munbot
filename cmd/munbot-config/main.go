@@ -7,6 +7,7 @@ import (
 	"os"
 
 	"github.com/munbot/master"
+	"github.com/munbot/master/config"
 	"github.com/munbot/master/cmd/internal/flags"
 	"github.com/munbot/master/log"
 )
@@ -30,18 +31,28 @@ func main() {
 	if err := munbot.Configure(fs); err != nil {
 		log.Fatal(err)
 	}
-	cfg := munbot.Config
+
+	filter := fs.Arg(0)
+	args := fs.Arg(1)
+
+	// use a config with no defaults set
+	cfg := config.New()
+	if listAll || filter != "" {
+		// unless list all is requested
+		config.SetDefaults(cfg)
+	}
+	if err := config.ReadFiles(cfg); err != nil {
+		log.Fatal(err)
+	}
 
 	var err error
 	if newUserName != "" {
 		err = newUser(cfg, newUserName)
 	} else {
-		filter := fs.Arg(0)
-		args := fs.Arg(1)
 		if args != "" {
 			err = edit(cfg, filter, args)
 		} else {
-			dump(cfg, os.Stdout, listAll, jsonFormat, filter)
+			dump(cfg, os.Stdout, jsonFormat, filter)
 		}
 	}
 	if err != nil {

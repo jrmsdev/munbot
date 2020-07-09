@@ -6,8 +6,10 @@ package config
 import (
 	"encoding/json"
 	"flag"
+	"fmt"
 	"io"
 	"io/ioutil"
+	"os"
 	"path/filepath"
 
 	"github.com/munbot/master/config/flags"
@@ -73,12 +75,51 @@ func Read(c *Munbot, fh io.ReadCloser) error {
 }
 
 func Bytes(c *Munbot) ([]byte, error) {
-	return json.MarshalIndent(c, "", "\t")
+	return json.Marshal(c)
 }
 
 //~ func Load(c *Munbot, b []byte) error {
 	//~ return json.Unmarshal(b, c)
 //~ }
+
+func ReadFiles(dst *Munbot) error {
+	if err := tryDir(dst, flags.ConfigSysDir); err != nil {
+		return err
+	}
+	if err := tryDir(dst, filepath.Join(flags.ConfigSysDir, flags.Profile)); err != nil {
+		return err
+	}
+	if err := tryDir(dst, flags.ConfigDir); err != nil {
+		return err
+	}
+	if err := tryDir(dst, flags.ConfigDistDir); err != nil {
+		return err
+	}
+	if err := tryDir(dst, filepath.Join(flags.ConfigDistDir, flags.Profile)); err != nil {
+		return err
+	}
+	return nil
+}
+
+var fileOpen = os.Open
+
+func tryDir(dst *Munbot, dn string) error {
+	fn := filepath.Join(dn, flags.ConfigFile)
+	fh, err := fileOpen(fn)
+	if err != nil {
+		if os.IsNotExist(err) {
+			log.Debug(err)
+		} else {
+			return fmt.Errorf("%s: %s", fn, err)
+		}
+	} else {
+		if err := Read(dst, fh); err != nil {
+			return fmt.Errorf("%s: %s", fn, err)
+		}
+		log.Printf("Config loaded %s", fn)
+	}
+	return nil
+}
 
 func Write(c *Munbot, fh io.Writer) error {
 	log.Debug("write...")

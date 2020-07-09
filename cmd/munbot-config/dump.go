@@ -13,25 +13,18 @@ import (
 	"github.com/munbot/master/log"
 )
 
-func dump(cfg *config.Munbot, out io.Writer, listAll, jsonFormat bool, filter string) error {
+func dump(cfg *config.Munbot, out io.Writer, jsonFormat bool, filter string) error {
 	log.Debugf("dump all=%v json=%v", listAll, jsonFormat)
-	if listAll {
-		if jsonFormat {
-			return jsonDump(cfg, out)
-		}
-		return parseDump(cfg, out)
-	} else if filter != "" {
+	if filter != "" {
 		if jsonFormat {
 			return jsonFilter(cfg, out, filter)
 		}
 		return parseFilter(cfg, out, filter)
 	}
-	def := config.New()
-	config.SetDefaults(def)
 	if jsonFormat {
-		return jsonDiff(def, cfg, out)
+		return jsonDump(cfg, out)
 	}
-	return parseDiff(def, cfg, out)
+	return parseDump(cfg, out)
 }
 
 func list(m map[string]string) []string {
@@ -44,7 +37,15 @@ func list(m map[string]string) []string {
 }
 
 func jsonDump(cfg *config.Munbot, out io.Writer) error {
-	return config.Write(cfg, out)
+	if blob, err := json.MarshalIndent(cfg, "", "\t"); err != nil {
+		return err
+	} else {
+		if _, err := out.Write(blob); err != nil {
+			return err
+		}
+		out.Write([]byte("\n"))
+	}
+	return nil
 }
 
 func jsonFilter(cfg *config.Munbot, out io.Writer, filter string) error {
@@ -55,13 +56,15 @@ func jsonFilter(cfg *config.Munbot, out io.Writer, filter string) error {
 	if blob, err := json.MarshalIndent(m, "", "\t"); err != nil {
 		return err
 	} else {
-		out.Write(blob)
+		if _, err := out.Write(blob); err != nil {
+			return err
+		}
+		out.Write([]byte("\n"))
 	}
 	return nil
 }
 
 func jsonDiff(def *config.Munbot, cfg *config.Munbot, out io.Writer) error {
-	// FIXME: implement jsonDiff
 	return nil
 }
 
@@ -71,7 +74,9 @@ func parseDump(cfg *config.Munbot, out io.Writer) error {
 		return err
 	}
 	for _, k := range list(m) {
-		fmt.Fprintf(out, "%s=%v\n", k, m[k])
+		if _, err := fmt.Fprintf(out, "%s=%v\n", k, m[k]); err != nil {
+			return err
+		}
 	}
 	return nil
 }
@@ -85,7 +90,9 @@ func parseFilter(cfg *config.Munbot, out io.Writer, filter string) error {
 		fmt.Fprintf(out, "%s\n", m[filter])
 	} else {
 		for _, k := range list(m) {
-			fmt.Fprintf(out, "%s=%v\n", k, m[k])
+			if _, err := fmt.Fprintf(out, "%s=%v\n", k, m[k]); err != nil {
+				return err
+			}
 		}
 	}
 	return nil
@@ -104,7 +111,9 @@ func parseDiff(def *config.Munbot, cfg *config.Munbot, out io.Writer) error {
 		defv, ok := defm[k]
 		v := m[k]
 		if !ok || v != defv {
-			fmt.Fprintf(out, "%s=%v\n", k, v)
+			if _, err := fmt.Fprintf(out, "%s=%v\n", k, v); err != nil {
+				return err
+			}
 		}
 	}
 	return nil
