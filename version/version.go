@@ -10,19 +10,18 @@ import (
 const (
 	Major int = 0
 	Minor int = 0
-	Patch int = 0
+	Patch int = 200710
 )
 
 func String() string {
-	v := ""
-	if Patch > 0 {
-		v = fmt.Sprintf("%d.%d.%d", Major, Minor, Patch)
-	} else {
-		v = fmt.Sprintf("%d.%d", Major, Minor)
+	v := new(Info)
+	b := v.Build().String()
+	if b != "" {
+		b = " [" + b + "]"
 	}
-	return fmt.Sprintf("%s%s", v, BuildInfo())
+	return fmt.Sprintf("%s%s", v, b)
 }
 
 func Print(progname string) {
-	fmt.Printf("%s version %s\n", progname, String())
+	fmt.Printf("%s version %s%s\n", progname, String())
 }

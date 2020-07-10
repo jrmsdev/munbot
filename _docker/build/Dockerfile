@@ -1,15 +1,15 @@
 FROM munbot/master:base
 
 LABEL maintainer="Jeremías Casteglione <jrmsdev@gmail.com>"
-LABEL version="2020.07.04"
+LABEL version="2020.07.10"
 
 USER munbot:munbot
-WORKDIR /go/src/munbot
+WORKDIR /munbot/src/master
 
 ENV USER munbot
 ENV HOME /home/munbot
 
-WORKDIR /go/src/munbot
+WORKDIR /munbot/src/master
 
 ADD --chown=munbot bin/entrypoint.sh /usr/local/bin/
 

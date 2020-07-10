@@ -15,20 +15,27 @@ var (
 	buildTags string = "notags"
 )
 
-type Build struct {
-	Date string
-	OS   string
-	Arch string
-	Tags []string
-}
-
-func BuildInfo() *Build {
-	return &Build{buildDate, buildOS, buildArch, strings.Split(buildTags, ",")}
-}
+type Build struct {}
 
 func (b *Build) String() string {
-	if b.Date != "nodate" {
-		return fmt.Sprintf(" (%s %s/%s %v)", b.Date, b.OS, b.Arch, b.Tags)
+	if buildDate != "nodate" {
+		return fmt.Sprintf("%s %s/%s [%s]", buildDate, buildOS, buildArch, buildTags)
 	}
 	return ""
+}
+
+func (b *Build) Date() string {
+	return buildDate
+}
+
+func (b *Build) OS() string {
+	return buildOS
+}
+
+func (b *Build) Arch() string {
+	return buildArch
+}
+
+func (b *Build) Tags() []string {
+	return strings.Split(buildTags, ",")
 }

@@ -1,7 +1,7 @@
 FROM munbot/master:base
 
 LABEL maintainer="Jeremías Casteglione <jrmsdev@gmail.com>"
-LABEL version="2020.07.03"
+LABEL version="2020.07.10"
 
 USER root:root
 WORKDIR /root
@@ -40,19 +40,19 @@ VOLUME /godoc/src/github.com/munbot/master
 
 EXPOSE 9090
 EXPOSE 6060
-EXPOSE 3000
+EXPOSE 6492
 
 ADD --chown=munbot bin/*.sh /usr/local/bin/
 
 USER munbot:munbot
-WORKDIR /go/src/munbot
+WORKDIR /munbot/src/master
 
 ENV USER munbot
 ENV HOME /home/munbot
 
 ENV GOBIN ''
-ENV GOPATH /go
-ENV GOENV /go/src/munbot/go.env
+ENV GOPATH /munbot
+ENV GOENV /munbot/src/master/go.env
 
 RUN go env && go version
 
@@ -65,4 +65,4 @@ VOLUME /home/munbot/.config/munbot/master/ssl
 
 # maybe? go get -u -v github.com/go-bindata/go-bindata/...
 
-CMD /usr/local/bin/entrypoint.sh
+ENTRYPOINT /usr/local/bin/entrypoint.sh

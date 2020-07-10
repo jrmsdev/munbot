@@ -3,10 +3,20 @@
 
 package version
 
+import (
+	"fmt"
+)
+
 type Info struct{}
 
 func (v *Info) String() string {
-	return String()
+	v := ""
+	if Patch > 0 {
+		v = fmt.Sprintf("%d.%d.%d", Major, Minor, Patch)
+	} else {
+		v = fmt.Sprintf("%d.%d", Major, Minor)
+	}
+	return v
 }
 
 func (v *Info) Major() int {
@@ -19,4 +29,8 @@ func (v *Info) Minor() int {
 
 func (v *Info) Patch() int {
 	return Patch
+}
+
+func (v *Info) Build() *Build {
+	return new(Build)
 }
