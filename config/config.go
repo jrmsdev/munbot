@@ -3,6 +3,17 @@
 
 package config
 
+import (
+	"encoding/json"
+	"fmt"
+	"io/ioutil"
+	"os"
+	"path/filepath"
+
+	"github.com/munbot/master/log"
+	"github.com/munbot/master/vfs"
+)
+
 type Munbot struct {
 	Master *Master `json:"master,omitempty"`
 }
@@ -27,5 +38,30 @@ func (c *Config) SetDefaults() {
 }
 
 func (c *Config) Read() error {
+	for i := range c.dirs {
+		dn := c.dirs[i]
+		fn := filepath.Join(dn, c.filename)
+		log.Debugf("config try %s", fn)
+		if err := c.readFile(fn); err != nil {
+			return err
+		}
+	}
 	return nil
+}
+
+func (c *Config) readFile(name string) error {
+	fh, err := vfs.Open(name)
+	if err != nil {
+		if os.IsNotExist(err) {
+			log.Debug(err)
+		} else {
+			return fmt.Errorf("%s: %s", name, err)
+		}
+	}
+	defer fh.Close()
+	blob, err := ioutil.ReadAll(fh)
+	if err != nil {
+		return err
+	}
+	return json.Unmarshal(blob, c.Munbot)
 }
