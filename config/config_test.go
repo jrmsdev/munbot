@@ -5,8 +5,9 @@ package config
 
 import (
 	"path/filepath"
-	"reflect"
 	"testing"
+
+	"github.com/munbot/master/testing/require"
 )
 
 var tdir string = filepath.FromSlash("./testdata")
@@ -18,11 +19,10 @@ var defcfg *Munbot = &Munbot{
 }
 
 func TestDefaults(t *testing.T) {
+	require := require.New(t)
 	c := New("empty")
 	c.SetDefaults()
-	if !reflect.DeepEqual(c.Munbot, defcfg) {
-		t.Fatalf("default config: '%#v' - expect: '%#v'", c.Munbot, defcfg)
-	}
+	require.Equal(defcfg, c.Munbot, "default config")
 }
 
 func TestRead(t *testing.T) {
