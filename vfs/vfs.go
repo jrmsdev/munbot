@@ -14,9 +14,11 @@ type File sysfs.File
 type Filesystem sysfs.Filesystem
 
 var fs Filesystem
+var DefaultFilesystem Filesystem
 
 func init() {
-	fs = new(sysfs.NativeFilesystem)
+	DefaultFilesystem = new(sysfs.NativeFilesystem)
+	fs = DefaultFilesystem
 }
 
 func SetFilesystem(newfs Filesystem) {
