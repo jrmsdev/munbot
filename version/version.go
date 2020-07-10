@@ -23,5 +23,5 @@ func String() string {
 }
 
 func Print(progname string) {
-	fmt.Printf("%s version %s%s\n", progname, String())
+	fmt.Printf("%s version %s\n", progname, String())
 }

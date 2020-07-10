@@ -10,13 +10,13 @@ import (
 type Info struct{}
 
 func (v *Info) String() string {
-	v := ""
+	s := ""
 	if Patch > 0 {
-		v = fmt.Sprintf("%d.%d.%d", Major, Minor, Patch)
+		s = fmt.Sprintf("%d.%d.%d", Major, Minor, Patch)
 	} else {
-		v = fmt.Sprintf("%d.%d", Major, Minor)
+		s = fmt.Sprintf("%d.%d", Major, Minor)
 	}
-	return v
+	return s
 }
 
 func (v *Info) Major() int {
