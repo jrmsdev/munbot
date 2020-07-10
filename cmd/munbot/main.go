@@ -28,5 +28,7 @@ func main() {
 		log.Fatal(err)
 	}
 	master := munbot.New()
-	master.Main(munbot.Config.Master)
+	if err := master.Main(munbot.Config.Master); err != nil {
+		log.Fatal(err)
+	}
 }

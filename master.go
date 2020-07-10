@@ -35,11 +35,13 @@ func New() *Master {
 //~ master.Start()
 //~ }
 
-func (m *Master) Main(cfg *config.Master) {
+func (m *Master) Main(cfg *config.Master) error {
 	log.Printf("Name %s", cfg.Name)
 	setupInfo()
 	if cfg.Api.Enable {
-		m.api.Start(cfg.Api)
+		if err := m.api.Start(cfg.Api); err != nil {
+			return err
+		}
 	} else {
 		log.Warn("master api is disabled")
 	}
@@ -50,5 +52,5 @@ func (m *Master) Main(cfg *config.Master) {
 	} else {
 		log.Warn("master robot is disabled")
 	}
-	m.Start()
+	return m.Start()
 }
