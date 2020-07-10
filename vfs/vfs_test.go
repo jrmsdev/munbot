@@ -8,6 +8,10 @@ import (
 	"testing"
 
 	"gobot.io/x/gobot/sysfs"
+
+	"github.com/munbot/master/testing/assert"
+	"github.com/munbot/master/testing/require"
+	"github.com/munbot/master/testing/suite"
 )
 
 var defFS Filesystem
@@ -16,7 +20,6 @@ var testFS Filesystem
 func init() {
 	defFS = fs
 	testFS = sysfs.NewMockFilesystem([]string{"stat.txt"})
-	SetFilesystem(testFS)
 }
 
 func TestDefaultFS(t *testing.T) {
@@ -27,40 +30,50 @@ func TestDefaultFS(t *testing.T) {
 	}
 }
 
-func TestStat(t *testing.T) {
+type Suite struct {
+	*suite.Suite
+}
+
+func (s *Suite) SetupTest() {
+	SetFilesystem(testFS)
+}
+
+func (s *Suite) TearDownTest() {
+	SetFilesystem(defFS)
+}
+
+func (s *Suite) TestStat() {
+	require := require.New(s.T())
+	assert := assert.New(s.T())
 	i, err := Stat("stat.txt")
-	if err != nil {
-		t.Fatalf("stat error: %v", err)
-	}
-	if i.Size() != 0 {
-		t.Errorf("stat file size: '%d' - expected: 0", i.Size())
-	}
+	require.NoError(err, "stat error")
+	assert.Equal(int64(0), i.Size(), "file size")
 }
 
-func TestOpen(t *testing.T) {
+func (s *Suite) TestOpen() {
+	require := require.New(s.T())
 	_, err := Open("stat.txt")
-	if err != nil {
-		t.Fatalf("open error: %v", err)
-	}
+	require.NoError(err, "open error")
 }
 
-func TestOpenError(t *testing.T) {
+func (s *Suite) TestOpenError() {
+	require := require.New(s.T())
 	_, err := Open("stat.err")
-	if err == nil {
-		t.Fatalf("open did not fail")
-	}
+	require.Error(err, "open error")
 }
 
-func TestOpenFile(t *testing.T) {
+func (s *Suite) TestOpenFile() {
+	require := require.New(s.T())
 	_, err := OpenFile("stat.txt", os.O_RDONLY, 0)
-	if err != nil {
-		t.Fatalf("open error: %v", err)
-	}
+	require.NoError(err, "open error")
 }
 
-func TestOpenFileError(t *testing.T) {
+func (s *Suite) TestOpenFileError() {
+	require := require.New(s.T())
 	_, err := OpenFile("stat.err", os.O_RDONLY, 0)
-	if err == nil {
-		t.Fatalf("open did not fail")
-	}
+	require.Error(err, "open error")
+}
+
+func TestSuite(t *testing.T) {
+	suite.Run(t, &Suite{suite.New()})
 }

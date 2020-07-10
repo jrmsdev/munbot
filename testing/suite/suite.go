@@ -9,7 +9,13 @@ import (
 	"github.com/stretchr/testify/suite"
 )
 
-type Suite suite.Suite
+type Suite struct {
+	*suite.Suite
+}
+
+func New() *Suite {
+	return &Suite{new(suite.Suite)}
+}
 
 func Run(t *testing.T, s suite.TestingSuite) {
 	suite.Run(t, s)

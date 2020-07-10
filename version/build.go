@@ -15,7 +15,7 @@ var (
 	buildTags string = "notags"
 )
 
-type Build struct {}
+type Build struct{}
 
 func (b *Build) String() string {
 	if buildDate != "nodate" {

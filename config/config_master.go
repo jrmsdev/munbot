@@ -4,6 +4,6 @@
 package config
 
 type Master struct {
-	Name string `json:"name,omitempty"`
-	Enable bool `json:"enable,omitempty"`
+	Name   string `json:"name,omitempty"`
+	Enable bool   `json:"enable,omitempty"`
 }

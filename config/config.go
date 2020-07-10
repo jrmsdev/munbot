@@ -20,8 +20,8 @@ type Munbot struct {
 
 type Config struct {
 	filename string
-	dirs []string
-	Munbot *Munbot `json:"munbot,omitempty"`
+	dirs     []string
+	Munbot   *Munbot `json:"munbot,omitempty"`
 }
 
 func New(filename string, dirs ...string) *Config {
@@ -32,7 +32,7 @@ func (c *Config) SetDefaults() {
 	c.Munbot = &Munbot{
 		Master: &Master{
 			Enable: true,
-			Name: "munbot",
+			Name:   "munbot",
 		},
 	}
 }

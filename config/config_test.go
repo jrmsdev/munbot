@@ -14,7 +14,7 @@ var tdir string = filepath.FromSlash("./testdata")
 var defcfg *Munbot = &Munbot{
 	Master: &Master{
 		Enable: true,
-		Name: "munbot",
+		Name:   "munbot",
 	},
 }
 
