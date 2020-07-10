@@ -3,22 +3,29 @@
 
 package config
 
-type Config interface {
-	Read() error
+type Munbot struct {
+	Master *Master `json:"master,omitempty"`
 }
 
-func New(filename string, dirs ...string) Config {
-	return &Master{
-		filename: filename,
-		dirs: dirs,
+type Config struct {
+	filename string
+	dirs []string
+	Munbot *Munbot `json:"munbot,omitempty"`
+}
+
+func New(filename string, dirs ...string) *Config {
+	return &Config{filename: filename, dirs: dirs}
+}
+
+func (c *Config) SetDefaults() {
+	c.Munbot = &Munbot{
+		Master: &Master{
+			Enable: true,
+			Name: "munbot",
+		},
 	}
 }
 
-type Master struct {
-	filename string
-	dirs []string
-}
-
-func (c *Master) Read() error {
+func (c *Config) Read() error {
 	return nil
 }
