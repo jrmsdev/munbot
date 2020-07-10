@@ -10,6 +10,7 @@ import (
 	"gobot.io/x/gobot/sysfs"
 
 	"github.com/munbot/master/testing/assert"
+	"github.com/munbot/master/testing/mock"
 	"github.com/munbot/master/testing/require"
 	"github.com/munbot/master/testing/suite"
 )
@@ -19,7 +20,7 @@ var testFS Filesystem
 
 func init() {
 	defFS = fs
-	testFS = sysfs.NewMockFilesystem([]string{"stat.txt"})
+	testFS = mock.NewFilesystem([]string{"stat.txt"})
 }
 
 func TestDefaultFS(t *testing.T) {
