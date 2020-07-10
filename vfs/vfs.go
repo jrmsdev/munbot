@@ -5,6 +5,7 @@ package vfs
 
 import (
 	"os"
+
 	"gobot.io/x/gobot/sysfs"
 )
 
