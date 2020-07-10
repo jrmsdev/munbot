@@ -38,12 +38,9 @@ func TestStat(t *testing.T) {
 }
 
 func TestOpen(t *testing.T) {
-	fh, err := Open("stat.txt")
+	_, err := Open("stat.txt")
 	if err != nil {
 		t.Fatalf("open error: %v", err)
-	}
-	if fh.Name() != "stat.txt" {
-		t.Errorf("filename: '%s' - expected: stat.txt", fh.Name())
 	}
 }
 
@@ -55,12 +52,9 @@ func TestOpenError(t *testing.T) {
 }
 
 func TestOpenFile(t *testing.T) {
-	fh, err := OpenFile("stat.txt", os.O_RDONLY, 0)
+	_, err := OpenFile("stat.txt", os.O_RDONLY, 0)
 	if err != nil {
 		t.Fatalf("open error: %v", err)
-	}
-	if fh.Name() != "stat.txt" {
-		t.Errorf("filename: '%s' - expected: stat.txt", fh.Name())
 	}
 }
 

@@ -9,23 +9,7 @@ import (
 	"gobot.io/x/gobot/sysfs"
 )
 
-type File interface {
-	sysfs.File
-	Name() string
-}
-
-type fileHandler struct {
-	sysfs.File
-	name string
-}
-
-func newFile(name string, fh sysfs.File) File {
-	return &fileHandler{fh, name}
-}
-
-func (f *fileHandler) Name() string {
-	return f.name
-}
+type File sysfs.File
 
 type Filesystem sysfs.Filesystem
 
@@ -41,11 +25,7 @@ func SetFilesystem(newfs Filesystem) {
 }
 
 func OpenFile(name string, flag int, perm os.FileMode) (File, error) {
-	fh , err := fs.OpenFile(name, flag, perm)
-	if err != nil {
-		return nil, err
-	}
-	return newFile(name, fh), nil
+	return fs.OpenFile(name, flag, perm)
 }
 
 func Stat(name string) (os.FileInfo, error) {
@@ -53,9 +33,5 @@ func Stat(name string) (os.FileInfo, error) {
 }
 
 func Open(name string) (File, error) {
-	fh, err := fs.OpenFile(name, os.O_RDONLY, 0)
-	if err != nil {
-		return nil, err
-	}
-	return newFile(name, fh), nil
+	return fs.OpenFile(name, os.O_RDONLY, 0)
 }
