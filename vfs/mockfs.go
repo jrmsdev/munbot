@@ -16,13 +16,13 @@ type MockFile struct {
 	closed bool
 }
 
-func (f MockFile) Close() error {
+func (f *MockFile) Close() error {
 	f.closed = true
 	f.Buffer.Reset()
 	return nil
 }
 
-func (f MockFile) Read(b []byte) (int, error) {
+func (f *MockFile) Read(b []byte) (int, error) {
 	if f.fs.WithReadError {
 		return 0, errors.New("mock read error")
 	}
@@ -32,7 +32,7 @@ func (f MockFile) Read(b []byte) (int, error) {
 	return f.Buffer.Read(b)
 }
 
-func (f MockFile) Write(b []byte) (int, error) {
+func (f *MockFile) Write(b []byte) (int, error) {
 	if f.fs.WithWriteError {
 		return 0, errors.New("mock write error")
 	}
@@ -42,7 +42,7 @@ func (f MockFile) Write(b []byte) (int, error) {
 	return f.Buffer.Write(b)
 }
 
-func (f MockFile) WriteString(s string) (int, error) {
+func (f *MockFile) WriteString(s string) (int, error) {
 	if f.fs.WithWriteError {
 		return 0, errors.New("mock write error")
 	}
@@ -52,8 +52,11 @@ func (f MockFile) WriteString(s string) (int, error) {
 	return f.Buffer.WriteString(s)
 }
 
+type tempFileFunc func(string, string) (*os.File, error)
+
 type MockFilesystem struct {
 	root map[string]File
+	tempfile tempFileFunc
 	WithOpenError bool
 	WithReadError bool
 	WithWriteError bool
@@ -62,6 +65,7 @@ type MockFilesystem struct {
 func NewMockFilesystem(files ...string) *MockFilesystem {
 	fs := &MockFilesystem{}
 	fs.root = make(map[string]File)
+	fs.tempfile = ioutil.TempFile
 	for i := range files {
 		fn := files[i]
 		fs.Add(fn)
@@ -79,9 +83,6 @@ func (fs *MockFilesystem) Add(filename string) *MockFile {
 }
 
 func (fs *MockFilesystem) OpenFile(name string, flag int, perm os.FileMode) (File, error) {
-	if fs.root == nil {
-		return nil, fs.notfound(name)
-	}
 	fh, found := fs.root[name]
 	if !found {
 		return nil, fs.notfound(name)
@@ -93,24 +94,17 @@ func (fs *MockFilesystem) OpenFile(name string, flag int, perm os.FileMode) (Fil
 }
 
 func (fs *MockFilesystem) Stat(name string) (os.FileInfo, error) {
-	if fs.root == nil {
-		return nil, fs.notfound(name)
-	}
 	_, found := fs.root[name]
 	if !found {
 		return nil, fs.notfound(name)
 	}
-	fh, err := ioutil.TempFile("", name)
+	fh, err := fs.tempfile("", name)
 	if err != nil {
 		return nil, err
 	}
 	defer fh.Close()
 	defer os.Remove(fh.Name())
-	s, serr := fh.Stat()
-	if serr != nil {
-		return nil, err
-	}
-	return s, nil
+	return fh.Stat()
 }
 
 func (fs *MockFilesystem) notfound(name string) error {
