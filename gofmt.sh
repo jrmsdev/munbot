@@ -1,2 +1,2 @@
 #!/bin/sh
-exec gofmt -w -l -s config log testing version vfs
+exec gofmt -w -l -s config log profile testing version vfs
