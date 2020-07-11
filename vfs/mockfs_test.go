@@ -20,8 +20,8 @@ func TestMockSuite(t *testing.T) {
 
 type MockSuite struct {
 	*suite.Suite
-	fs *MockFilesystem
-	assert *assert.Assertions
+	fs      *MockFilesystem
+	assert  *assert.Assertions
 	require *require.Assertions
 }
 

@@ -12,7 +12,7 @@ import (
 
 type MockFile struct {
 	*bytes.Buffer
-	fs *MockFilesystem
+	fs     *MockFilesystem
 	closed bool
 }
 
@@ -55,10 +55,10 @@ func (f *MockFile) WriteString(s string) (int, error) {
 type tempFileFunc func(string, string) (*os.File, error)
 
 type MockFilesystem struct {
-	root map[string]File
-	tempfile tempFileFunc
-	WithOpenError bool
-	WithReadError bool
+	root           map[string]File
+	tempfile       tempFileFunc
+	WithOpenError  bool
+	WithReadError  bool
 	WithWriteError bool
 }
 
