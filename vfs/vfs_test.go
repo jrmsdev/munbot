@@ -5,6 +5,7 @@ package vfs
 
 import (
 	"os"
+	"path/filepath"
 	"testing"
 
 	"github.com/munbot/master/testing/assert"
@@ -74,4 +75,40 @@ func (s *Suite) TestOpenFileError() {
 
 func TestSuite(t *testing.T) {
 	suite.Run(t, &Suite{suite.New()})
+}
+
+func TestNativeOpenFile(t *testing.T) {
+	require := require.New(t)
+	fs := new(NativeFilesystem)
+	fn := filepath.FromSlash("./testdata/native.test")
+	fh, err := fs.OpenFile(fn, os.O_RDONLY, 0)
+	require.NoError(err, "open file")
+	require.Implements((*File)(nil), fh, "file interface")
+}
+
+func TestNativeOpenFileError(t *testing.T) {
+	require := require.New(t)
+	fs := new(NativeFilesystem)
+	fn := filepath.FromSlash("./testdata/nofile.test")
+	_, err := fs.OpenFile(fn, os.O_RDONLY, 0)
+	require.Error(err, "open file error")
+	require.True(os.IsNotExist(err), "open file not found error type")
+}
+
+func TestNativeStat(t *testing.T) {
+	require := require.New(t)
+	fs := new(NativeFilesystem)
+	fn := filepath.FromSlash("./testdata/native.test")
+	fi, err := fs.Stat(fn)
+	require.NoError(err, "fs stat")
+	require.Equal(int64(len("testing\n")), fi.Size(), "stat file size")
+}
+
+func TestNativeStatError(t *testing.T) {
+	require := require.New(t)
+	fs := new(NativeFilesystem)
+	fn := filepath.FromSlash("./testdata/nofile.test")
+	_, err := fs.Stat(fn)
+	require.Error(err, "stat error")
+	require.True(os.IsNotExist(err), "stat file not found error type")
 }
