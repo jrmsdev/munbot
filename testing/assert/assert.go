@@ -9,6 +9,10 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func New(t *testing.T) *assert.Assertions {
-	return assert.New(t)
+type Assertions struct {
+	*assert.Assertions
+}
+
+func New(t *testing.T) *Assertions {
+	return &Assertions{assert.New(t)}
 }

@@ -9,6 +9,10 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func New(t *testing.T) *require.Assertions {
-	return require.New(t)
+type Assertions struct {
+	*require.Assertions
+}
+
+func New(t *testing.T) *Assertions {
+	return &Assertions{require.New(t)}
 }
