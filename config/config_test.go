@@ -10,7 +10,6 @@ import (
 	"github.com/munbot/master/testing/mock"
 	"github.com/munbot/master/testing/require"
 	"github.com/munbot/master/testing/suite"
-	"github.com/munbot/master/vfs"
 )
 
 var tdir string = filepath.FromSlash("./testdata")
@@ -35,7 +34,7 @@ func TestRead(t *testing.T) {
 
 type Suite struct {
 	*suite.Suite
-	fs *mock.MockFilesystem
+	fs *mock.Filesystem
 }
 
 func TestSuite(t *testing.T) {
@@ -43,13 +42,13 @@ func TestSuite(t *testing.T) {
 }
 
 func (s *Suite) SetupTest() {
-	s.fs = mock.NewFilesystem([]string{"config/testing.txt"})
-	vfs.SetFilesystem(s.fs)
+	s.fs = mock.NewFilesystem("config/testing.txt")
+	mock.SetFilesystem(s.fs)
 }
 
 func (s *Suite) TearDownTest() {
 	s.fs = nil
-	vfs.SetFilesystem(vfs.DefaultFilesystem)
+	mock.SetDefaultFilesystem()
 }
 
 func (s *Suite) TestReadError() {
@@ -57,15 +56,14 @@ func (s *Suite) TestReadError() {
 	require := require.New(s.T())
 	c := New("testing.txt", "config")
 	err := c.Read()
-	require.EqualError(err, "read error", "read error")
+	require.EqualError(err, "mock read error", "read error")
 }
 
-//~ func (s *Suite) TestJSONError() {
-	//~ require := require.New(s.T())
-	//~ fh := s.fs.Add("testing/config.json")
-	//~ fh.WriteString("{")
-	//~ fh.Seek(0, 0)
-	//~ c := New("config.json", "testing")
-	//~ err := c.Read()
-	//~ require.EqualError(err, "read error", "read error")
-//~ }
+func (s *Suite) TestJSONError() {
+	require := require.New(s.T())
+	fh := s.fs.Add("testing/config.json")
+	fh.WriteString("{")
+	c := New("config.json", "testing")
+	err := c.Read()
+	require.EqualError(err, "unexpected end of JSON input", "read error")
+}

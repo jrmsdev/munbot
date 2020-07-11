@@ -7,10 +7,7 @@ import (
 	"os"
 	"testing"
 
-	"gobot.io/x/gobot/sysfs"
-
 	"github.com/munbot/master/testing/assert"
-	"github.com/munbot/master/testing/mock"
 	"github.com/munbot/master/testing/require"
 	"github.com/munbot/master/testing/suite"
 )
@@ -20,12 +17,12 @@ var testFS Filesystem
 
 func init() {
 	defFS = fs
-	testFS = mock.NewFilesystem([]string{"stat.txt"})
+	testFS = NewMockFilesystem("stat.txt")
 }
 
 func TestDefaultFS(t *testing.T) {
 	switch typ := defFS.(type) {
-	case *sysfs.NativeFilesystem:
+	case *NativeFilesystem:
 	default:
 		t.Fatalf("wrong default filesystem: %T", typ)
 	}

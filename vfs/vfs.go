@@ -4,20 +4,25 @@
 package vfs
 
 import (
+	"io"
 	"os"
-
-	"gobot.io/x/gobot/sysfs"
 )
 
-type File sysfs.File
+type File interface {
+	io.ReadWriteCloser
+	io.StringWriter
+}
 
-type Filesystem sysfs.Filesystem
+type Filesystem interface {
+	OpenFile(string, int, os.FileMode) (File, error)
+	Stat(string) (os.FileInfo, error)
+}
 
 var fs Filesystem
 var DefaultFilesystem Filesystem
 
 func init() {
-	DefaultFilesystem = new(sysfs.NativeFilesystem)
+	DefaultFilesystem = new(NativeFilesystem)
 	fs = DefaultFilesystem
 }
 
