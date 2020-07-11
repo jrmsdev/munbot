@@ -42,6 +42,16 @@ func (f MockFile) Write(b []byte) (int, error) {
 	return f.Buffer.Write(b)
 }
 
+func (f MockFile) WriteString(s string) (int, error) {
+	if f.fs.WithWriteError {
+		return 0, errors.New("mock write error")
+	}
+	if f.closed {
+		return 0, errors.New("mock file is closed")
+	}
+	return f.Buffer.WriteString(s)
+}
+
 type MockFilesystem struct {
 	root map[string]File
 	WithOpenError bool
