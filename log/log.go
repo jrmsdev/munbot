@@ -6,8 +6,9 @@ package log
 import (
 	"errors"
 	"fmt"
-	gol "log"
 	"os"
+
+	gol "log"
 )
 
 var (
@@ -17,12 +18,14 @@ var (
 	verbose    bool = true
 )
 
-var osExit func(int) = os.Exit
+var output func(int, string) error = gol.Output
+var setFlags func(int) = gol.SetFlags
+var setPrefix func(string) = gol.SetPrefix
 
 func DebugEnable() {
 	debug = true
 	verbose = true
-	gol.SetFlags(debugFlags)
+	setFlags(debugFlags)
 }
 
 func SetQuiet() {
@@ -36,73 +39,75 @@ func SetVerbose() {
 }
 
 func SetPrefix(name string) {
-	gol.SetPrefix(fmt.Sprintf("[%s:%d] ", name, os.Getpid()))
+	setPrefix(fmt.Sprintf("[%s:%d] ", name, os.Getpid()))
 }
 
 func Panic(v ...interface{}) {
-	gol.Output(cdepth, fmt.Sprintf("[PANIC] %s", fmt.Sprint(v...)))
+	output(cdepth, fmt.Sprintf("[PANIC] %s", fmt.Sprint(v...)))
 	panic("oops!!")
 }
 
 func Panicf(format string, v ...interface{}) {
-	gol.Output(cdepth, fmt.Sprintf("[PANIC] %s", fmt.Sprintf(format, v...)))
+	output(cdepth, fmt.Sprintf("[PANIC] %s", fmt.Sprintf(format, v...)))
 	panic("oops!!")
 }
 
 func Print(v ...interface{}) {
 	if verbose {
-		gol.Output(cdepth, fmt.Sprint(v...))
+		output(cdepth, fmt.Sprint(v...))
 	}
 }
 
 func Printf(format string, v ...interface{}) {
 	if verbose {
-		gol.Output(cdepth, fmt.Sprintf(format, v...))
+		output(cdepth, fmt.Sprintf(format, v...))
 	}
 }
 
 func Debug(v ...interface{}) {
 	if debug {
-		gol.Output(cdepth, fmt.Sprint(v...))
+		output(cdepth, fmt.Sprint(v...))
 	}
 }
 
 func Debugf(format string, v ...interface{}) {
 	if debug {
-		gol.Output(cdepth, fmt.Sprintf(format, v...))
+		output(cdepth, fmt.Sprintf(format, v...))
 	}
 }
 
 func Error(v ...interface{}) error {
 	err := errors.New(fmt.Sprint(v...))
-	gol.Output(cdepth, fmt.Sprintf("[ERROR] %s", err))
+	output(cdepth, fmt.Sprintf("[ERROR] %s", err))
 	return err
 }
 
 func Errorf(format string, v ...interface{}) error {
 	err := errors.New(fmt.Sprintf(format, v...))
-	gol.Output(cdepth, fmt.Sprintf("[ERROR] %s", err))
+	output(cdepth, fmt.Sprintf("[ERROR] %s", err))
 	return err
 }
 
+var osExit func(int) = os.Exit
+
 func Fatal(v ...interface{}) {
-	gol.Output(cdepth, fmt.Sprintf("[FATAL] %s", fmt.Sprint(v...)))
+	output(cdepth, fmt.Sprintf("[FATAL] %s", fmt.Sprint(v...)))
 	osExit(2)
 }
 
 func Fatalf(format string, v ...interface{}) {
-	gol.Output(cdepth, fmt.Sprintf("[FATAL] %s", fmt.Sprintf(format, v...)))
+	output(cdepth, fmt.Sprintf("[FATAL] %s", fmt.Sprintf(format, v...)))
 	osExit(2)
 }
 
 func Warn(v ...interface{}) {
 	if verbose {
-		gol.Output(cdepth, fmt.Sprintf("[WARNING] %s", fmt.Sprint(v...)))
+		output(cdepth, fmt.Sprintf("[WARNING] %s", fmt.Sprint(v...)))
 	}
 }
 
 func Warnf(format string, v ...interface{}) {
 	if verbose {
-		gol.Output(cdepth, fmt.Sprintf("[WARNING] %s", fmt.Sprintf(format, v...)))
+		output(cdepth, fmt.Sprintf("[WARNING] %s", fmt.Sprintf(format, v...)))
 	}
 }

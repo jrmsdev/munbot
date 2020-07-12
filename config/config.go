@@ -9,7 +9,6 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/munbot/master/log"
 	"github.com/munbot/master/vfs"
 )
 
@@ -35,7 +34,7 @@ func (c *Config) Read() error {
 	for i := range c.dirs {
 		dn := c.dirs[i]
 		fn := filepath.Join(dn, c.filename)
-		log.Debugf("config try %s", fn)
+		//~ log.Debugf("config try %s", fn)
 		if err := c.readFile(fn); err != nil {
 			return err
 		}
@@ -47,7 +46,7 @@ func (c *Config) readFile(name string) error {
 	fh, err := vfs.Open(name)
 	if err != nil {
 		if os.IsNotExist(err) {
-			log.Debug(err)
+			//~ log.Debug(err)
 			return nil
 		} else {
 			return err
