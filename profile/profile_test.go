@@ -17,18 +17,19 @@ func TestInitErrors(t *testing.T) {
 	require.NoError(configDirErr, "os user config dir")
 }
 
-func TestSetDefaults(t *testing.T) {
+func TestNewDefaults(t *testing.T) {
 	assert := assert.New(t)
 	homeDir = ""
-	ConfigDir = ""
-	setDefaults()
+	configDir = ""
+	p := New("testing")
 	home := filepath.FromSlash("./.munbot")
 	assert.Equal(home, homeDir, "home dir")
-	assert.Equal(filepath.Join(home, "config"), ConfigDir, "config dir")
-	assert.Equal("munbot", Name, "profile name")
-	assert.Equal("config.json", ConfigFilename, "config filename")
+	assert.Equal(filepath.Join(home, "config"), configDir, "config dir")
+	assert.Equal(configDir, p.ConfigDir, "profile config dir")
+	assert.Equal("testing", p.Name, "profile name")
+	assert.Equal("config.json", p.ConfigFilename, "config filename")
 	assert.Equal(filepath.FromSlash("/usr/local/etc/munbot"),
-		ConfigSysDir, "config sys dir")
+		p.ConfigSysDir, "config sys dir")
 	assert.Equal(filepath.FromSlash("/etc/munbot"),
-		ConfigDistDir, "config dist dir")
+		p.ConfigDistDir, "config dist dir")
 }

@@ -11,33 +11,41 @@ import (
 var (
 	homeDir        string
 	homeDirErr     error
+	configDir      string
 	configDirErr   error
+)
+
+func init() {
+	homeDir, homeDirErr = os.UserHomeDir()
+	configDir, configDirErr = os.UserConfigDir()
+}
+
+type Profile struct {
 	Name           string
 	ConfigFilename string
 	ConfigDir      string
 	ConfigSysDir   string
 	ConfigDistDir  string
-)
-
-func init() {
-	homeDir, homeDirErr = os.UserHomeDir()
-	ConfigDir, configDirErr = os.UserConfigDir()
-	setDefaults()
 }
 
-func setDefaults() {
+func setDefaults(p *Profile) *Profile {
 	if homeDir == "" || homeDirErr != nil {
 		homeDir = filepath.FromSlash("./.munbot")
 	} else {
 		homeDir = filepath.Join(homeDir, ".munbot")
 	}
-	if ConfigDir == "" || configDirErr != nil {
-		ConfigDir = filepath.Join(homeDir, "config")
+	if configDir == "" || configDirErr != nil {
+		configDir = filepath.Join(homeDir, "config")
 	} else {
-		ConfigDir = filepath.Join(ConfigDir, "munbot")
+		configDir = filepath.Join(configDir, "munbot")
 	}
-	Name = "munbot"
-	ConfigFilename = "config.json"
-	ConfigSysDir = filepath.FromSlash("/usr/local/etc/munbot")
-	ConfigDistDir = filepath.FromSlash("/etc/munbot")
+	p.ConfigFilename = "config.json"
+	p.ConfigDir = configDir
+	p.ConfigSysDir = filepath.FromSlash("/usr/local/etc/munbot")
+	p.ConfigDistDir = filepath.FromSlash("/etc/munbot")
+	return p
+}
+
+func New(name string) *Profile {
+	return setDefaults(&Profile{Name: name})
 }
