@@ -50,22 +50,34 @@ func (c *Config) readFile(name string) error {
 		}
 	}
 	defer fh.Close()
-	blob, err := ioutil.ReadAll(fh)
+	return c.Read(fh)
+}
+
+func (c *Config) Read(r io.Reader) error {
+	blob, err := ioutil.ReadAll(r)
 	if err != nil {
 		return err
 	}
 	return json.Unmarshal(blob, c)
 }
 
-func (c *Config) Read(r io.Reader) error {
-	return nil
-}
-
 func (c *Config) Save(p *profile.Profile) error {
-	return nil
+	fn := p.GetConfigFile()
+	fh, err := vfs.Create(fn)
+	if err != nil {
+		return err
+	}
+	defer fh.Close()
+	return c.Write(fh)
 }
 
 func (c *Config) Write(w io.Writer) error {
-	//~ blob, err := json.Marshal(c.Munbot)
+	blob, err := json.Marshal(c)
+	if err != nil {
+		return err
+	}
+	if _, err := w.Write(blob); err != nil {
+		return err
+	}
 	return nil
 }

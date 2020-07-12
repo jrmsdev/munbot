@@ -42,3 +42,7 @@ func Stat(name string) (os.FileInfo, error) {
 func Open(name string) (File, error) {
 	return fs.OpenFile(name, os.O_RDONLY, 0)
 }
+
+func Create(name string) (File, error) {
+	return fs.OpenFile(name, os.O_RDWR|os.O_CREATE|os.O_TRUNC, 0660)
+}
