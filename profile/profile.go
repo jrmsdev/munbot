@@ -49,3 +49,21 @@ func setDefaults(p *Profile) *Profile {
 func New(name string) *Profile {
 	return setDefaults(&Profile{Name: name})
 }
+
+func (p *Profile) ListConfigFiles() []string {
+	l := make([]string, 0)
+	if p.ConfigSysDir != "" {
+		p.ConfigSysDir = filepath.Clean(p.ConfigSysDir)
+		l = append(l, filepath.Join(p.ConfigSysDir, p.ConfigFilename))
+		l = append(l, filepath.Join(p.ConfigSysDir, p.Name, p.ConfigFilename))
+	}
+	p.ConfigDir = filepath.Clean(p.ConfigDir)
+	l = append(l, filepath.Join(p.ConfigDir, p.ConfigFilename))
+	l = append(l, filepath.Join(p.ConfigDir, p.Name, p.ConfigFilename))
+	if p.ConfigDistDir != "" {
+		p.ConfigDistDir = filepath.Clean(p.ConfigDistDir)
+		l = append(l, filepath.Join(p.ConfigDistDir, p.ConfigFilename))
+		l = append(l, filepath.Join(p.ConfigDistDir, p.Name, p.ConfigFilename))
+	}
+	return l
+}
