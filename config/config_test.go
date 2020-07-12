@@ -4,6 +4,8 @@
 package config
 
 import (
+	"bytes"
+	"errors"
 	"testing"
 
 	"github.com/munbot/master/profile"
@@ -63,14 +65,14 @@ func (s *Suite) TestLoad() {
 	s.require.NoError(err, "read error")
 }
 
-func (s *Suite) TestLoadError() {
+func (s *Suite) TestReadError() {
 	s.fs.WithReadError = true
 	c := New()
 	err := c.Load(s.profile)
 	s.require.EqualError(err, "mock read error", "read error")
 }
 
-func (s *Suite) TestJSONError() {
+func (s *Suite) TestReadJSONError() {
 	c := New()
 	err := c.Load(s.profile)
 	s.require.EqualError(err, "unexpected end of JSON input", "read error")
@@ -123,4 +125,37 @@ func (s *Suite) TestLoadOverride() {
 	err = c.Load(s.profile)
 	s.require.NoError(err, "load error")
 	s.Equal("dist", c.Munbot.Master.Name, "master name")
+}
+
+func (s *Suite) TestSave() {
+	s.fs.Add("test/testing/config.json")
+	c := New()
+	err := c.Save(s.profile)
+	s.require.NoError(err, "save error")
+}
+
+func (s *Suite) TestSaveError() {
+	c := New()
+	err := c.Save(s.profile)
+	s.require.EqualError(err, "stat test/testing/config.json.mock-notfound: no such file or directory", "save error")
+}
+
+func (s *Suite) TestWriteError() {
+	s.fs.WithWriteError = true
+	s.fs.Add("test/testing/config.json")
+	c := New()
+	err := c.Save(s.profile)
+	s.require.EqualError(err, "mock write error", "write error")
+}
+
+func mockMarshal(v interface{}) ([]byte, error) {
+	return nil, errors.New("mock marshal error")
+}
+
+func (s *Suite) TestWriteJSONError() {
+	var w bytes.Buffer
+	c := New()
+	c.marshal = mockMarshal
+	err := c.Write(&w)
+	s.require.EqualError(err, "mock marshal error", "read error")
 }

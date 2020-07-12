@@ -18,12 +18,15 @@ type Munbot struct {
 	Master *Master `json:"master,omitempty"`
 }
 
+type marshalFunc func(interface{}) ([]byte, error)
+
 type Config struct {
 	Munbot *Munbot `json:"munbot,omitempty"`
+	marshal marshalFunc
 }
 
 func New() *Config {
-	return &Config{&Munbot{}}
+	return &Config{Munbot: &Munbot{}, marshal: json.Marshal}
 }
 
 func (c *Config) SetDefaults() {
@@ -72,7 +75,7 @@ func (c *Config) Save(p *profile.Profile) error {
 }
 
 func (c *Config) Write(w io.Writer) error {
-	blob, err := json.Marshal(c)
+	blob, err := c.marshal(c)
 	if err != nil {
 		return err
 	}
