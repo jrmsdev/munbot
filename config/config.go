@@ -5,7 +5,6 @@ package config
 
 import (
 	"encoding/json"
-	"fmt"
 	"io/ioutil"
 	"os"
 	"path/filepath"
@@ -25,16 +24,11 @@ type Config struct {
 }
 
 func New(filename string, dirs ...string) *Config {
-	return &Config{filename: filename, dirs: dirs}
+	return &Config{filename, dirs, &Munbot{}}
 }
 
 func (c *Config) SetDefaults() {
-	c.Munbot = &Munbot{
-		Master: &Master{
-			Enable: true,
-			Name:   "munbot",
-		},
-	}
+	c.Munbot.Master = &Master{Enable: true, Name: "munbot"}
 }
 
 func (c *Config) Read() error {
@@ -54,8 +48,9 @@ func (c *Config) readFile(name string) error {
 	if err != nil {
 		if os.IsNotExist(err) {
 			log.Debug(err)
+			return nil
 		} else {
-			return fmt.Errorf("%s: %s", name, err)
+			return err
 		}
 	}
 	defer fh.Close()

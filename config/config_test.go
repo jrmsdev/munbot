@@ -4,7 +4,6 @@
 package config
 
 import (
-	"path/filepath"
 	"testing"
 
 	"github.com/munbot/master/testing/mock"
@@ -12,7 +11,6 @@ import (
 	"github.com/munbot/master/testing/suite"
 )
 
-var tdir string = filepath.FromSlash("./testdata")
 var defcfg *Munbot = &Munbot{
 	Master: &Master{
 		Enable: true,
@@ -27,43 +25,60 @@ func TestDefaults(t *testing.T) {
 	require.Equal(defcfg, c.Munbot, "default config")
 }
 
-func TestRead(t *testing.T) {
-	c := New("config.json", tdir)
-	c.Read()
-}
-
 type Suite struct {
 	*suite.Suite
 	fs *mock.Filesystem
+	require *require.Assertions
 }
 
 func TestSuite(t *testing.T) {
-	suite.Run(t, &Suite{suite.New(), nil})
+	suite.Run(t, &Suite{suite.New(), nil, nil})
 }
 
 func (s *Suite) SetupTest() {
+	s.require = require.New(s.T())
 	s.fs = mock.NewFilesystem("config/testing.txt")
 	mock.SetFilesystem(s.fs)
 }
 
 func (s *Suite) TearDownTest() {
+	s.require = nil
 	s.fs = nil
 	mock.SetDefaultFilesystem()
 }
 
+func (s *Suite) TestRead() {
+	fh := s.fs.Add("testing/config.json")
+	fh.WriteString("{}")
+	c := New("config.json", "testing")
+	err := c.Read()
+	s.require.NoError(err, "read error")
+}
+
 func (s *Suite) TestReadError() {
 	s.fs.WithReadError = true
-	require := require.New(s.T())
 	c := New("testing.txt", "config")
 	err := c.Read()
-	require.EqualError(err, "mock read error", "read error")
+	s.require.EqualError(err, "mock read error", "read error")
 }
 
 func (s *Suite) TestJSONError() {
-	require := require.New(s.T())
 	fh := s.fs.Add("testing/config.json")
 	fh.WriteString("{")
 	c := New("config.json", "testing")
 	err := c.Read()
-	require.EqualError(err, "unexpected end of JSON input", "read error")
+	s.require.EqualError(err, "unexpected end of JSON input", "read error")
+}
+
+func (s *Suite) TestReadFileNotExist() {
+	c := New("nofile.txt", "nodir")
+	err := c.Read()
+	s.require.NoError(err, "read file not exist")
+}
+
+func (s *Suite) TestOpenError() {
+	s.fs.WithOpenError = true
+	c := New("testing.txt", "config")
+	err := c.Read()
+	s.require.EqualError(err, "mock open error", "open error")
 }
