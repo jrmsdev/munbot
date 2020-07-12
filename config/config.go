@@ -5,6 +5,7 @@ package config
 
 import (
 	"encoding/json"
+	"io"
 	"io/ioutil"
 	"os"
 
@@ -53,5 +54,18 @@ func (c *Config) readFile(name string) error {
 	if err != nil {
 		return err
 	}
-	return json.Unmarshal(blob, c.Munbot)
+	return json.Unmarshal(blob, c)
+}
+
+func (c *Config) Read(r io.Reader) error {
+	return nil
+}
+
+func (c *Config) Save(p *profile.Profile) error {
+	return nil
+}
+
+func (c *Config) Write(w io.Writer) error {
+	//~ blob, err := json.Marshal(c.Munbot)
+	return nil
 }

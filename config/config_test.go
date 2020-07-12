@@ -76,7 +76,7 @@ func (s *Suite) TestJSONError() {
 	s.require.EqualError(err, "unexpected end of JSON input", "read error")
 }
 
-func (s *Suite) TestReadFileNotExist() {
+func (s *Suite) TestLoadFileNotExist() {
 	s.profile.ConfigFilename = "nofile.txt"
 	c := New()
 	err := c.Load(s.profile)
@@ -88,4 +88,39 @@ func (s *Suite) TestOpenError() {
 	c := New()
 	err := c.Load(s.profile)
 	s.require.EqualError(err, "mock open error", "open error")
+}
+
+func (s *Suite) TestLoadOverride() {
+	c := New()
+	c.SetDefaults()
+	s.require.Equal("munbot", c.Munbot.Master.Name, "master name")
+
+	// config file overrides system file
+	sysfh := s.fs.Add("sys/config.json")
+	sysfh.WriteString(`{"munbot":{"master":{"name":"sys"}}}`)
+	fh := s.fs.Add("test/config.json")
+	fh.WriteString(`{"munbot":{"master":{"name":"test"}}}`)
+	err := c.Load(s.profile)
+	s.require.NoError(err, "load error")
+	s.Equal("test", c.Munbot.Master.Name, "master name")
+
+	// load system options if config file is empty (or not found)
+	sysfh = s.fs.Add("sys/config.json")
+	sysfh.WriteString(`{"munbot":{"master":{"name":"sys"}}}`)
+	fh = s.fs.Add("test/config.json")
+	fh.WriteString(`{}`)
+	err = c.Load(s.profile)
+	s.require.NoError(err, "load error")
+	s.Equal("sys", c.Munbot.Master.Name, "master name")
+
+	// dist config file overrides everything
+	fh = s.fs.Add("test/config.json")
+	fh.WriteString(`{"munbot":{"master":{"name":"test"}}}`)
+	sysfh = s.fs.Add("sys/config.json")
+	sysfh.WriteString(`{"munbot":{"master":{"name":"sys"}}}`)
+	distfh := s.fs.Add("dist/config.json")
+	distfh.WriteString(`{"munbot":{"master":{"name":"dist"}}}`)
+	err = c.Load(s.profile)
+	s.require.NoError(err, "load error")
+	s.Equal("dist", c.Munbot.Master.Name, "master name")
 }
