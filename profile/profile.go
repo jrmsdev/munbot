@@ -9,10 +9,10 @@ import (
 )
 
 var (
-	homeDir        string
-	homeDirErr     error
-	configDir      string
-	configDirErr   error
+	homeDir      string
+	homeDirErr   error
+	configDir    string
+	configDirErr error
 )
 
 func init() {

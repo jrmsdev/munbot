@@ -19,7 +19,7 @@ func TestDefaults(t *testing.T) {
 	require := require.New(t)
 	require.Equal(2, cdepth, "call depth")
 	require.Equal(false, debug, "debug")
-	require.Equal(gol.Ldate | gol.Ltime | gol.Lmicroseconds | gol.Llongfile,
+	require.Equal(gol.Ldate|gol.Ltime|gol.Lmicroseconds|gol.Llongfile,
 		debugFlags, "debug flags")
 	require.Equal(true, verbose, "verbose")
 }
@@ -31,7 +31,7 @@ func TestSuite(t *testing.T) {
 type Suite struct {
 	*suite.Suite
 	logger *gol.Logger
-	buf *bytes.Buffer
+	buf    *bytes.Buffer
 }
 
 func (s *Suite) SetupTest() {

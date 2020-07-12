@@ -18,7 +18,7 @@ type Munbot struct {
 }
 
 type Config struct {
-	Munbot   *Munbot `json:"munbot,omitempty"`
+	Munbot *Munbot `json:"munbot,omitempty"`
 }
 
 func New() *Config {

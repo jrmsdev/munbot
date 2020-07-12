@@ -28,7 +28,7 @@ func TestDefaults(t *testing.T) {
 
 type Suite struct {
 	*suite.Suite
-	fs *mock.Filesystem
+	fs      *mock.Filesystem
 	require *require.Assertions
 	profile *profile.Profile
 }
