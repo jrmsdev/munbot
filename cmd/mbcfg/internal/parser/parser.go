@@ -8,7 +8,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/munbot/master/config"
+	"github.com/munbot/master/cmd/mbcfg/internal/config"
 )
 
 type marshalFunc func(interface{}) ([]byte, error)
@@ -17,7 +17,7 @@ type unmarshalFunc func([]byte, interface{}) error
 var jsonMarshal marshalFunc = json.Marshal
 var jsonUnmarshal unmarshalFunc = json.Unmarshal
 
-func Parse(c *config.Munbot, filter string) (map[string]string, error) {
+func Parse(c config.DB, filter string) (map[string]string, error) {
 	m := make(map[string]interface{})
 	if blob, err := jsonMarshal(c); err != nil {
 		return nil, err

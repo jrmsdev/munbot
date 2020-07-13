@@ -8,13 +8,18 @@ import (
 	"errors"
 	"testing"
 
-	"github.com/munbot/master/config"
+	"github.com/munbot/master/cmd/mbcfg/internal/config"
 	"github.com/munbot/master/testing/assert"
 	"github.com/munbot/master/testing/require"
 )
 
-func newCfg() *config.Munbot {
-	return &config.Munbot{Master: &config.Master{Name: "testing", Enable: true}}
+func newCfg() config.DB {
+	return config.DB{
+		"master": config.Map{
+			"name": "testing",
+			"enable": "true",
+		},
+	}
 }
 
 func TestParse(t *testing.T) {
