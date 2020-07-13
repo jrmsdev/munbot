@@ -40,6 +40,14 @@ func (c *Config) Load(b []byte) error {
 	return json.Unmarshal(b, &c.db)
 }
 
+func (c *Config) HasOption(section, option string) bool {
+	if !c.HasSection(section) {
+		return false
+	}
+	s := c.Section(section)
+	return s.HasOption(option)
+}
+
 func (c *Config) HasSection(name string) bool {
 	_, found := c.db[name]
 	return found
@@ -61,6 +69,11 @@ type Section struct {
 
 func (s *Section) Name() string {
 	return s.name
+}
+
+func (s *Section) HasOption(name string) bool {
+	_, found := s.m[name]
+	return found
 }
 
 func (s *Section) Get(name string) string {

@@ -13,7 +13,7 @@ import (
 // {"master":{"name":"testing"}}
 // {"master.api":{"addr":"0.0.0.0"}}
 
-func Update(c *config.Config, option, newval string) []byte {
+func Update(c *config.Config, option, newval string) error {
 	i := strings.Split(option, ".")
 	ilen := len(i)
 	opt := i[ilen-1]
@@ -27,7 +27,11 @@ func Update(c *config.Config, option, newval string) []byte {
 			}
 		}
 	}
-	return []byte(sect + ":" + opt)
+	if !c.HasSection(sect) || !c.HasOption(sect, opt) {
+		return fmt.Errorf("invalid option: %s", option)
+	}
+	s := fmt.Sprintf(`{"%s":{"%s":"%s"}}`, sect, opt, newval)
+	return c.Load([]byte(s))
 }
 
 func checkSection(c *config.Config, args []string) string {
