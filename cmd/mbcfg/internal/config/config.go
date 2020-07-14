@@ -5,6 +5,7 @@ package config
 
 import (
 	"encoding/json"
+	"fmt"
 	"strconv"
 )
 
@@ -18,6 +19,17 @@ func SetDefaults(c *Config) {
 		"addr": "0.0.0.0",
 		"port": "6492",
 	}
+}
+
+func Update(c *Config, section, option, newval string) error {
+	if !c.HasSection(section) {
+		return fmt.Errorf("invalid section: %s", section)
+	}
+	if !c.HasOption(section, option) {
+		return fmt.Errorf("%s section invalid option: %s", section, option)
+	}
+	c.db[section][option] = newval
+	return nil
 }
 
 type Map map[string]string

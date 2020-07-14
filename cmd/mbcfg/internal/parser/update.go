@@ -27,11 +27,7 @@ func Update(c *config.Config, option, newval string) error {
 			}
 		}
 	}
-	if !c.HasSection(sect) || !c.HasOption(sect, opt) {
-		return fmt.Errorf("invalid option: %s", option)
-	}
-	s := fmt.Sprintf(`{"%s":{"%s":"%s"}}`, sect, opt, newval)
-	return c.Load([]byte(s))
+	return config.Update(c, sect, opt, newval)
 }
 
 func checkSection(c *config.Config, args []string) string {
