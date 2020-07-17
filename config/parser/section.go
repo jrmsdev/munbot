@@ -4,7 +4,6 @@
 package parser
 
 import (
-	"os"
 	"strconv"
 
 	"github.com/munbot/master/log"
@@ -12,7 +11,6 @@ import (
 
 type Section struct {
 	name string
-	m    Map
 	c    *Config
 }
 
@@ -21,21 +19,11 @@ func (s *Section) Name() string {
 }
 
 func (s *Section) HasOption(name string) bool {
-	_, found := s.m[name]
-	return found
-}
-
-func (s *Section) eval(value string) string {
-	return os.Expand(value, s.c.expand)
+	return s.c.HasOption(s.name, name)
 }
 
 func (s *Section) Get(name string) string {
-	v, found := s.m[name]
-	if !found {
-		log.Debugf("config missing option: %s.%s", s.name, name)
-		return ""
-	}
-	return s.eval(v)
+	return s.c.Get(s.name, name)
 }
 
 func (s *Section) GetBool(name string) bool {

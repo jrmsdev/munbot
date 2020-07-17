@@ -6,6 +6,7 @@ package parser
 import (
 	"encoding/json"
 	"fmt"
+	"os"
 	"strings"
 )
 
@@ -39,8 +40,8 @@ func (c *Config) HasOption(section, option string) bool {
 	if !c.HasSection(section) {
 		return false
 	}
-	s := c.Section(section)
-	return s.HasOption(option)
+	_, found := c.db[section][option]
+	return found
 }
 
 func (c *Config) HasSection(name string) bool {
@@ -49,12 +50,37 @@ func (c *Config) HasSection(name string) bool {
 }
 
 func (c *Config) Section(name string) *Section {
-	m, found := c.db[name]
+	_, found := c.db[name]
 	if !found {
-		// TODO: debug log about missing section
-		m = Map{}
+		// TODO: debug log about missing section, maybe panic?
+		name = fmt.Sprintf("ECFGSECT:%s", name)
 	}
-	return &Section{name, m, c}
+	return &Section{name, c}
+}
+
+func (c *Config) Get(sect, opt string) string {
+	if sect == "" || !c.HasSection(sect) {
+		return fmt.Sprintf("ECFGMISS:%s.%s", sect, opt)
+	}
+	if opt == "" || !c.HasOption(sect, opt) {
+		return fmt.Sprintf("ECFGMISS:%s.%s", sect, opt)
+	}
+	return c.eval(c.db[sect][opt])
+}
+
+func (c *Config) eval(value string) string {
+	return os.Expand(value, c.expand)
+}
+
+func (c *Config) expand(option string) string {
+	sect, opt := c.getSectOpt(option)
+	if sect == "" || !c.HasSection(sect) {
+		return fmt.Sprintf("ECFGMISS:%s", option)
+	}
+	if opt == "" || !c.HasOption(sect, opt) {
+		return fmt.Sprintf("ECFGMISS:%s", option)
+	}
+	return c.db[sect][opt]
 }
 
 func (c *Config) getSectOpt(option string) (string, string) {
@@ -80,15 +106,4 @@ func (c *Config) checkSection(args []string) string {
 		return n
 	}
 	return ""
-}
-
-func (c *Config) expand(option string) string {
-	sect, opt := c.getSectOpt(option)
-	if sect == "" || !c.HasSection(sect) {
-		return fmt.Sprintf("ECFGMISS:%s", option)
-	}
-	if opt == "" || !c.HasOption(sect, opt) {
-		return fmt.Sprintf("ECFGMISS:%s", option)
-	}
-	return c.db[sect][opt]
 }
