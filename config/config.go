@@ -4,11 +4,12 @@
 package config
 
 import (
-	"encoding/json"
+	"fmt"
 	"io"
 	"io/ioutil"
 	"os"
 
+	"github.com/munbot/master/config/parser"
 	"github.com/munbot/master/log"
 	"github.com/munbot/master/profile"
 	"github.com/munbot/master/vfs"
@@ -18,25 +19,33 @@ type Munbot struct {
 	Master *Master `json:"master,omitempty"`
 }
 
-type marshalFunc func(interface{}) ([]byte, error)
-
 type Config struct {
 	Munbot *Munbot `json:"munbot,omitempty"`
-	marshal marshalFunc
+	handler *parser.Config
 }
 
 func New() *Config {
-	return &Config{Munbot: &Munbot{}, marshal: json.Marshal}
+	return &Config{
+		handler: parser.New(),
+		Munbot: &Munbot{
+			Master: &Master{},
+		},
+	}
 }
 
 func (c *Config) SetDefaults() {
-	c.Munbot.Master = &Master{Enable: true, Name: "munbot"}
+	parser.SetDefaults(c.handler)
+	c.loadConfig(c.handler)
+}
+
+func (c *Config) loadConfig(h *parser.Config) {
+	c.Munbot.Master.load(h.Section("master"))
 }
 
 func (c *Config) Load(p *profile.Profile) error {
 	for _, fn := range p.ListConfigFiles() {
 		if err := c.readFile(fn); err != nil {
-			return err
+			return fmt.Errorf("%s: %s", fn, err)
 		}
 	}
 	return nil
@@ -61,7 +70,11 @@ func (c *Config) Read(r io.Reader) error {
 	if err != nil {
 		return err
 	}
-	return json.Unmarshal(blob, c)
+	if err := c.handler.Load(blob); err != nil {
+		return err
+	}
+	c.loadConfig(c.handler)
+	return nil
 }
 
 func (c *Config) Save(p *profile.Profile) error {
@@ -75,7 +88,7 @@ func (c *Config) Save(p *profile.Profile) error {
 }
 
 func (c *Config) Write(w io.Writer) error {
-	blob, err := c.marshal(c)
+	blob, err := c.handler.Dump()
 	if err != nil {
 		return err
 	}

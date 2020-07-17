@@ -4,8 +4,6 @@
 package config
 
 import (
-	"bytes"
-	"errors"
 	"testing"
 
 	"github.com/munbot/master/profile"
@@ -69,13 +67,13 @@ func (s *Suite) TestReadError() {
 	s.fs.WithReadError = true
 	c := New()
 	err := c.Load(s.profile)
-	s.require.EqualError(err, "mock read error", "read error")
+	s.require.EqualError(err, "test/config.json: mock read error", "read error")
 }
 
 func (s *Suite) TestReadJSONError() {
 	c := New()
 	err := c.Load(s.profile)
-	s.require.EqualError(err, "unexpected end of JSON input", "read error")
+	s.require.EqualError(err, "test/config.json: unexpected end of JSON input", "read error")
 }
 
 func (s *Suite) TestLoadFileNotExist() {
@@ -89,7 +87,7 @@ func (s *Suite) TestOpenError() {
 	s.fs.WithOpenError = true
 	c := New()
 	err := c.Load(s.profile)
-	s.require.EqualError(err, "mock open error", "open error")
+	s.require.EqualError(err, "test/config.json: mock open error", "open error")
 }
 
 func (s *Suite) TestLoadOverride() {
@@ -99,16 +97,16 @@ func (s *Suite) TestLoadOverride() {
 
 	// config file overrides system file
 	sysfh := s.fs.Add("sys/config.json")
-	sysfh.WriteString(`{"munbot":{"master":{"name":"sys"}}}`)
+	sysfh.WriteString(`{"master":{"name":"sys"}}`)
 	fh := s.fs.Add("test/config.json")
-	fh.WriteString(`{"munbot":{"master":{"name":"test"}}}`)
+	fh.WriteString(`{"master":{"name":"test"}}`)
 	err := c.Load(s.profile)
 	s.require.NoError(err, "load error")
 	s.Equal("test", c.Munbot.Master.Name, "master name")
 
 	// load system options if config file is empty (or not found)
 	sysfh = s.fs.Add("sys/config.json")
-	sysfh.WriteString(`{"munbot":{"master":{"name":"sys"}}}`)
+	sysfh.WriteString(`{"master":{"name":"sys"}}`)
 	fh = s.fs.Add("test/config.json")
 	fh.WriteString(`{}`)
 	err = c.Load(s.profile)
@@ -117,11 +115,11 @@ func (s *Suite) TestLoadOverride() {
 
 	// dist config file overrides everything
 	fh = s.fs.Add("test/config.json")
-	fh.WriteString(`{"munbot":{"master":{"name":"test"}}}`)
+	fh.WriteString(`{"master":{"name":"test"}}`)
 	sysfh = s.fs.Add("sys/config.json")
-	sysfh.WriteString(`{"munbot":{"master":{"name":"sys"}}}`)
+	sysfh.WriteString(`{"master":{"name":"sys"}}`)
 	distfh := s.fs.Add("dist/config.json")
-	distfh.WriteString(`{"munbot":{"master":{"name":"dist"}}}`)
+	distfh.WriteString(`{"master":{"name":"dist"}}`)
 	err = c.Load(s.profile)
 	s.require.NoError(err, "load error")
 	s.Equal("dist", c.Munbot.Master.Name, "master name")
@@ -146,16 +144,4 @@ func (s *Suite) TestWriteError() {
 	c := New()
 	err := c.Save(s.profile)
 	s.require.EqualError(err, "mock write error", "write error")
-}
-
-func mockMarshal(v interface{}) ([]byte, error) {
-	return nil, errors.New("mock marshal error")
-}
-
-func (s *Suite) TestWriteJSONError() {
-	var w bytes.Buffer
-	c := New()
-	c.marshal = mockMarshal
-	err := c.Write(&w)
-	s.require.EqualError(err, "mock marshal error", "read error")
 }
