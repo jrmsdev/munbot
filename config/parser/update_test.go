@@ -9,7 +9,7 @@ import (
 
 func TestUpdate(t *testing.T) {
 	c := New()
-	SetDefaults(c)
+	c.SetDefaults(tdef)
 	s := c.Section("master")
 	blob, err := c.Dump()
 	if err != nil {

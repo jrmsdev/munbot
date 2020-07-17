@@ -8,18 +8,6 @@ import (
 	"strconv"
 )
 
-func SetDefaults(c *Config) {
-	c.db["master"] = Map{
-		"enable": "true",
-		"name": "munbot",
-	}
-	c.db["master.api"] = Map{
-		"enable": "true",
-		"addr": "0.0.0.0",
-		"port": "6492",
-	}
-}
-
 type Map map[string]string
 
 type DB map[string]Map
@@ -30,6 +18,12 @@ type Config struct {
 
 func New() *Config {
 	return &Config{db: make(DB)}
+}
+
+func (c *Config) SetDefaults(src DB) {
+	for k, v := range src {
+		c.db[k] = v
+	}
 }
 
 func (c *Config) Dump() ([]byte, error) {

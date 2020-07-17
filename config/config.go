@@ -15,12 +15,23 @@ import (
 	"github.com/munbot/master/vfs"
 )
 
+var Defaults parser.DB = parser.DB{
+	"master": parser.Map{
+		"name": "munbot",
+	},
+	"master.api": parser.Map{
+		"enable": "true",
+		"addr": "0.0.0.0",
+		"port": "6492",
+	},
+}
+
 type Munbot struct {
-	Master *Master `json:"master,omitempty"`
+	Master *Master
 }
 
 type Config struct {
-	Munbot *Munbot `json:"munbot,omitempty"`
+	Munbot *Munbot
 	handler *parser.Config
 }
 
@@ -34,7 +45,7 @@ func New() *Config {
 }
 
 func (c *Config) SetDefaults() {
-	parser.SetDefaults(c.handler)
+	c.handler.SetDefaults(Defaults)
 	c.loadConfig(c.handler)
 }
 

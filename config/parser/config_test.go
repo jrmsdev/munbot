@@ -7,12 +7,18 @@ import (
 	"testing"
 )
 
-var tcfg = []byte(`{"master":{"enable":"false","name":"testing"}}`)
+var tdef DB = DB{
+	"master": Map{
+		"name": "munbot",
+	},
+}
+
+var tcfg = []byte(`{"master":{"name":"testing"}}`)
 
 func TestNew(t *testing.T) {
 	c := New()
 	t.Logf("%#v", c)
-	SetDefaults(c)
+	c.SetDefaults(tdef)
 	t.Logf("%#v", c)
 	blob, err := c.Dump()
 	if err != nil {
@@ -22,7 +28,6 @@ func TestNew(t *testing.T) {
 	s := c.Section("master")
 	t.Log(s)
 	t.Logf("master.name: %s", s.Get("name"))
-	t.Logf("master.enable: %v", s.GetBool("enable"))
 	t.Logf("missing bool: %v", s.GetBool("missing"))
 	s = c.Section("master.api")
 	t.Log(s)

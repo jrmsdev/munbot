@@ -14,7 +14,6 @@ import (
 
 var defcfg *Munbot = &Munbot{
 	Master: &Master{
-		Enable: true,
 		Name:   "munbot",
 	},
 }
