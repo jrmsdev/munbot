@@ -30,14 +30,19 @@ type Munbot struct {
 	Master *Master
 }
 
+type dumpFunc func() ([]byte, error)
+
 type Config struct {
 	Munbot  *Munbot
 	handler *parser.Config
+	dump    dumpFunc
 }
 
 func New() *Config {
+	h := parser.New()
 	return &Config{
-		handler: parser.New(),
+		handler: h,
+		dump:    h.Dump,
 		Munbot: &Munbot{
 			Master: &Master{
 				Api: &Api{},
@@ -102,7 +107,7 @@ func (c *Config) Save(p *profile.Profile) error {
 }
 
 func (c *Config) Write(w io.Writer) error {
-	blob, err := c.handler.Dump()
+	blob, err := c.dump()
 	if err != nil {
 		return err
 	}

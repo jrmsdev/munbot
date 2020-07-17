@@ -4,6 +4,7 @@
 package config
 
 import (
+	"errors"
 	"testing"
 
 	"github.com/munbot/master/profile"
@@ -140,6 +141,18 @@ func (s *Suite) TestSaveError() {
 	c := New()
 	err := c.Save(s.profile)
 	s.require.EqualError(err, "stat test/testing/config.json.mock-notfound: no such file or directory", "save error")
+}
+
+func mockDump() ([]byte, error) {
+	return nil, errors.New("mock dump error")
+}
+
+func (s *Suite) TestWriteDumpError() {
+	s.fs.Add("test/testing/config.json")
+	c := New()
+	c.dump = mockDump
+	err := c.Save(s.profile)
+	s.require.EqualError(err, "mock dump error", "write dump error")
 }
 
 func (s *Suite) TestWriteError() {
