@@ -5,6 +5,8 @@ package parser
 
 import (
 	"encoding/json"
+	"fmt"
+	"strings"
 )
 
 type Map map[string]string
@@ -52,5 +54,41 @@ func (c *Config) Section(name string) *Section {
 		// TODO: debug log about missing section
 		m = Map{}
 	}
-	return &Section{name, m}
+	return &Section{name, m, c}
+}
+
+func (c *Config) getSectOpt(option string) (string, string) {
+	i := strings.Split(option, ".")
+	ilen := len(i)
+	opt := i[ilen-1]
+	sect := c.checkSection(i[0 : ilen-1])
+	if sect == "" {
+		for j := ilen - 2; j > 0; j-- {
+			sect = c.checkSection(i[0:j])
+			opt = fmt.Sprintf("%s.%s", i[j], opt)
+			if sect != "" {
+				break
+			}
+		}
+	}
+	return sect, opt
+}
+
+func (c *Config) checkSection(args []string) string {
+	n := strings.Join(args, ".")
+	if c.HasSection(n) {
+		return n
+	}
+	return ""
+}
+
+func (c *Config) expand(option string) string {
+	sect, opt := c.getSectOpt(option)
+	if sect == "" || !c.HasSection(sect) {
+		return fmt.Sprintf("ECFGMISS:%s", option)
+	}
+	if opt == "" || !c.HasOption(sect, opt) {
+		return fmt.Sprintf("ECFGMISS:%s", option)
+	}
+	return c.db[sect][opt]
 }
