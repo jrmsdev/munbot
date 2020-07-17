@@ -20,15 +20,18 @@ func TestNew(t *testing.T) {
 	t.Logf("%#v", c)
 	c.SetDefaults(tdef)
 	t.Logf("%#v", c)
+
 	blob, err := c.Dump()
 	if err != nil {
 		t.Fatal(err)
 	}
 	t.Logf("%s", blob)
+
 	s := c.Section("master")
 	t.Log(s)
 	t.Logf("master.name: %s", s.Get("name"))
 	t.Logf("missing bool: %v", s.GetBool("missing"))
+
 	s = c.Section("master.api")
 	t.Log(s)
 	t.Logf("master.api.enable: %v", s.GetBool("enable"))
