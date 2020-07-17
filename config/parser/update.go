@@ -14,7 +14,7 @@ func Update(c *Config, option, newval string) error {
 	opt := i[ilen-1]
 	sect := checkSection(c, i[0:ilen-1])
 	if sect == "" {
-		for j := ilen-2; j > 0; j-- {
+		for j := ilen - 2; j > 0; j-- {
 			sect = checkSection(c, i[0:j])
 			opt = fmt.Sprintf("%s.%s", i[j], opt)
 			if sect != "" {

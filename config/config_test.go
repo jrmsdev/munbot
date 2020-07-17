@@ -14,7 +14,12 @@ import (
 
 var defcfg *Munbot = &Munbot{
 	Master: &Master{
-		Name:   "munbot",
+		Name: "munbot",
+		Api: &Api{
+			Enable: true,
+			Addr:   "0.0.0.0",
+			Port:   6492,
+		},
 	},
 }
 

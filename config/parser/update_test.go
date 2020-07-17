@@ -25,7 +25,4 @@ func TestUpdate(t *testing.T) {
 	t.Logf("%s", blob)
 	s = c.Section("master")
 	t.Logf("master.name: %s", s.Get("name"))
-	//~ t.Logf("%s", Update(c, "master.dot.opt", "testing"))
-	//~ t.Logf("%s", Update(c, "master.api.addr", "testing"))
-	//~ t.Logf("%s", Update(c, "master.api.dot.opt", "testing"))
 }

@@ -5,11 +5,13 @@ package parser
 
 import (
 	"strconv"
+
+	"github.com/munbot/master/log"
 )
 
 type Section struct {
 	name string
-	m Map
+	m    Map
 }
 
 func (s *Section) Name() string {
@@ -24,7 +26,7 @@ func (s *Section) HasOption(name string) bool {
 func (s *Section) Get(name string) string {
 	v, found := s.m[name]
 	if !found {
-		// TODO: debug log about missing option
+		log.Debugf("config missing option: %s.%s", s.name, name)
 		return ""
 	}
 	return v
@@ -33,8 +35,17 @@ func (s *Section) Get(name string) string {
 func (s *Section) GetBool(name string) bool {
 	r, err := strconv.ParseBool(s.Get(name))
 	if err != nil {
-		// TODO: log about parsing error
+		log.Errorf("config option %s.%s parse error: %s", s.name, name, err)
 		return false
+	}
+	return r
+}
+
+func (s *Section) GetInt(name string) int {
+	r, err := strconv.Atoi(s.Get(name))
+	if err != nil {
+		log.Errorf("config option %s.%s parse error: %s", s.name, name, err)
+		return 0
 	}
 	return r
 }

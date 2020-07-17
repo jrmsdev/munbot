@@ -21,8 +21,8 @@ var Defaults parser.DB = parser.DB{
 	},
 	"master.api": parser.Map{
 		"enable": "true",
-		"addr": "0.0.0.0",
-		"port": "6492",
+		"addr":   "0.0.0.0",
+		"port":   "6492",
 	},
 }
 
@@ -31,7 +31,7 @@ type Munbot struct {
 }
 
 type Config struct {
-	Munbot *Munbot
+	Munbot  *Munbot
 	handler *parser.Config
 }
 
@@ -39,7 +39,9 @@ func New() *Config {
 	return &Config{
 		handler: parser.New(),
 		Munbot: &Munbot{
-			Master: &Master{},
+			Master: &Master{
+				Api: &Api{},
+			},
 		},
 	}
 }
@@ -51,6 +53,7 @@ func (c *Config) SetDefaults() {
 
 func (c *Config) loadConfig(h *parser.Config) {
 	c.Munbot.Master.load(h.Section("master"))
+	c.Munbot.Master.Api.load(h.Section("master.api"))
 }
 
 func (c *Config) Load(p *profile.Profile) error {

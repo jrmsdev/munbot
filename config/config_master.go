@@ -9,6 +9,7 @@ import (
 
 type Master struct {
 	Name string
+	Api  *Api
 }
 
 func (c *Master) load(s *parser.Section) {
