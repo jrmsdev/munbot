@@ -19,9 +19,9 @@ var tdef DB = DB{
 var tcfg = []byte(`{"master":{"name":"testing"}}`)
 
 type testCfg struct {
-	t *testing.T
-	test *Config
-	assert *assert.Assertions
+	t       *testing.T
+	test    *Config
+	assert  *assert.Assertions
 	require *require.Assertions
 }
 
@@ -31,6 +31,11 @@ func newTestCfg(t *testing.T) *testCfg {
 
 func (c *testCfg) setDefaults() {
 	c.test.SetDefaults(tdef)
+}
+
+func (c *testCfg) loadTestCfg() {
+	err := c.test.Load(tcfg)
+	c.require.NoError(err, "load error")
 }
 
 func TestNew(t *testing.T) {
@@ -49,9 +54,7 @@ func TestNew(t *testing.T) {
 	s = c.test.Section("missing")
 	c.require.Equal(s.Name(), "ECFGSECT:missing", "missing section name")
 
-	err = c.test.Load(tcfg)
-	c.require.NoError(err, "load error")
-
+	c.loadTestCfg()
 	blob, err = c.test.Dump()
 	c.require.NoError(err, "dump error")
 	c.assert.Equal(blob, tcfg, "dump blob")

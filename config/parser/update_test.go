@@ -8,21 +8,15 @@ import (
 )
 
 func TestUpdate(t *testing.T) {
-	c := New()
-	c.SetDefaults(tdef)
-	s := c.Section("master")
-	blob, err := c.Dump()
-	if err != nil {
-		t.Fatal(err)
-	}
-	t.Logf("%s", blob)
-	t.Logf("master.name: %s", s.Get("name"))
-	t.Log(Update(c, "master.name", "testing"))
-	blob, err = c.Dump()
-	if err != nil {
-		t.Fatal(err)
-	}
-	t.Logf("%s", blob)
-	s = c.Section("master")
-	t.Logf("master.name: %s", s.Get("name"))
+	c := newTestCfg(t)
+	c.setDefaults()
+
+	s := c.test.Section("master")
+	c.require.Equal(s.Get("name"), "munbot", "master name default")
+
+	err := Update(c.test, "master.name", "testing")
+	c.require.NoError(err, "update master.name error")
+
+	s = c.test.Section("master")
+	c.assert.Equal(s.Get("name"), "testing", "master name default")
 }

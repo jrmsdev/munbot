@@ -5,33 +5,23 @@ package parser
 
 import (
 	"testing"
-
-	"github.com/munbot/master/testing/assert"
 )
 
-func newCfg() *Config {
-	return &Config{db: DB{
-		"master": Map{
-			"name": "testing",
-		},
-	}}
-}
-
 func TestParse(t *testing.T) {
-	assert := assert.New(t)
-	c := newCfg()
-	m := Parse(c, "")
-	assert.Equal("testing", m["master.name"], "paser master.name")
+	c := newTestCfg(t)
+	c.loadTestCfg()
+	m := Parse(c.test, "")
+	c.assert.Equal("testing", m["master.name"], "paser master.name")
 }
 
 func TestParseFilter(t *testing.T) {
-	assert := assert.New(t)
-	c := newCfg()
+	c := newTestCfg(t)
+	c.loadTestCfg()
 
-	m := Parse(c, "master")
-	assert.Equal("testing", m["master.name"], "parser master.name")
+	m := Parse(c.test, "master")
+	c.assert.Equal("testing", m["master.name"], "parser master.name")
 
-	m = Parse(c, "master.name")
-	assert.Equal("testing", m["master.name"], "parser master.name")
-	assert.Equal("", m["master.enable"], "parser master.enable")
+	m = Parse(c.test, "master.name")
+	c.assert.Equal("testing", m["master.name"], "parser master.name")
+	c.assert.Equal("", m["master.enable"], "parser master.enable")
 }
