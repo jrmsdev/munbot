@@ -69,18 +69,30 @@ func (c *Config) Get(sect, opt string) string {
 }
 
 func (c *Config) eval(value string) string {
-	return os.Expand(value, c.expand)
+	return os.Expand(value, c.expand())
 }
 
-func (c *Config) expand(option string) string {
-	sect, opt := c.getSectOpt(option)
-	if sect == "" || !c.HasSection(sect) {
-		return fmt.Sprintf("ECFGMISS:%s", option)
+func (c *Config) expand() func(string) string {
+	var loop func(value string) string
+	done := make(map[string]bool)
+	fn := func(option string) string {
+		if done[option] {
+			return fmt.Sprintf("ECFGLOOP:%s", option)
+		}
+		done[option] = true
+		sect, opt := c.getSectOpt(option)
+		if sect == "" || !c.HasSection(sect) {
+			return fmt.Sprintf("ECFGMISS:%s", option)
+		}
+		if opt == "" || !c.HasOption(sect, opt) {
+			return fmt.Sprintf("ECFGMISS:%s", option)
+		}
+		return loop(c.db[sect][opt])
 	}
-	if opt == "" || !c.HasOption(sect, opt) {
-		return fmt.Sprintf("ECFGMISS:%s", option)
+	loop = func(value string) string {
+		return os.Expand(value, fn)
 	}
-	return c.db[sect][opt]
+	return fn
 }
 
 func (c *Config) getSectOpt(option string) (string, string) {
