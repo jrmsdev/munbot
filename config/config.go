@@ -26,39 +26,24 @@ var Defaults parser.DB = parser.DB{
 	},
 }
 
-type Munbot struct {
-	Master *Master
+var handler *parser.Config
+
+func init() {
+	handler = parser.New()
 }
 
 type dumpFunc func() ([]byte, error)
 
 type Config struct {
-	Munbot  *Munbot
-	handler *parser.Config
-	dump    dumpFunc
+	dump dumpFunc
 }
 
 func New() *Config {
-	h := parser.New()
-	return &Config{
-		handler: h,
-		dump:    h.Dump,
-		Munbot: &Munbot{
-			Master: &Master{
-				Api: &Api{},
-			},
-		},
-	}
+	return &Config{dump: handler.Dump}
 }
 
 func (c *Config) SetDefaults() {
-	c.handler.SetDefaults(Defaults)
-	c.loadConfig(c.handler)
-}
-
-func (c *Config) loadConfig(h *parser.Config) {
-	c.Munbot.Master.load(h.Section("master"))
-	c.Munbot.Master.Api.load(h.Section("master.api"))
+	handler.SetDefaults(Defaults)
 }
 
 func (c *Config) Load(p *profile.Profile) error {
@@ -89,11 +74,7 @@ func (c *Config) Read(r io.Reader) error {
 	if err != nil {
 		return err
 	}
-	if err := c.handler.Load(blob); err != nil {
-		return err
-	}
-	c.loadConfig(c.handler)
-	return nil
+	return handler.Load(blob)
 }
 
 func (c *Config) Save(p *profile.Profile) error {
@@ -115,4 +96,20 @@ func (c *Config) Write(w io.Writer) error {
 		return err
 	}
 	return nil
+}
+
+func (c *Config) HasOption(section, option string) bool {
+	return handler.HasOption(section, option)
+}
+
+func (c *Config) HasSection(name string) bool {
+	return handler.HasSection(name)
+}
+
+func (c *Config) Section(name string) *Section {
+	if !handler.HasSection(name) {
+		// TODO: debug log about missing section, maybe panic?
+		name = fmt.Sprintf("ECFGSECT:%s", name)
+	}
+	return &Section{name, handler}
 }

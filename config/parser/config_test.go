@@ -51,13 +51,8 @@ func TestNew(t *testing.T) {
 	c.require.NoError(err, "dump error")
 	c.assert.Equal(blob, []byte(`{"master":{"name":"munbot"}}`), "dump blob")
 
-	s := c.test.Section("master")
-	c.require.Equal(s.Name(), "master", "section name")
-	c.assert.Equal(s.Get("name"), "munbot", "master.name value")
-	c.assert.Equal(s.Get("missing"), "ECFGMISS:master.missing", "get missing value")
-
-	s = c.test.Section("missing")
-	c.require.Equal(s.Name(), "ECFGSECT:missing", "missing section name")
+	c.assert.Equal("munbot", c.test.Get("master", "name"), "master.name value")
+	c.assert.Equal("ECFGMISS:master.missing", c.test.Get("master", "missing"), "get missing value")
 
 	c.loadTestCfg()
 	blob, err = c.test.Dump()

@@ -1,17 +1,18 @@
 // Copyright (c) Jeremías Casteglione <jrmsdev@gmail.com>
 // See LICENSE file.
 
-package parser
+package config
 
 import (
 	"strconv"
 
+	"github.com/munbot/master/config/parser"
 	"github.com/munbot/master/log"
 )
 
 type Section struct {
 	name string
-	c    *Config
+	h    *parser.Config
 }
 
 func (s *Section) Name() string {
@@ -19,11 +20,11 @@ func (s *Section) Name() string {
 }
 
 func (s *Section) HasOption(name string) bool {
-	return s.c.HasOption(s.name, name)
+	return s.h.HasOption(s.name, name)
 }
 
 func (s *Section) Get(name string) string {
-	return s.c.Get(s.name, name)
+	return s.h.Get(s.name, name)
 }
 
 func (s *Section) GetBool(name string) bool {

@@ -10,13 +10,9 @@ import (
 func TestUpdate(t *testing.T) {
 	c := newTestCfg(t)
 	c.setDefaults()
-
-	s := c.test.Section("master")
-	c.require.Equal(s.Get("name"), "munbot", "master name default")
+	c.require.Equal("munbot", c.test.Get("master", "name"), "master name default")
 
 	err := Update(c.test, "master.name", "testing")
 	c.require.NoError(err, "update master.name error")
-
-	s = c.test.Section("master")
-	c.assert.Equal(s.Get("name"), "testing", "master name default")
+	c.assert.Equal("testing", c.test.Get("master", "name"), "master name update")
 }

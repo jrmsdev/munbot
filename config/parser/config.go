@@ -49,15 +49,6 @@ func (c *Config) HasSection(name string) bool {
 	return found
 }
 
-func (c *Config) Section(name string) *Section {
-	_, found := c.db[name]
-	if !found {
-		// TODO: debug log about missing section, maybe panic?
-		name = fmt.Sprintf("ECFGSECT:%s", name)
-	}
-	return &Section{name, c}
-}
-
 func (c *Config) Get(sect, opt string) string {
 	if sect == "" || !c.HasSection(sect) {
 		return fmt.Sprintf("ECFGMISS:%s.%s", sect, opt)
