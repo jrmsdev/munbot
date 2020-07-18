@@ -16,13 +16,15 @@ import (
 )
 
 var Defaults parser.DB = parser.DB{
-	"master": parser.Map{
+	"default": parser.Map{
+		"enable": "false",
 		"name": "munbot",
 	},
-	"master.api": parser.Map{
-		"enable": "true",
-		"addr":   "0.0.0.0",
-		"port":   "6492",
+	"master": parser.Map{
+		"name": "${default.name}",
+		"api.enable": "true",
+		"api.addr":   "0.0.0.0",
+		"api.port":   "6492",
 	},
 }
 
@@ -108,8 +110,8 @@ func (c *Config) HasSection(name string) bool {
 
 func (c *Config) Section(name string) *Section {
 	if !handler.HasSection(name) {
-		// TODO: debug log about missing section, maybe panic?
-		name = fmt.Sprintf("ECFGSECT:%s", name)
+		// TODO: debug log about missing section?
+		name = "default"
 	}
 	return &Section{name, handler}
 }
