@@ -1,6 +1,8 @@
 // Copyright (c) Jeremías Casteglione <jrmsdev@gmail.com>
 // See LICENSE file.
 
+// Package assert is just a handy shorcut (?) to import
+// github.com/stretchr/testify/assert functionality.
 package assert
 
 import (

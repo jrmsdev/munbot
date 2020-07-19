@@ -1,6 +1,8 @@
 // Copyright (c) Jeremías Casteglione <jrmsdev@gmail.com>
 // See LICENSE file.
 
+// Package suite is just a handy shorcut (?) to import
+// github.com/stretchr/testify/suite functionality.
 package suite
 
 import (

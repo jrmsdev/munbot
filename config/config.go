@@ -18,10 +18,10 @@ import (
 var Defaults parser.DB = parser.DB{
 	"default": parser.Map{
 		"enable": "false",
-		"name": "munbot",
+		"name":   "munbot",
 	},
 	"master": parser.Map{
-		"name": "${default.name}",
+		"name":       "${default.name}",
 		"api.enable": "true",
 		"api.addr":   "0.0.0.0",
 		"api.port":   "6492",

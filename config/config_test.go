@@ -14,21 +14,21 @@ import (
 )
 
 //~ var defcfg parser.DB = parser.DB{
-	//~ "master": parser.Map{
-		//~ "name": "munbot",
-	//~ },
-	//~ "master.api": parser.Map{
-		//~ "enable": "true",
-		//~ "addr":   "0.0.0.0",
-		//~ "port":   "6492",
-	//~ },
+//~ "master": parser.Map{
+//~ "name": "munbot",
+//~ },
+//~ "master.api": parser.Map{
+//~ "enable": "true",
+//~ "addr":   "0.0.0.0",
+//~ "port":   "6492",
+//~ },
 //~ }
 
 //~ func TestDefaults(t *testing.T) {
-	//~ require := require.New(t)
-	//~ c := New()
-	//~ c.SetDefaults()
-	//~ require.Equal(defcfg, c.Munbot, "default config")
+//~ require := require.New(t)
+//~ c := New()
+//~ c.SetDefaults()
+//~ require.Equal(defcfg, c.Munbot, "default config")
 //~ }
 
 type Suite struct {
@@ -92,7 +92,7 @@ func (s *Suite) TestOpenError() {
 	s.fs.WithOpenError = true
 	c := New()
 	err := c.Load(s.profile)
-	s.require.EqualError(err, "test/config.json: mock open error", "open error")
+	s.require.EqualError(err, "sys/config.json: mock open error", "open error")
 }
 
 func (s *Suite) TestLoadOverride() {
