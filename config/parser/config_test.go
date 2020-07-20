@@ -6,12 +6,13 @@ package parser
 import (
 	"testing"
 
+	"github.com/munbot/master/config/value"
 	"github.com/munbot/master/testing/assert"
 	"github.com/munbot/master/testing/require"
 )
 
-var tdef DB = DB{
-	"master": Map{
+var tdef value.DB = value.DB{
+	"master": value.Map{
 		"name": "munbot",
 	},
 }

@@ -8,21 +8,19 @@ import (
 	"fmt"
 	"os"
 	"strings"
+
+	"github.com/munbot/master/config/value"
 )
 
-type Map map[string]string
-
-type DB map[string]Map
-
 type Config struct {
-	db DB
+	db value.DB
 }
 
 func New() *Config {
-	return &Config{db: make(DB)}
+	return &Config{db: make(value.DB)}
 }
 
-func (c *Config) SetDefaults(src DB) {
+func (c *Config) SetDefaults(src value.DB) {
 	for k, v := range src {
 		c.db[k] = v
 	}

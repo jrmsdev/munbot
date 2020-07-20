@@ -10,17 +10,18 @@ import (
 	"os"
 
 	"github.com/munbot/master/config/parser"
+	"github.com/munbot/master/config/value"
 	"github.com/munbot/master/log"
 	"github.com/munbot/master/profile"
 	"github.com/munbot/master/vfs"
 )
 
-var Defaults parser.DB = parser.DB{
-	"default": parser.Map{
+var Defaults value.DB = value.DB{
+	"default": value.Map{
 		"enable": "false",
 		"name":   "munbot",
 	},
-	"master": parser.Map{
+	"master": value.Map{
 		"name":       "${default.name}",
 		"api.enable": "true",
 		"api.addr":   "0.0.0.0",
