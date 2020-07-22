@@ -6,7 +6,7 @@ package config
 import (
 	"strconv"
 
-	"github.com/munbot/master/config/parser"
+	"github.com/munbot/master/config/internal/parser"
 	"github.com/munbot/master/log"
 )
 

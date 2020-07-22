@@ -9,7 +9,7 @@ import (
 	"io/ioutil"
 	"os"
 
-	"github.com/munbot/master/config/parser"
+	"github.com/munbot/master/config/internal/parser"
 	"github.com/munbot/master/config/value"
 	"github.com/munbot/master/log"
 	"github.com/munbot/master/profile"
@@ -33,6 +33,14 @@ var handler *parser.Config
 
 func init() {
 	handler = parser.New()
+}
+
+func Parse(filter string) map[string]string {
+	return parser.Parse(handler, filter)
+}
+
+func Update(option, newval string) error {
+	return parser.Update(handler, option, newval)
 }
 
 type dumpFunc func() ([]byte, error)
