@@ -28,6 +28,9 @@ func (s *Section) HasOption(name string) bool {
 
 // Get returns the evalualed (${var} expanded) content for the named option.
 func (s *Section) Get(name string) string {
+	if !s.HasOption(name) && s.name != "default" {
+		return s.h.Get("default", name)
+	}
 	return s.h.Get(s.name, name)
 }
 
