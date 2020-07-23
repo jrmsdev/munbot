@@ -1,6 +1,7 @@
 // Copyright (c) Jeremías Casteglione <jrmsdev@gmail.com>
 // See LICENSE file.
 
+// Package log provides the logger functionalities.
 package log
 
 import (

@@ -1,6 +1,7 @@
 // Copyright (c) Jeremías Casteglione <jrmsdev@gmail.com>
 // See LICENSE file.
 
+// Package version holds the running version information.
 package version
 
 import (
