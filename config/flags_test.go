@@ -26,7 +26,7 @@ func (s *Suite) TestFlagsParse() {
 	f.parse(c)
 	s.False(f.Debug, "default debug")
 	s.Equal("default", f.Profile, "default profile")
-	s.Equal("127.0.0.1", f.ApiAddr, "default api.addr")
+	s.Equal("ECFGMISS:default.netaddr", f.ApiAddr, "default api.addr")
 }
 
 func (s *Suite) TestFlagsDefaults() {
@@ -38,4 +38,5 @@ func (s *Suite) TestFlagsDefaults() {
 	s.False(f.Debug, "default debug")
 	s.Equal("default", f.Profile, "default profile")
 	s.Equal("0.0.0.0", f.ApiAddr, "default api.addr")
+	s.Equal(int(6492), f.ApiPort, "default api.port")
 }
