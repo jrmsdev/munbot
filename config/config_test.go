@@ -59,8 +59,8 @@ func (s *Suite) TearDownTest() {
 	s.fs = nil
 	mock.SetDefaultFilesystem()
 	s.profile = nil
-	handler = nil
-	handler = parser.New()
+	__handler = nil
+	__handler = parser.New()
 }
 
 func (s *Suite) TestLoad() {

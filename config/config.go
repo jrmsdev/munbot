@@ -34,10 +34,10 @@ var Defaults value.DB = value.DB{
 	},
 }
 
-var handler *parser.Config
+var __handler *parser.Config
 
 func init() {
-	handler = parser.New()
+	__handler = parser.New()
 }
 
 // Parse returns a map with section.option as keys with their respective values
@@ -45,26 +45,26 @@ func init() {
 // the prefix of the values to filter. In example, if filter is "master", only
 // values from master section ("master.*") will be returned.
 func Parse(filter string) map[string]string {
-	return parser.Parse(handler, filter)
+	return parser.Parse(__handler, filter)
 }
 
 // Update updates section.option on the global parser object with the new
 // provided value. If section.option does not exists already, an error is
 // returned.
 func Update(option, newval string) error {
-	return parser.Update(handler, option, newval)
+	return parser.Update(__handler, option, newval)
 }
 
 // Set sets section.option with provided value. It's an error if the option
 // already exists.
 func Set(option, val string) error {
-	return parser.Set(handler, option, val)
+	return parser.Set(__handler, option, val)
 }
 
 // SetOrUpdate sets config section.option with provided value or updates it if
 // already exists.
 func SetOrUpdate(option, val string) {
-	parser.SetOrUpdate(handler, option, val)
+	parser.SetOrUpdate(__handler, option, val)
 }
 
 type dumpFunc func() ([]byte, error)
@@ -79,7 +79,7 @@ type Config struct {
 // New creates a new Config object with the global handler attached to it. So
 // _ALL_ instances will work on the same data.
 func New() *Config {
-	return &Config{h: handler, dump: handler.Dump}
+	return &Config{h: __handler, dump: __handler.Dump}
 }
 
 // Copy creates a new Config object with a copy of the source handler, so
@@ -93,7 +93,7 @@ func (c *Config) Copy() *Config {
 // SetDefaults set the values from the Defaults global variable. If a section
 // already exists, it will be overriden.
 func (c *Config) SetDefaults() {
-	handler.SetDefaults(Defaults)
+	c.h.SetDefaults(Defaults)
 }
 
 // Load reads the configuration files from the provided profile.
@@ -126,7 +126,7 @@ func (c *Config) Read(r io.Reader) error {
 	if err != nil {
 		return err
 	}
-	return handler.Load(blob)
+	return c.h.Load(blob)
 }
 
 // Save writes configuration to the provided profile.
@@ -154,22 +154,22 @@ func (c *Config) Write(w io.Writer) error {
 
 // HasOption checks if option exists in section.
 func (c *Config) HasOption(section, option string) bool {
-	return handler.HasOption(section, option)
+	return c.h.HasOption(section, option)
 }
 
 // HasSection checks if the section exists in the global parser.
 func (c *Config) HasSection(name string) bool {
-	return handler.HasSection(name)
+	return c.h.HasSection(name)
 }
 
 // Section creates a new Section object with its named section data attached to
 // it. If the section name does not exists, "default" is used.
 func (c *Config) Section(name string) *Section {
-	if !handler.HasSection(name) {
+	if !c.h.HasSection(name) {
 		// TODO: debug log about missing section?
 		name = "default"
 	}
-	return &Section{name, handler}
+	return &Section{name, c.h}
 }
 
 // FlagSet sets the configurable flags to the provided flags handler.
