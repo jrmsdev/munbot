@@ -20,6 +20,17 @@ func New() *Config {
 	return &Config{db: make(value.DB)}
 }
 
+func (c *Config) Copy() *Config {
+	db := value.DB{}
+	for s, l := range c.db {
+		db[s] = value.Map{}
+		for k, v := range l {
+			db[s][k] = v
+		}
+	}
+	return &Config{db: db}
+}
+
 func (c *Config) SetDefaults(src value.DB) {
 	for k, v := range src {
 		c.db[k] = v

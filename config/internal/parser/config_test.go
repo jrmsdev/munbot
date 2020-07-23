@@ -92,3 +92,17 @@ func TestEval(t *testing.T) {
 	c.assert.Equal("ECFGLOOP:test.loop7", c.test.Get("test", "loop6"), "test loop6")
 	c.assert.Equal("ECFGLOOP:test.loop5", c.test.Get("test", "loop7"), "test loop7")
 }
+
+func TestCopy(t *testing.T) {
+	c := newTestCfg(t)
+	c.setDefaults()
+	ct := c.test
+	ct2 := ct.Copy()
+	c.assert.Equal("munbot", ct.Get("master", "name"), "config val")
+	c.assert.Equal("munbot", ct2.Get("master", "name"), "copy val")
+
+	ct.db["master"]["name"] = "ct"
+	ct2.db["master"]["name"] = "ct2"
+	c.assert.Equal("ct", ct.Get("master", "name"), "config val")
+	c.assert.Equal("ct2", ct2.Get("master", "name"), "copy val")
+}

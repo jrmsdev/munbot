@@ -70,13 +70,21 @@ type dumpFunc func() ([]byte, error)
 
 // Config is the main configuration manager.
 type Config struct {
+	h    *parser.Config
 	dump dumpFunc
 }
 
 // New creates a new Config object with the global handler attached to it. So
 // _ALL_ instances will work on the same data.
 func New() *Config {
-	return &Config{dump: handler.Dump}
+	return &Config{h: handler, dump: handler.Dump}
+}
+
+// Copy creates a new Config object with a copy of the source handler, so
+// changes in the new copy object will not affect the global parser.
+func Copy() *Config {
+	h := handler.Copy()
+	return &Config{h: h, dump: h.Dump}
 }
 
 // SetDefaults set the values from the Defaults global variable. If a section
