@@ -11,12 +11,6 @@ import (
 	"github.com/munbot/master/testing/require"
 )
 
-var tdef value.DB = value.DB{
-	"master": value.Map{
-		"name": "munbot",
-	},
-}
-
 var tcfg = []byte(`{"master":{"name":"testing"}}`)
 
 type testCfg struct {
@@ -31,6 +25,11 @@ func newTestCfg(t *testing.T) *testCfg {
 }
 
 func (c *testCfg) setDefaults() {
+	tdef := value.DB{
+		"master": value.Map{
+			"name": "munbot",
+		},
+	}
 	c.test.SetDefaults(tdef)
 }
 
