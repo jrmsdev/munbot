@@ -66,8 +66,8 @@ var evalCfg = `{
 		"name":"testing"
 	},
 	"test": {
-		"master.name": "${master.name}",
-		"alias": "${test.master.name}",
+		"master_name": "${master.name}",
+		"alias": "${test.master_name}",
 		"loop": "${test.loop}",
 		"loop2": "${test.loop}",
 		"loop3": "${test.loop4}",
@@ -82,7 +82,7 @@ func TestEval(t *testing.T) {
 	c := newTestCfg(t)
 	c.loadCfg(evalCfg)
 	c.require.Equal("testing", c.test.Get("master", "name"), "master.name")
-	c.assert.Equal("testing", c.test.Get("test", "master.name"), "test master.name")
+	c.assert.Equal("testing", c.test.Get("test", "master_name"), "test master_name")
 	c.assert.Equal("testing", c.test.Get("test", "alias"), "test alias")
 	c.assert.Equal("ECFGLOOP:test.loop", c.test.Get("test", "loop"), "test loop")
 	c.assert.Equal("ECFGLOOP:test.loop", c.test.Get("test", "loop2"), "test loop2")

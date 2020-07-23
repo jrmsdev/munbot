@@ -7,6 +7,7 @@ import (
 	"errors"
 	"testing"
 
+	"github.com/munbot/master/config/internal/parser"
 	"github.com/munbot/master/profile"
 	"github.com/munbot/master/testing/mock"
 	"github.com/munbot/master/testing/require"
@@ -58,6 +59,8 @@ func (s *Suite) TearDownTest() {
 	s.fs = nil
 	mock.SetDefaultFilesystem()
 	s.profile = nil
+	handler = nil
+	handler = parser.New()
 }
 
 func (s *Suite) TestLoad() {
@@ -161,4 +164,55 @@ func (s *Suite) TestWriteError() {
 	c := New()
 	err := c.Save(s.profile)
 	s.require.EqualError(err, "mock write error", "write error")
+}
+
+func (s *Suite) TestParse() {
+	fh := s.fs.Add("test/config.json")
+	fh.WriteString(`{"test":{"opt":"testing"}}`)
+	c := New()
+	err := c.Load(s.profile)
+	s.require.NoError(err, "load error")
+
+	m := Parse("test")
+	s.Equal(map[string]string{"test.opt": "testing"}, m, "parse map")
+}
+
+func (s *Suite) TestUpdate() {
+	fh := s.fs.Add("test/config.json")
+	fh.WriteString(`{"test":{"opt":"testing"}}`)
+	c := New()
+	err := c.Load(s.profile)
+	s.require.NoError(err, "load error")
+
+	err = Update("noopt", "val")
+	s.Error(err, "update error")
+
+	x := c.Section("test")
+	s.Equal("testing", x.Get("opt"), "testing opt")
+
+	err = Update("test.opt", "newval")
+	s.require.NoError(err, "update error")
+	s.Equal("newval", x.Get("opt"), "testing opt new val")
+}
+
+func (s *Suite) TestSet() {
+	err := Set("test.opt", "testing")
+	s.require.NoError(err, "set error")
+
+	err = Set("test.opt", "error")
+	s.require.Error(err, "set exist error")
+}
+
+func (s *Suite) TestSetOrUpdate() {
+	c := New()
+	SetOrUpdate("test.opt", "testing")
+
+	x := c.Section("test")
+	s.Equal("testing", x.Get("opt"), "testing opt")
+
+	SetOrUpdate("test.opt", "newval")
+	s.Equal("newval", x.Get("opt"), "testing opt new val")
+
+	SetOrUpdate("test.newopt", "testing")
+	s.Equal("testing", x.Get("newopt"), "testing new opt val")
 }

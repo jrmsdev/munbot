@@ -24,10 +24,12 @@ var Defaults value.DB = value.DB{
 		"name":   "munbot",
 	},
 	"master": value.Map{
-		"name":       "${default.name}",
-		"api.enable": "true",
-		"api.addr":   "0.0.0.0",
-		"api.port":   "6492",
+		"name": "${default.name}",
+	},
+	"master.api": value.Map{
+		"enable": "true",
+		"addr":   "0.0.0.0",
+		"port":   "6492",
 	},
 }
 

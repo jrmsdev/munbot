@@ -87,24 +87,7 @@ func (c *Config) expand() func(string) string {
 func (c *Config) getSectOpt(option string) (string, string) {
 	i := strings.Split(option, ".")
 	ilen := len(i)
+	sect := strings.Join(i[0:ilen-1], ".")
 	opt := i[ilen-1]
-	sect := c.checkSection(i[0 : ilen-1])
-	if sect == "" {
-		for j := ilen - 2; j > 0; j-- {
-			sect = c.checkSection(i[0:j])
-			opt = fmt.Sprintf("%s.%s", i[j], opt)
-			if sect != "" {
-				break
-			}
-		}
-	}
 	return sect, opt
-}
-
-func (c *Config) checkSection(args []string) string {
-	n := strings.Join(args, ".")
-	if c.HasSection(n) {
-		return n
-	}
-	return ""
 }
