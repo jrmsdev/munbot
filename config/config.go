@@ -52,6 +52,18 @@ func Update(option, newval string) error {
 	return parser.Update(handler, option, newval)
 }
 
+// Set sets section.option with provided value. It's an error if the option
+// already exists.
+func Set(option, val string) error {
+	return parser.Set(handler, option, val)
+}
+
+// SetOrUpdate sets config section.option with provided value or updates it if
+// already exists.
+func SetOrUpdate(option, val string) {
+	parser.SetOrUpdate(handler, option, val)
+}
+
 type dumpFunc func() ([]byte, error)
 
 // Config is the main configuration manager.
