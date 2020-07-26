@@ -59,6 +59,9 @@ func (m *Main) Run(args []string) int {
 		option := args[0]
 		newval := args[1]
 		return m.edit(option, newval)
+	} else if alen > 2 {
+		log.Errorf("invalid arguments: %v", args)
+		return 1
 	}
 	return m.list(filter)
 }
