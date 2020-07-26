@@ -5,7 +5,6 @@
 package config
 
 import (
-	"flag"
 	"fmt"
 	"io"
 	"io/ioutil"
@@ -71,9 +70,8 @@ type dumpFunc func() ([]byte, error)
 
 // Config is the main configuration manager.
 type Config struct {
-	h     *parser.Config
-	dump  dumpFunc
-	flags *Flags
+	h    *parser.Config
+	dump dumpFunc
 }
 
 // New creates a new Config object with the global handler attached to it. So
@@ -86,7 +84,6 @@ func New() *Config {
 // changes in the new copy object will not affect the global parser.
 func (c *Config) Copy() *Config {
 	h := c.h.Copy()
-	// FIXME: should c.flags.Copy()
 	return &Config{h: h, dump: h.Dump}
 }
 
@@ -170,23 +167,4 @@ func (c *Config) Section(name string) *Section {
 		name = "default"
 	}
 	return &Section{name, c.h}
-}
-
-// FlagSet sets the configurable flags to the provided flags handler.
-func (c *Config) FlagSet(fs *flag.FlagSet) {
-	c.flags = nil
-	c.flags = new(Flags)
-	c.flags.set(fs)
-}
-
-// Flags parses the flags and returns a pointer to them. Flags that were not
-// set via the flags handler (cmd args usually) are set with their respective
-// values from the configuration. Only if the parser was previously set of
-// course. Otherwise flags will have their (Go) default values.
-func (c *Config) Flags() *Flags {
-	if c.flags == nil {
-		return new(Flags)
-	}
-	c.flags.parse(c)
-	return c.flags
 }

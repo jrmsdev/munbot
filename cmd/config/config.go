@@ -6,8 +6,8 @@ package config
 import (
 	"flag"
 
-	"github.com/munbot/master"
 	"github.com/munbot/master/cmd"
+	"github.com/munbot/master/config"
 )
 
 type Cmd struct {
@@ -20,7 +20,7 @@ func New() *Cmd {
 func (c *Cmd) FlagSet(fs *flag.FlagSet) {
 }
 
-func (c *Cmd) Command(flags *master.Flags) cmd.Command {
+func (c *Cmd) Command(flags *config.Flags) cmd.Command {
 	return &Main{}
 }
 

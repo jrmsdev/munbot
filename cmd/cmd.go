@@ -8,7 +8,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/munbot/master"
+	"github.com/munbot/master/config"
 )
 
 type Command interface {
@@ -17,7 +17,7 @@ type Command interface {
 
 type Builder interface {
 	FlagSet(fs *flag.FlagSet)
-	Command(flags *master.Flags) Command
+	Command(flags *config.Flags) Command
 }
 
 type Main struct {
@@ -26,7 +26,7 @@ type Main struct {
 	subcmd map[string]Builder
 	fs     *flag.FlagSet
 	subfs  map[string]*flag.FlagSet
-	flags  *master.Flags
+	flags  *config.Flags
 }
 
 var flagsErrorHandler flag.ErrorHandling
@@ -37,7 +37,7 @@ func init() {
 
 func New(name string, main Builder) *Main {
 	fs := flag.NewFlagSet(name, flagsErrorHandler)
-	flags := new(master.Flags)
+	flags := new(config.Flags)
 	flags.Set(fs)
 	main.FlagSet(fs)
 	return &Main{
