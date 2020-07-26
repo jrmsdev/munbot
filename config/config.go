@@ -21,16 +21,16 @@ import (
 // Defaults contains the values that will be used by Config.SetDefaults().
 var Defaults value.DB = value.DB{
 	"default": value.Map{
-		"enable": "false",
-		"netaddr":   "127.0.0.1",
-		"netport":   "6492",
+		"enable":  "false",
+		"netaddr": "127.0.0.1",
+		"netport": "6492",
 	},
 	"master": value.Map{
 		"name": "munbot",
 	},
 	"master.api": value.Map{
-		"enable": "true",
-		"netaddr":   "0.0.0.0",
+		"enable":  "true",
+		"netaddr": "0.0.0.0",
 	},
 }
 
@@ -71,8 +71,8 @@ type dumpFunc func() ([]byte, error)
 
 // Config is the main configuration manager.
 type Config struct {
-	h    *parser.Config
-	dump dumpFunc
+	h     *parser.Config
+	dump  dumpFunc
 	flags *Flags
 }
 

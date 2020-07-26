@@ -24,7 +24,7 @@ BUILD_INFO="${BUILD_INFO} -X ${imp}.buildArch=$(go env GOARCH)"
 BUILD_INFO="${BUILD_INFO} -X ${imp}.buildTags=${TAGS}"
 build_cmds=${SRC}
 if test 'all' = "${build_cmds}"; then
-	build_cmds='munbot munbot-config'
+	build_cmds='mbcfg'
 fi
 for cmd in ${build_cmds}; do
 	go build -v -mod vendor -i -o ./_build/cmd/${cmd}.bin $@ -tags "${TAGS}" \

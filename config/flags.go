@@ -9,7 +9,7 @@ import (
 
 // Flags holds some configuration settings that can be overriden from cmd args.
 type Flags struct {
-	Debug bool
+	Debug   bool
 	Profile string
 	ApiAddr string
 	ApiPort int
