@@ -26,9 +26,11 @@ type Main struct {
 }
 
 var flagsErrorHandler flag.ErrorHandling
+var osExit func(int)
 
 func init() {
 	flagsErrorHandler = flag.ExitOnError
+	osExit = os.Exit
 }
 
 func New(name string, main Builder) *Main {
@@ -69,9 +71,12 @@ func (m *Main) Main(args []string) {
 	build.FlagSet(fs)
 	fs.Parse(cmdargs)
 	if err := flags.Parse(); err != nil {
-		os.Exit(1)
+		osExit(1)
 	}
 	cmd := build.Command(flags)
+	if cmd == nil {
+		osExit(9)
+	}
 	rc := cmd.Run(fs.Args())
-	os.Exit(rc)
+	osExit(rc)
 }
