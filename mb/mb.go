@@ -9,16 +9,18 @@ import (
 	//~ "fmt"
 	//~ "sort"
 
+	"github.com/munbot/master"
 	"github.com/munbot/master/cmd"
 	"github.com/munbot/master/config"
-	//~ "github.com/munbot/master/config/profile"
 	//~ "github.com/munbot/master/log"
 )
 
 type Flags struct {
+	Master *master.Flags
 }
 
 func (f *Flags) set(fs *flag.FlagSet) {
+	f.Master.Set(fs)
 	//~ fs.BoolVar(&f.ListAll, "a", false, "list all options")
 	//~ fs.BoolVar(&f.Set, "set", false, "set option instead of updating it")
 	//~ fs.BoolVar(&f.Unset, "unset", false, "unset option from configuration file")
@@ -29,7 +31,7 @@ type Cmd struct {
 }
 
 func New() *Cmd {
-	return &Cmd{flags: &Flags{}}
+	return &Cmd{flags: &Flags{Master: new(master.Flags)}}
 }
 
 func (c *Cmd) FlagSet(fs *flag.FlagSet) {
