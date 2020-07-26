@@ -45,8 +45,13 @@ type Main struct {
 
 func (m *Main) Run(args []string) int {
 	filter := ""
-	if len(args) == 1 {
+	alen := len(args)
+	if alen == 1 {
 		filter = args[0]
+	} else if alen == 2 {
+		option := args[0]
+		newval := args[1]
+		return m.edit(option, newval)
 	}
 	return m.list(filter)
 }
@@ -79,4 +84,15 @@ func (m *Main) sort(n map[string]string) []string {
 	}
 	sort.Strings(l)
 	return l
+}
+
+func (m *Main) edit(option, newval string) int {
+	cfg := config.New()
+	p := config.NewParser(cfg)
+	p.SetOrUpdate(option, newval)
+	if err := cfg.Save(m.profile); err != nil {
+		log.Error(err)
+		return 1
+	}
+	return 0
 }
