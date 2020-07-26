@@ -12,6 +12,5 @@ import (
 
 func main() {
 	m := cmd.New("mbcfg", config.New())
-	m.AddCommand("config", config.New())
 	m.Main(os.Args[1:])
 }

@@ -21,11 +21,8 @@ type Builder interface {
 
 type Main struct {
 	name   string
-	build  Builder
+	main   Builder
 	subcmd map[string]Builder
-	fs     *flag.FlagSet
-	subfs  map[string]*flag.FlagSet
-	flags  *config.Flags
 }
 
 var flagsErrorHandler flag.ErrorHandling
@@ -35,51 +32,46 @@ func init() {
 }
 
 func New(name string, main Builder) *Main {
-	fs := flag.NewFlagSet(name, flagsErrorHandler)
-	flags := new(config.Flags)
-	flags.Set(fs)
-	main.FlagSet(fs)
 	return &Main{
 		name:   name,
-		build:  main,
+		main:  main,
 		subcmd: make(map[string]Builder),
-		fs:     fs,
-		subfs:  make(map[string]*flag.FlagSet),
-		flags:  flags,
 	}
 }
 
 func (m *Main) AddCommand(name string, b Builder) {
 	// TODO: panic if command already exists?
-	fs := flag.NewFlagSet(name, flagsErrorHandler)
-	m.flags.Set(fs)
-	b.FlagSet(fs)
-	m.subfs[name] = fs
 	m.subcmd[name] = b
 }
 
 func (m *Main) Main(args []string) {
-	var build Builder
-	var action string
-	var fs *flag.FlagSet
-	var cmdargs []string
+	var (
+		action string
+		build Builder
+		cmdargs []string
+		progname string
+	)
 	if len(args) >= 1 {
 		action = args[0]
 	}
 	if b, ok := m.subcmd[action]; ok {
 		build = b
-		fs = m.subfs[action]
 		cmdargs = args[1:]
+		progname = m.name + "-" + action
 	} else {
-		build = m.build
-		fs = m.fs
+		build = m.main
 		cmdargs = args
+		progname = m.name
 	}
+	fs := flag.NewFlagSet(progname, flagsErrorHandler)
+	flags := new(config.Flags)
+	flags.Set(fs)
+	build.FlagSet(fs)
 	fs.Parse(cmdargs)
-	if err := m.flags.Parse(); err != nil {
+	if err := flags.Parse(); err != nil {
 		os.Exit(1)
 	}
-	cmd := build.Command(m.flags)
-	rc := cmd.Run(cmdargs)
+	cmd := build.Command(flags)
+	rc := cmd.Run(fs.Args())
 	os.Exit(rc)
 }
