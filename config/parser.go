@@ -35,3 +35,8 @@ func (p *Parser) Update(option, newval string) error {
 func (p *Parser) Set(option, val string) error {
 	return parser.Set(p.cfg, option, val)
 }
+
+// Unset removes section.option.
+func (p *Parser) Unset(option string) error {
+	return parser.Unset(p.cfg, option)
+}

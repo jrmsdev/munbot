@@ -35,3 +35,18 @@ func TestSetEmptyOption(t *testing.T) {
 	err := Set(c.test, "test", "opt")
 	c.assert.EqualError(err, "set invalid format: test opt", "set error")
 }
+
+func TestUnset(t *testing.T) {
+	c := newTestCfg(t)
+	err := Unset(c.test, "test.opt")
+	c.require.NoError(err, "unset error")
+	c.require.Equal("ECFGMISS:test.opt", c.test.Get("test", "opt"), "test opt")
+
+	err = Set(c.test, "test.opt", "testing")
+	c.require.NoError(err, "set error")
+	c.require.Equal("testing", c.test.Get("test", "opt"), "test opt")
+
+	err = Unset(c.test, "test.opt")
+	c.require.NoError(err, "unset error")
+	c.require.Equal("ECFGMISS:test.opt", c.test.Get("test", "opt"), "test opt")
+}

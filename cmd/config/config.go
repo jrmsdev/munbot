@@ -17,11 +17,13 @@ import (
 type Flags struct {
 	ListAll bool
 	Set     bool
+	Unset   bool
 }
 
 func (f *Flags) set(fs *flag.FlagSet) {
 	fs.BoolVar(&f.ListAll, "a", false, "list all options")
 	fs.BoolVar(&f.Set, "set", false, "set option instead of updating it")
+	fs.BoolVar(&f.Unset, "unset", false, "unset option from configuration file")
 }
 
 type Cmd struct {
@@ -49,6 +51,9 @@ func (m *Main) Run(args []string) int {
 	filter := ""
 	alen := len(args)
 	if alen == 1 {
+		if m.flags.Unset {
+			return m.edit(args[0], "")
+		}
 		filter = args[0]
 	} else if alen == 2 {
 		option := args[0]
@@ -98,6 +103,8 @@ func (m *Main) edit(option, newval string) int {
 	p := config.NewParser(cfg)
 	if m.flags.Set {
 		err = p.Set(option, newval)
+	} else if m.flags.Unset {
+		err = p.Unset(option)
 	} else {
 		err = p.Update(option, newval)
 	}

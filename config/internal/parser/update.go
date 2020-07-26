@@ -37,3 +37,14 @@ func Set(c *Config, option, val string) error {
 	c.db[sect][opt] = val
 	return nil
 }
+
+func Unset(c *Config, option string) error {
+	sect, opt := c.getSectOpt(option)
+	if opt == "" {
+		return fmt.Errorf("unset invalid option: %s", option)
+	}
+	if c.HasOption(sect, opt) {
+		delete(c.db[sect], opt)
+	}
+	return nil
+}
