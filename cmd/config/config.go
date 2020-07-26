@@ -16,10 +16,12 @@ import (
 
 type Flags struct {
 	ListAll bool
+	Set     bool
 }
 
 func (f *Flags) set(fs *flag.FlagSet) {
 	fs.BoolVar(&f.ListAll, "a", false, "list all options")
+	fs.BoolVar(&f.Set, "set", false, "set option instead of updating it")
 }
 
 type Cmd struct {
@@ -87,9 +89,19 @@ func (m *Main) sort(n map[string]string) []string {
 }
 
 func (m *Main) edit(option, newval string) int {
+	var err error
 	cfg := config.New()
+	if err := cfg.Load(m.profile); err != nil {
+		log.Error(err)
+		return 1
+	}
 	p := config.NewParser(cfg)
-	if err := p.Update(option, newval); err != nil {
+	if m.flags.Set {
+		err = p.Set(option, newval)
+	} else {
+		err = p.Update(option, newval)
+	}
+	if err != nil {
 		log.Error(err)
 		return 7
 	}
