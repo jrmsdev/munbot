@@ -5,7 +5,6 @@ package parser
 
 import (
 	"fmt"
-	"sort"
 	"strings"
 )
 
@@ -28,7 +27,6 @@ func listSections(c *Config) []string {
 	for n := range c.db {
 		l = append(l, n)
 	}
-	sort.Strings(l)
 	return l
 }
 
@@ -37,6 +35,5 @@ func listOptions(c *Config, section string) []string {
 	for n := range c.db[section] {
 		l = append(l, n)
 	}
-	sort.Strings(l)
 	return l
 }
