@@ -1,7 +1,8 @@
 // Copyright (c) Jeremías Casteglione <jrmsdev@gmail.com>
 // See LICENSE file.
 
-package config
+// Package mbcfg implements config cmd util.
+package mbcfg
 
 import (
 	"flag"
@@ -43,7 +44,7 @@ func (c *Cmd) Command(flags *config.Flags) cmd.Command {
 }
 
 type Main struct {
-	flags *Flags
+	flags   *Flags
 	profile *profile.Profile
 }
 
