@@ -6,6 +6,7 @@ package config
 import (
 	"flag"
 	"fmt"
+	"sort"
 
 	"github.com/munbot/master/cmd"
 	"github.com/munbot/master/config"
@@ -60,8 +61,18 @@ func (m *Main) list(filter string) int {
 		return 1
 	}
 	p := config.NewParser(cfg)
-	for k, v := range p.Map(filter) {
-		fmt.Printf("%s=%s\n", k, v)
+	pm := p.Map(filter)
+	for _, k := range m.sort(pm) {
+		fmt.Printf("%s=%s\n", k, pm[k])
 	}
 	return 0
+}
+
+func (m *Main) sort(n map[string]string) []string {
+	l := make([]string, 0, len(n))
+	for k := range n {
+		l = append(l, k)
+	}
+	sort.Strings(l)
+	return l
 }
