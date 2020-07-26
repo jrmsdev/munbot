@@ -20,5 +20,6 @@ func (f *Flags) Set(fs *flag.FlagSet) {
 }
 
 // Parse parses the flags.
-func (f *Flags) Parse() {
+func (f *Flags) Parse() error {
+	return nil
 }

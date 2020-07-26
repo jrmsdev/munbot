@@ -27,6 +27,6 @@ func (c *Cmd) Command(flags *config.Flags) cmd.Command {
 type Main struct {
 }
 
-func (m *Main) Run(args []string) error {
-	return nil
+func (m *Main) Run(args []string) int {
+	return 0
 }

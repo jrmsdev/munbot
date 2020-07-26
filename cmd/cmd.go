@@ -5,14 +5,13 @@ package cmd
 
 import (
 	"flag"
-	"fmt"
 	"os"
 
 	"github.com/munbot/master/config"
 )
 
 type Command interface {
-	Run(args []string) error
+	Run(args []string) int
 }
 
 type Builder interface {
@@ -77,10 +76,10 @@ func (m *Main) Main(args []string) {
 		cmdargs = args
 	}
 	fs.Parse(cmdargs)
-	cmd := build.Command(m.flags)
-	err := cmd.Run(cmdargs)
-	if err != nil {
-		fmt.Fprintf(os.Stderr, "%s failed: %v\n", m.name, err)
-		os.Exit(2)
+	if err := m.flags.Parse(); err != nil {
+		os.Exit(1)
 	}
+	cmd := build.Command(m.flags)
+	rc := cmd.Run(cmdargs)
+	os.Exit(rc)
 }
