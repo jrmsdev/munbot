@@ -89,10 +89,13 @@ func (m *Main) sort(n map[string]string) []string {
 func (m *Main) edit(option, newval string) int {
 	cfg := config.New()
 	p := config.NewParser(cfg)
-	p.SetOrUpdate(option, newval)
+	if err := p.Update(option, newval); err != nil {
+		log.Error(err)
+		return 7
+	}
 	if err := cfg.Save(m.profile); err != nil {
 		log.Error(err)
-		return 1
+		return 8
 	}
 	return 0
 }

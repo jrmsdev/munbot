@@ -11,11 +11,14 @@ import (
 
 func Update(c *Config, option, newval string) error {
 	sect, opt := c.getSectOpt(option)
+	if opt == "" {
+		return fmt.Errorf("update invalid format: %s %s", option, newval)
+	}
 	if !c.HasSection(sect) {
-		return fmt.Errorf("invalid section: %s", sect)
+		return fmt.Errorf("update invalid section: %s", sect)
 	}
 	if !c.HasOption(sect, opt) {
-		return fmt.Errorf("%s section invalid option: %s", sect, opt)
+		return fmt.Errorf("update invalid option: %s.%s", sect, opt)
 	}
 	c.db[sect][opt] = newval
 	return nil
@@ -23,19 +26,14 @@ func Update(c *Config, option, newval string) error {
 
 func Set(c *Config, option, val string) error {
 	sect, opt := c.getSectOpt(option)
+	if opt == "" {
+		return fmt.Errorf("set invalid format: %s %s", option, val)
+	}
 	if !c.HasSection(sect) {
 		c.db[sect] = value.Map{}
 	} else if c.HasOption(sect, opt) {
-		return fmt.Errorf("%s.%s option already exists", sect, opt)
+		return fmt.Errorf("set option already exists: %s.%s", sect, opt)
 	}
 	c.db[sect][opt] = val
 	return nil
-}
-
-func SetOrUpdate(c *Config, option, val string) {
-	sect, opt := c.getSectOpt(option)
-	if !c.HasOption(sect, opt) {
-		Set(c, option, val)
-	}
-	Update(c, option, val)
 }

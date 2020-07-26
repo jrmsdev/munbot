@@ -98,7 +98,11 @@ func (c *Config) expand() func(string) string {
 func (c *Config) getSectOpt(option string) (string, string) {
 	i := strings.Split(option, ".")
 	ilen := len(i)
-	sect := strings.Join(i[0:ilen-1], ".")
-	opt := i[ilen-1]
+	sect := option
+	opt := ""
+	if ilen > 1 {
+		sect = strings.Join(i[0:ilen-1], ".")
+		opt = i[ilen-1]
+	}
 	return sect, opt
 }

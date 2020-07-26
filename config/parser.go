@@ -35,9 +35,3 @@ func (p *Parser) Update(option, newval string) error {
 func (p *Parser) Set(option, val string) error {
 	return parser.Set(p.cfg, option, val)
 }
-
-// SetOrUpdate sets config section.option with provided value or updates it if
-// already exists.
-func (p *Parser) SetOrUpdate(option, val string) {
-	parser.SetOrUpdate(p.cfg, option, val)
-}

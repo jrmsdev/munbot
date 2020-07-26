@@ -44,18 +44,3 @@ func (s *Suite) TestSet() {
 	err = p.Set("test.opt", "error")
 	s.require.Error(err, "set exist error")
 }
-
-func (s *Suite) TestSetOrUpdate() {
-	c := New()
-	p := NewParser(c)
-	p.SetOrUpdate("test.opt", "testing")
-
-	x := c.Section("test")
-	s.Equal("testing", x.Get("opt"), "testing opt")
-
-	p.SetOrUpdate("test.opt", "newval")
-	s.Equal("newval", x.Get("opt"), "testing opt new val")
-
-	p.SetOrUpdate("test.newopt", "testing")
-	s.Equal("testing", x.Get("newopt"), "testing new opt val")
-}

@@ -15,9 +15,9 @@ func TestUpdate(t *testing.T) {
 	c.require.NoError(err, "update master.name error")
 	c.assert.Equal("testing", c.test.Get("master", "name"), "master name update")
 	err = Update(c.test, "nosect.opt", "val")
-	c.assert.EqualError(err, "invalid section: nosect", "update error")
+	c.assert.EqualError(err, "update invalid section: nosect", "update error")
 	err = Update(c.test, "master.noopt", "val")
-	c.assert.EqualError(err, "master section invalid option: noopt", "update error")
+	c.assert.EqualError(err, "update invalid option: master.noopt", "update error")
 }
 
 func TestSet(t *testing.T) {
@@ -30,10 +30,8 @@ func TestSet(t *testing.T) {
 	c.assert.Equal("testing", c.test.Get("test", "opt"), "test opt")
 }
 
-func TestSetOrUpdate(t *testing.T) {
+func TestSetEmptyOption(t *testing.T) {
 	c := newTestCfg(t)
-	SetOrUpdate(c.test, "test.opt", "testing")
-	c.assert.Equal("testing", c.test.Get("test", "opt"), "test opt")
-	SetOrUpdate(c.test, "test.opt", "newval")
-	c.assert.Equal("newval", c.test.Get("test", "opt"), "test opt")
+	err := Set(c.test, "test", "opt")
+	c.assert.EqualError(err, "set invalid format: test opt", "set error")
 }
