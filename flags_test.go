@@ -38,7 +38,7 @@ func TestFlagsDefaults(t *testing.T) {
 	f := new(Flags)
 	f.Set(newTestFS())
 	c := config.New()
-	c.SetDefaults()
+	c.SetDefaults(config.Defaults)
 	f.Parse(c)
 	assert.Equal("0.0.0.0", f.ApiAddr, "default api.addr")
 	assert.Equal(int(6492), f.ApiPort, "default api.port")

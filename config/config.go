@@ -53,8 +53,8 @@ func New() *Config {
 	return &Config{h: __handler, dump: __handler.Dump}
 }
 
-// Copy creates a new Config object with a copy of the source handler, so
-// changes in the new copy object will not affect the global parser.
+// Copy creates a new Config object with a copy of the data handler, so
+// we can detach from the global parser.
 func (c *Config) Copy() *Config {
 	h := c.h.Copy()
 	return &Config{h: h, dump: h.Dump}
@@ -62,8 +62,8 @@ func (c *Config) Copy() *Config {
 
 // SetDefaults set the values from the Defaults global variable. If a section
 // already exists, it will be overriden.
-func (c *Config) SetDefaults() {
-	c.h.SetDefaults(Defaults)
+func (c *Config) SetDefaults(v value.DB) {
+	c.h.SetDefaults(v)
 }
 
 // Load reads the configuration files from the provided profile.

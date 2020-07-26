@@ -14,24 +14,6 @@ import (
 	"github.com/munbot/master/testing/suite"
 )
 
-//~ var defcfg parser.DB = parser.DB{
-//~ "master": parser.Map{
-//~ "name": "munbot",
-//~ },
-//~ "master.api": parser.Map{
-//~ "enable": "true",
-//~ "addr":   "0.0.0.0",
-//~ "port":   "6492",
-//~ },
-//~ }
-
-//~ func TestDefaults(t *testing.T) {
-//~ require := require.New(t)
-//~ c := New()
-//~ c.SetDefaults()
-//~ require.Equal(defcfg, c.Munbot, "default config")
-//~ }
-
 type Suite struct {
 	*suite.Suite
 	fs      *mock.Filesystem
@@ -100,7 +82,7 @@ func (s *Suite) TestOpenError() {
 
 func (s *Suite) TestLoadOverride() {
 	c := New()
-	c.SetDefaults()
+	c.SetDefaults(Defaults)
 	//~ s.require.Equal("munbot", c.Munbot.Master.Name, "master name")
 
 	// config file overrides system file
