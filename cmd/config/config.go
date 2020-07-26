@@ -62,8 +62,12 @@ func (m *Main) list(filter string) int {
 	}
 	p := config.NewParser(cfg)
 	pm := p.Map(filter)
-	for _, k := range m.sort(pm) {
-		fmt.Printf("%s=%s\n", k, pm[k])
+	if v, ok := pm[filter]; ok {
+		fmt.Printf("%s\n", v)
+	} else {
+		for _, k := range m.sort(pm) {
+			fmt.Printf("%s=%s\n", k, pm[k])
+		}
 	}
 	return 0
 }
