@@ -11,9 +11,9 @@ import (
 	"os"
 
 	"github.com/munbot/master/config/internal/parser"
+	"github.com/munbot/master/config/profile"
 	"github.com/munbot/master/config/value"
 	"github.com/munbot/master/log"
-	"github.com/munbot/master/profile"
 	"github.com/munbot/master/vfs"
 )
 

@@ -11,10 +11,12 @@ import (
 
 // Flags holds some configuration settings that can be overriden from cmd args.
 type Flags struct {
-	Debug   bool
-	Quiet   bool
-	Verbose bool
-	Profile string
+	Debug     bool
+	Quiet     bool
+	Verbose   bool
+	Profile   string
+	Config    string
+	ConfigDir string
 }
 
 // Set sets the flags to the provided handler.

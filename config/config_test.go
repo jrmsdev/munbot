@@ -8,7 +8,7 @@ import (
 	"testing"
 
 	"github.com/munbot/master/config/internal/parser"
-	"github.com/munbot/master/profile"
+	"github.com/munbot/master/config/profile"
 	"github.com/munbot/master/testing/mock"
 	"github.com/munbot/master/testing/require"
 	"github.com/munbot/master/testing/suite"
