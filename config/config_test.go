@@ -30,7 +30,7 @@ func (s *Suite) SetupTest() {
 	s.fs = mock.NewFilesystem("test/config.json")
 	mock.SetFilesystem(s.fs)
 	s.profile = profile.New("testing")
-	s.profile.ConfigFilename = "config.json"
+	s.profile.Config = "config.json"
 	s.profile.ConfigDir = "test"
 	s.profile.ConfigSysDir = "sys"
 	s.profile.ConfigDistDir = "dist"
@@ -67,7 +67,7 @@ func (s *Suite) TestReadJSONError() {
 }
 
 func (s *Suite) TestLoadFileNotExist() {
-	s.profile.ConfigFilename = "nofile.txt"
+	s.profile.Config = "nofile.txt"
 	c := New()
 	err := c.Load(s.profile)
 	s.require.NoError(err, "read file not exist")

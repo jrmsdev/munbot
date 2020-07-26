@@ -23,11 +23,16 @@ func init() {
 
 // Profile holds the profile settings.
 type Profile struct {
-	Name           string
-	ConfigFilename string
-	ConfigDir      string
-	ConfigSysDir   string
-	ConfigDistDir  string
+	Name          string
+	Config        string
+	ConfigDir     string
+	ConfigSysDir  string
+	ConfigDistDir string
+}
+
+// New creates a new object with defaults values set.
+func New(name string) *Profile {
+	return setDefaults(&Profile{Name: name})
 }
 
 func setDefaults(p *Profile) *Profile {
@@ -41,23 +46,18 @@ func setDefaults(p *Profile) *Profile {
 	} else {
 		configDir = filepath.Join(configDir, "munbot")
 	}
-	p.ConfigFilename = "config.json"
+	p.Config = "config.json"
 	p.ConfigDir = configDir
 	p.ConfigSysDir = filepath.FromSlash("/usr/local/etc/munbot")
 	p.ConfigDistDir = filepath.FromSlash("/etc/munbot")
 	return p
 }
 
-// New creates a new object with defaults values set.
-func New(name string) *Profile {
-	return setDefaults(&Profile{Name: name})
-}
-
 // GetConfigFile returns the absolute filename of the configuration file for the
 // current os user. This is the filename used to save configuration updates.
 func (p *Profile) GetConfigFile() string {
 	cfgDir := filepath.Clean(p.ConfigDir)
-	return filepath.Join(cfgDir, p.Name, p.ConfigFilename)
+	return filepath.Join(cfgDir, p.Name, p.Config)
 }
 
 // ListConfigFiles returns a list of all the profiled filenames to read the
@@ -66,16 +66,16 @@ func (p *Profile) ListConfigFiles() []string {
 	l := make([]string, 0)
 	if p.ConfigSysDir != "" {
 		sysDir := filepath.Clean(p.ConfigSysDir)
-		l = append(l, filepath.Join(sysDir, p.ConfigFilename))
-		l = append(l, filepath.Join(sysDir, p.Name, p.ConfigFilename))
+		l = append(l, filepath.Join(sysDir, p.Config))
+		l = append(l, filepath.Join(sysDir, p.Name, p.Config))
 	}
 	cfgDir := filepath.Clean(p.ConfigDir)
-	l = append(l, filepath.Join(cfgDir, p.ConfigFilename))
-	l = append(l, filepath.Join(cfgDir, p.Name, p.ConfigFilename))
+	l = append(l, filepath.Join(cfgDir, p.Config))
+	l = append(l, filepath.Join(cfgDir, p.Name, p.Config))
 	if p.ConfigDistDir != "" {
 		distDir := filepath.Clean(p.ConfigDistDir)
-		l = append(l, filepath.Join(distDir, p.ConfigFilename))
-		l = append(l, filepath.Join(distDir, p.Name, p.ConfigFilename))
+		l = append(l, filepath.Join(distDir, p.Config))
+		l = append(l, filepath.Join(distDir, p.Name, p.Config))
 	}
 	return l
 }

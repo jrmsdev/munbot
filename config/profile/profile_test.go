@@ -27,7 +27,7 @@ func TestNewDefaults(t *testing.T) {
 	assert.Equal(filepath.Join(home, "config"), configDir, "config dir")
 	assert.Equal(configDir, p.ConfigDir, "profile config dir")
 	assert.Equal("testing", p.Name, "profile name")
-	assert.Equal("config.json", p.ConfigFilename, "config filename")
+	assert.Equal("config.json", p.Config, "config filename")
 	assert.Equal(filepath.FromSlash("/usr/local/etc/munbot"),
 		p.ConfigSysDir, "config sys dir")
 	assert.Equal(filepath.FromSlash("/etc/munbot"),
