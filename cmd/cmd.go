@@ -36,7 +36,7 @@ func init() {
 func New(name string, main Builder) *Main {
 	return &Main{
 		name:   name,
-		main:  main,
+		main:   main,
 		subcmd: make(map[string]Builder),
 	}
 }
@@ -48,9 +48,9 @@ func (m *Main) AddCommand(name string, b Builder) {
 
 func (m *Main) Main(args []string) {
 	var (
-		action string
-		build Builder
-		cmdargs []string
+		action   string
+		build    Builder
+		cmdargs  []string
 		progname string
 	)
 	if len(args) >= 1 {

@@ -39,33 +39,6 @@ func init() {
 	__handler = parser.New()
 }
 
-// Parse returns a map with section.option as keys with their respective values
-// from the global parser object. The filter string can be empty "" or contain
-// the prefix of the values to filter. In example, if filter is "master", only
-// values from master section ("master.*") will be returned.
-func Parse(filter string) map[string]string {
-	return parser.Parse(__handler, filter)
-}
-
-// Update updates section.option on the global parser object with the new
-// provided value. If section.option does not exists already, an error is
-// returned.
-func Update(option, newval string) error {
-	return parser.Update(__handler, option, newval)
-}
-
-// Set sets section.option with provided value. It's an error if the option
-// already exists.
-func Set(option, val string) error {
-	return parser.Set(__handler, option, val)
-}
-
-// SetOrUpdate sets config section.option with provided value or updates it if
-// already exists.
-func SetOrUpdate(option, val string) {
-	parser.SetOrUpdate(__handler, option, val)
-}
-
 type dumpFunc func() ([]byte, error)
 
 // Config is the main configuration manager.
