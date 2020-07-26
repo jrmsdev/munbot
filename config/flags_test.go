@@ -12,23 +12,20 @@ func newTestFS() *flag.FlagSet {
 }
 
 func (s *Suite) TestFlagsSet() {
-	f := new(Flags)
-	f.Set(newTestFS())
+	f := NewFlags(newTestFS())
 	s.False(f.Debug, "default debug")
 	s.Equal("default", f.Profile, "default profile")
 }
 
 func (s *Suite) TestFlagsParse() {
-	f := new(Flags)
-	f.Set(newTestFS())
+	f := NewFlags(newTestFS())
 	f.Parse()
 	s.False(f.Debug, "default debug")
 	s.Equal("default", f.Profile, "default profile")
 }
 
 func (s *Suite) TestFlagsDefaults() {
-	f := new(Flags)
-	f.Set(newTestFS())
+	f := NewFlags(newTestFS())
 	f.Parse()
 	s.False(f.Debug, "default debug")
 	s.Equal("default", f.Profile, "default profile")

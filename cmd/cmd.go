@@ -66,8 +66,7 @@ func (m *Main) Main(args []string) {
 		progname = m.name
 	}
 	fs := flag.NewFlagSet(progname, flagsErrorHandler)
-	flags := new(config.Flags)
-	flags.Set(fs)
+	flags := config.NewFlags(fs)
 	build.FlagSet(fs)
 	fs.Parse(cmdargs)
 	if err := flags.Parse(); err != nil {

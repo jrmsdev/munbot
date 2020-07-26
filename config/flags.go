@@ -19,12 +19,16 @@ type Flags struct {
 	ConfigDir string
 }
 
-// Set sets the flags to the provided handler.
-func (f *Flags) Set(fs *flag.FlagSet) {
+// NewFlags creates a new Flags object and sets the flags to the provided handler.
+func NewFlags(fs *flag.FlagSet) *Flags {
+	f := &Flags{}
 	fs.BoolVar(&f.Debug, "debug", false, "enable debug settings")
 	fs.BoolVar(&f.Quiet, "q", false, "set quiet mode")
 	fs.BoolVar(&f.Verbose, "v", false, "set verbose mode")
 	fs.StringVar(&f.Profile, "profile", "default", "profile `name`")
+	fs.StringVar(&f.Config, "config", "config.json", "config file `name`")
+	fs.StringVar(&f.ConfigDir, "cfg.dir", "", "config dir `path`")
+	return f
 }
 
 // Parse parses the flags.
