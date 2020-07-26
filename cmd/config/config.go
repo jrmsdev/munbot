@@ -53,7 +53,7 @@ func (m *Main) Run(args []string) int {
 
 func (m *Main) list(filter string) int {
 	cfg := config.New()
-	if m.flags.ListAll {
+	if m.flags.ListAll || filter != "" {
 		cfg.SetDefaults(config.Defaults)
 	}
 	if err := cfg.Load(m.profile); err != nil {
