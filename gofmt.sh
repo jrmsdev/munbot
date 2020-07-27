@@ -2,6 +2,7 @@
 exec gofmt -w -l -s \
 	cmd \
 	config \
+	core \
 	log \
 	mb \
 	state \
