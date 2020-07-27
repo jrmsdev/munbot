@@ -34,13 +34,17 @@ func tryLock(mu *lock.Locker) (string, error) {
 }
 
 type Runtime struct {
-	ctx context.Context
-	mu *lock.Locker
+	ctx  context.Context
+	mu   *lock.Locker
 	uuid string
 }
 
 func NewRuntime(ctx context.Context) *Runtime {
 	return &Runtime{ctx: ctx, mu: lock.New()}
+}
+
+func (rt *Runtime) String() string {
+	return "core.runtime:" + rt.uuid
 }
 
 func (rt *Runtime) Lock() error {

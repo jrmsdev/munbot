@@ -6,9 +6,13 @@ package state
 import (
 	"context"
 	"errors"
+
+	"github.com/munbot/master/core"
+	"github.com/munbot/master/log"
 )
 
 var InitError = errors.New("init: run Master.Configure first")
+var InitDoneError = errors.New("init: runtime already done")
 
 type InitState struct {
 	m   *Machine
@@ -36,6 +40,16 @@ func (s *InitState) Run(ctx context.Context) Status {
 			s.err = InitError
 			return PANIC
 		}
+		if s.m.Runtime != nil {
+			s.err = InitDoneError
+			return ERROR
+		}
+		s.m.Runtime = core.NewRuntime(ctx)
+		if err := s.m.Runtime.Lock(); err != nil {
+			s.err = err
+			return ERROR
+		}
+		log.Debug(s.m.Runtime)
 		s.m.setState(s.m.configure)
 	}
 	return OK

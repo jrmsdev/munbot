@@ -7,6 +7,7 @@ import (
 	"context"
 
 	"github.com/munbot/master/config"
+	"github.com/munbot/master/core"
 	"github.com/munbot/master/log"
 )
 
@@ -15,6 +16,7 @@ type Machine struct {
 	init      State
 	configure State
 	Config    *config.Config
+	Runtime   *core.Runtime
 }
 
 func NewMachine() *Machine {
