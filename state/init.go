@@ -8,7 +8,7 @@ import (
 	"errors"
 )
 
-var InitError = errors.New("init: run Configure first")
+var InitError = errors.New("init: run Master.Configure first")
 
 type InitState struct {
 	m   *Machine
@@ -20,7 +20,7 @@ func newInit(m *Machine) *InitState {
 }
 
 func (s *InitState) String() string {
-	return "InitState"
+	return "Init"
 }
 
 func (s *InitState) Error() error {
@@ -34,8 +34,9 @@ func (s *InitState) Run(ctx context.Context) Status {
 	default:
 		if s.m.Config == nil {
 			s.err = InitError
-			return ERROR
+			return PANIC
 		}
+		s.m.setState(s.m.configure)
 	}
-	return EXIT
+	return OK
 }

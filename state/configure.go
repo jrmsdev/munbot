@@ -20,7 +20,7 @@ func newConfigure(m *Machine) *ConfigureState {
 }
 
 func (s *ConfigureState) String() string {
-	return "ConfigureState"
+	return "Configure"
 }
 
 func (s *ConfigureState) Error() error {
@@ -32,11 +32,6 @@ func (s *ConfigureState) Run(ctx context.Context) Status {
 	case <-ctx.Done():
 		return DONE
 	default:
-		if s.m.Config == nil {
-			s.err = ConfigureError
-			return PANIC
-		}
-		s.m.setState(s.m.init)
 	}
-	return OK
+	return EXIT
 }

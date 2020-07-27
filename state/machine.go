@@ -11,17 +11,17 @@ import (
 )
 
 type Machine struct {
-	configure State
-	init      State
 	st        State
+	init      State
+	configure State
 	Config    *config.Config
 }
 
 func NewMachine() *Machine {
 	m := &Machine{}
-	m.configure = newConfigure(m)
 	m.init = newInit(m)
-	m.setState(m.configure)
+	m.configure = newConfigure(m)
+	m.st = m.init
 	return m
 }
 
