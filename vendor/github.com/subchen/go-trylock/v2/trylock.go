@@ -1,6 +1,7 @@
 package trylock
 
 import (
+	"context"
 	"sync"
 	"sync/atomic"
 	"time"
@@ -9,10 +10,16 @@ import (
 // TryLocker is a RWMutex with trylock support
 type TryLocker interface {
 	// TryLock acquires the write lock without blocking.
+	// On success, returns true. On failure or context cancellation,
+	// returns false.
+	// A nil Context means try and return at once.
+	TryLock(context.Context) bool
+
+	// TryLockTimeout acquires the write lock without blocking.
 	// On success, returns true. On failure or timeout, returns false.
 	// A negative timeout means no timeout.
 	// A zero timeout means try and return at once.
-	TryLock(timeout time.Duration) bool
+	TryLockTimeout(time.Duration) bool
 
 	// Lock locks for writing.
 	// If the lock is already locked for reading or writing, Lock blocks until the lock is available.
@@ -24,9 +31,14 @@ type TryLocker interface {
 
 	// RTryLock acquires the read lock without blocking.
 	// On success, returns true. On failure or timeout, returns false.
+	// A nil Context means try and return at once.
+	RTryLock(context.Context) bool
+
+	// RTryLockTimeout acquires the read lock without blocking.
+	// On success, returns true. On failure or timeout, returns false.
 	// A negative timeout means no timeout.
 	// A zero timeout means try and return at once.
-	RTryLock(timeout time.Duration) bool
+	RTryLockTimeout(time.Duration) bool
 
 	// RLock locks for reading.
 	// If the lock is already locked for writing, RLock blocks until the lock is available.
@@ -62,44 +74,36 @@ func New() TryLocker {
 	}
 }
 
-func (m *trylocker) TryLock(timeout time.Duration) bool {
-	// deadline for timeout
-	deadline := time.Now().Add(timeout)
-
+func (m *trylocker) TryLock(ctx context.Context) bool {
 	for {
 		if atomic.CompareAndSwapInt32(m.state, 0, -1) {
 			// acquire OK
 			return true
+		}
+		if ctx == nil {
+			return false
 		}
 
 		// get broadcast channel
 		ch := m.channel()
 
 		// waiting for broadcast signal or timeout
-		if timeout < 0 {
-			<-ch
-		} else {
-			elapsed := time.Until(deadline)
-			if elapsed <= 0 {
-				// timeout
-				return false
-			}
-
-			select {
-			case <-ch:
-				// wake up to try again
-			case <-time.After(elapsed):
-				// timeout
-				return false
-			}
+		select {
+		case <-ch:
+			// wake up to try again
+		case <-ctx.Done():
+			// timeout
+			return false
 		}
 	}
 }
+func (m *trylocker) TryLockTimeout(d time.Duration) bool {
+	ctx, cancel := context.WithTimeout(context.Background(), d)
+	defer cancel()
+	return m.TryLock(ctx)
+}
 
-func (m *trylocker) RTryLock(timeout time.Duration) bool {
-	// deadline for timeout
-	deadline := time.Now().Add(timeout)
-
+func (m *trylocker) RTryLock(ctx context.Context) bool {
 	for {
 		n := atomic.LoadInt32(m.state)
 		if n >= 0 {
@@ -112,33 +116,27 @@ func (m *trylocker) RTryLock(timeout time.Duration) bool {
 		// get broadcast channel
 		ch := m.channel()
 
-		// Waiting for wake up before trying again.
-		if timeout < 0 {
-			<-ch
-		} else {
-			elapsed := time.Until(deadline)
-			if elapsed <= 0 {
-				// timeout
-				return false
-			}
-
-			select {
-			case <-ch:
-				// wake up to try again
-			case <-time.After(elapsed):
-				// timeout
-				return false
-			}
+		select {
+		case <-ch:
+			// wake up to try again
+		case <-ctx.Done():
+			// timeout
+			return false
 		}
 	}
 }
+func (m *trylocker) RTryLockTimeout(d time.Duration) bool {
+	ctx, cancel := context.WithTimeout(context.Background(), d)
+	defer cancel()
+	return m.RTryLock(ctx)
+}
 
 func (m *trylocker) Lock() {
-	m.TryLock(-1)
+	m.TryLock(context.Background())
 }
 
 func (m *trylocker) RLock() {
-	m.RTryLock(-1)
+	m.RTryLock(context.Background())
 }
 
 func (m *trylocker) Unlock() {

@@ -5,7 +5,7 @@
 package lock
 
 import (
-	"github.com/subchen/go-trylock"
+	"github.com/subchen/go-trylock/v2"
 )
 
 type Locker struct {
