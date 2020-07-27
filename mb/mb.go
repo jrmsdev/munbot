@@ -12,7 +12,7 @@ import (
 	"github.com/munbot/master"
 	"github.com/munbot/master/cmd"
 	"github.com/munbot/master/config"
-	//~ "github.com/munbot/master/log"
+	"github.com/munbot/master/log"
 )
 
 type Flags struct {
@@ -53,9 +53,11 @@ func (m *Main) Run(args []string) int {
 	fmt.Println("api.port", m.flags.Master.ApiPort)
 	mbot := master.New()
 	if err := mbot.Configure(m.cf, m.flags.Master); err != nil {
+		log.Error(err)
 		return 10
 	}
 	if err := mbot.Run(); err != nil {
+		log.Error(err)
 		return 11
 	}
 	return 0

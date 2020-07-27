@@ -4,6 +4,7 @@ exec gofmt -w -l -s \
 	config \
 	log \
 	mb \
+	state \
 	testing \
 	version \
 	vfs

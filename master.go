@@ -6,6 +6,7 @@ package master
 
 import (
 	"github.com/munbot/master/config"
+	"github.com/munbot/master/state"
 	"github.com/munbot/master/version"
 )
 
@@ -15,16 +16,18 @@ func Version() *version.Info {
 }
 
 type Master struct {
+	sm *state.Machine
 }
 
 func New() *Master {
-	return &Master{}
+	return &Master{sm: state.NewMachine()}
 }
 
 func (m *Master) Configure(cf *config.Flags, fl *Flags) error {
+	m.sm.Config = config.New()
 	return nil
 }
 
 func (m *Master) Run() error {
-	return nil
+	return m.sm.Run()
 }
