@@ -51,5 +51,12 @@ func (m *Main) Run(args []string) int {
 	fmt.Println("api.enable", m.flags.Master.ApiEnable)
 	fmt.Println("api.addr", m.flags.Master.ApiAddr)
 	fmt.Println("api.port", m.flags.Master.ApiPort)
+	mbot := master.New()
+	if err := mbot.Configure(m.cf, m.flags.Master); err != nil {
+		return 10
+	}
+	if err := mbot.Run(); err != nil {
+		return 11
+	}
 	return 0
 }
