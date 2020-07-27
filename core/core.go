@@ -6,23 +6,45 @@ package core
 
 import (
 	"context"
+	"errors"
+	"time"
 
-	"github.com/munbot/master/core/lock"
+	"github.com/munbot/master/utils/lock"
+	"github.com/munbot/master/utils/uuid"
 )
 
-var rt *runtime
+type key int
 
-func init() {
-	rt = newRuntime()
+const lockKey key = 0
+
+func lockContext(rt *Runtime) (context.Context, error) {
+	var err error
+	rt.uuid, err = tryLock(rt.mu)
+	if err != nil {
+		return nil, err
+	}
+	return context.WithValue(rt.ctx, lockKey, rt.uuid), nil
 }
 
-type runtime struct {
+func tryLock(mu *lock.Locker) (string, error) {
+	if mu.TryLockTimeout(time.Second) {
+		return uuid.Rand(), nil
+	}
+	return "", errors.New("core lock timeout")
 }
 
-func newRuntime() *runtime {
-	return &runtime{}
+type Runtime struct {
+	ctx context.Context
+	mu *lock.Locker
+	uuid string
 }
 
-func Lock(ctx context.Context) (context.Context, error) {
-	return lock.NewContext(ctx)
+func NewRuntime(ctx context.Context) *Runtime {
+	return &Runtime{ctx: ctx, mu: lock.New()}
+}
+
+func (rt *Runtime) Lock() error {
+	var err error
+	rt.ctx, err = lockContext(rt)
+	return err
 }
