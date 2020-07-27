@@ -4,6 +4,8 @@
 package state
 
 import (
+	"context"
+
 	"github.com/munbot/master/config"
 	"github.com/munbot/master/log"
 )
@@ -28,18 +30,25 @@ func (m *Machine) setState(s State) {
 	m.st = s
 }
 
-func (m *Machine) Run() error {
+func (m *Machine) Run(ctx context.Context) error {
+	var err error
 	rc := OK
 	for rc == OK {
-		n := m.st.String()
-		log.Debugf("%s run", n)
-		rc = m.st.Run()
-		log.Debugf("%s status %s", n, stMap[rc])
+		select {
+		case <-ctx.Done():
+			err = ctx.Err()
+			rc = DONE
+		default:
+			n := m.st.String()
+			log.Debugf("%s run", n)
+			rc = m.st.Run(ctx)
+			log.Debugf("%s status %s", n, stMap[rc])
+		}
 	}
 	if rc == ERROR {
-		return m.st.Error()
+		err = m.st.Error()
 	} else if rc == PANIC {
 		log.Panic(m.st.Error())
 	}
-	return nil
+	return err
 }

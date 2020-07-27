@@ -3,7 +3,10 @@
 
 package state
 
-import "errors"
+import (
+	"context"
+	"errors"
+)
 
 var InitError = errors.New("init: run Configure first")
 
@@ -24,10 +27,15 @@ func (s *InitState) Error() error {
 	return s.err
 }
 
-func (s *InitState) Run() Status {
-	if s.m.Config == nil {
-		s.err = InitError
-		return ERROR
+func (s *InitState) Run(ctx context.Context) Status {
+	select {
+	case <-ctx.Done():
+		return DONE
+	default:
+		if s.m.Config == nil {
+			s.err = InitError
+			return ERROR
+		}
 	}
 	return EXIT
 }

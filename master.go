@@ -5,6 +5,8 @@
 package master
 
 import (
+	"context"
+
 	"github.com/munbot/master/config"
 	"github.com/munbot/master/state"
 	"github.com/munbot/master/version"
@@ -24,7 +26,7 @@ func New() *Master {
 }
 
 func (m *Master) Run() error {
-	return m.sm.Run()
+	return m.sm.Run(context.Background())
 }
 
 func (m *Master) Configure(cf *config.Flags, fl *Flags) error {

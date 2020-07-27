@@ -4,10 +4,15 @@
 // master state machine.
 package state
 
+import (
+	"context"
+)
+
 type Status int
 
 const (
 	OK Status = iota
+	DONE
 	EXIT
 	ERROR
 	PANIC
@@ -15,6 +20,7 @@ const (
 
 var stMap = map[Status]string{
 	OK:    "OK",
+	DONE:  "DONE",
 	EXIT:  "EXIT",
 	ERROR: "ERROR",
 	PANIC: "PANIC",
@@ -22,6 +28,6 @@ var stMap = map[Status]string{
 
 type State interface {
 	Error() error
-	Run() Status
+	Run(context.Context) Status
 	String() string
 }

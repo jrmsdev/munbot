@@ -3,7 +3,10 @@
 
 package state
 
-import "errors"
+import (
+	"context"
+	"errors"
+)
 
 var ConfigureError = errors.New("internal error: run Master.Configure first")
 
@@ -24,11 +27,16 @@ func (s *ConfigureState) Error() error {
 	return s.err
 }
 
-func (s *ConfigureState) Run() Status {
-	if s.m.Config == nil {
-		s.err = ConfigureError
-		return PANIC
+func (s *ConfigureState) Run(ctx context.Context) Status {
+	select {
+	case <-ctx.Done():
+		return DONE
+	default:
+		if s.m.Config == nil {
+			s.err = ConfigureError
+			return PANIC
+		}
+		s.m.setState(s.m.init)
 	}
-	s.m.setState(s.m.init)
 	return OK
 }
