@@ -12,11 +12,12 @@ import (
 )
 
 type Machine struct {
-	st        State
-	init      State
-	configure State
-	Config    *config.Config
-	Runtime   *core.Runtime
+	st          State
+	init        State
+	configure   State
+	Config      *config.Config
+	ConfigFlags *config.Flags
+	Runtime     *core.Runtime
 }
 
 func NewMachine() *Machine {

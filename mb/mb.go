@@ -45,7 +45,7 @@ type Main struct {
 func (m *Main) Run(args []string) int {
 	log.Debugf("munbot version %s", master.Version())
 	mbot := master.New()
-	if err := mbot.Configure(m.cf, m.flags.Master); err != nil {
+	if err := mbot.Init(m.cf, m.flags.Master); err != nil {
 		log.Error(err)
 		return 10
 	}

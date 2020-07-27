@@ -25,15 +25,12 @@ func New() *Master {
 	return &Master{sm: state.NewMachine()}
 }
 
-func (m *Master) Run() error {
-	return m.sm.Run(context.Background())
+func (m *Master) Init(cf *config.Flags, fl *Flags) error {
+	m.sm.Config = config.New()
+	m.sm.ConfigFlags = cf
+	return nil
 }
 
-func (m *Master) Configure(cf *config.Flags, fl *Flags) error {
-	cfg := config.New()
-	if err := cfg.Load(cf.Profile); err != nil {
-		return err
-	}
-	m.sm.Config = cfg
-	return nil
+func (m *Master) Run() error {
+	return m.sm.Run(context.Background())
 }
