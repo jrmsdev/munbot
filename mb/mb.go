@@ -6,7 +6,7 @@ package mb
 
 import (
 	"flag"
-	//~ "fmt"
+	"fmt"
 	//~ "sort"
 
 	"github.com/munbot/master"
@@ -31,7 +31,7 @@ type Cmd struct {
 }
 
 func New() *Cmd {
-	return &Cmd{flags: &Flags{Master: new(master.Flags)}}
+	return &Cmd{flags: &Flags{Master: master.NewFlags()}}
 }
 
 func (c *Cmd) FlagSet(fs *flag.FlagSet) {
@@ -48,5 +48,8 @@ type Main struct {
 }
 
 func (m *Main) Run(args []string) int {
+	fmt.Println("api.enable", m.flags.Master.ApiEnable)
+	fmt.Println("api.addr", m.flags.Master.ApiAddr)
+	fmt.Println("api.port", m.flags.Master.ApiPort)
 	return 0
 }

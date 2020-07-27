@@ -11,12 +11,19 @@ import (
 
 // Flags holds main flags settings.
 type Flags struct {
-	ApiAddr string
-	ApiPort int
+	ApiEnable  bool
+	apiDisable bool
+	ApiAddr    string
+	ApiPort    int
+}
+
+func NewFlags() *Flags {
+	return &Flags{ApiEnable: true}
 }
 
 // Set sets the flags to the provided handler.
 func (f *Flags) Set(fs *flag.FlagSet) {
+	fs.BoolVar(&f.apiDisable, "api.disable", false, "disable api")
 	fs.StringVar(&f.ApiAddr, "api.addr", "", "api tcp `address` to bind to")
 	fs.IntVar(&f.ApiPort, "api.port", 0, "api tcp `port` to bind to")
 }
@@ -28,6 +35,10 @@ func (f *Flags) Parse(c *config.Config) {
 }
 
 func (f *Flags) parseApi(s *config.Section) {
+	f.ApiEnable = s.GetBool("enable")
+	if f.apiDisable {
+		f.ApiEnable = false
+	}
 	if f.ApiAddr == "" {
 		f.ApiAddr = s.Get("netaddr")
 	}
