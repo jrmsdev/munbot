@@ -14,8 +14,8 @@ const (
 )
 
 var stMap = map[Status]string{
-	OK: "OK",
-	EXIT: "EXIT",
+	OK:    "OK",
+	EXIT:  "EXIT",
 	ERROR: "ERROR",
 	PANIC: "PANIC",
 }

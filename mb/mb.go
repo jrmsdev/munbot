@@ -6,8 +6,6 @@ package mb
 
 import (
 	"flag"
-	"fmt"
-	//~ "sort"
 
 	"github.com/munbot/master"
 	"github.com/munbot/master/cmd"
@@ -21,9 +19,6 @@ type Flags struct {
 
 func (f *Flags) set(fs *flag.FlagSet) {
 	f.Master.Set(fs)
-	//~ fs.BoolVar(&f.ListAll, "a", false, "list all options")
-	//~ fs.BoolVar(&f.Set, "set", false, "set option instead of updating it")
-	//~ fs.BoolVar(&f.Unset, "unset", false, "unset option from configuration file")
 }
 
 type Cmd struct {
@@ -48,9 +43,7 @@ type Main struct {
 }
 
 func (m *Main) Run(args []string) int {
-	fmt.Println("api.enable", m.flags.Master.ApiEnable)
-	fmt.Println("api.addr", m.flags.Master.ApiAddr)
-	fmt.Println("api.port", m.flags.Master.ApiPort)
+	log.Debugf("munbot version %s", master.Version())
 	mbot := master.New()
 	if err := mbot.Configure(m.cf, m.flags.Master); err != nil {
 		log.Error(err)

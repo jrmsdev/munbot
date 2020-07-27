@@ -28,6 +28,10 @@ func (m *Master) Run() error {
 }
 
 func (m *Master) Configure(cf *config.Flags, fl *Flags) error {
-	m.sm.Config = config.New()
+	cfg := config.New()
+	if err := cfg.Load(cf.Profile); err != nil {
+		return err
+	}
+	m.sm.Config = cfg
 	return nil
 }
