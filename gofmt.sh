@@ -7,5 +7,6 @@ exec gofmt -w -l -s \
 	mb \
 	state \
 	testing \
+	utils \
 	version \
 	vfs
