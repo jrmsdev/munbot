@@ -8,6 +8,7 @@ import (
 	"context"
 
 	"github.com/munbot/master/config"
+	"github.com/munbot/master/core"
 	"github.com/munbot/master/state"
 	"github.com/munbot/master/version"
 )
@@ -25,9 +26,10 @@ func New() *Master {
 	return &Master{sm: state.NewMachine()}
 }
 
-func (m *Master) Init(cf *config.Flags, fl *Flags) error {
+func (m *Master) Init(cf *config.Flags, fl *core.Flags) error {
 	m.sm.Config = config.New()
 	m.sm.ConfigFlags = cf
+	m.sm.CoreFlags = fl
 	return nil
 }
 

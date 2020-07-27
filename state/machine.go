@@ -17,6 +17,7 @@ type Machine struct {
 	configure   State
 	Config      *config.Config
 	ConfigFlags *config.Flags
+	CoreFlags   *core.Flags
 	Runtime     *core.Runtime
 }
 

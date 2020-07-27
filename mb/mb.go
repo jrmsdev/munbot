@@ -9,28 +9,21 @@ import (
 
 	"github.com/munbot/master"
 	"github.com/munbot/master/cmd"
+	"github.com/munbot/master/core"
 	"github.com/munbot/master/config"
 	"github.com/munbot/master/log"
 )
 
-type Flags struct {
-	Master *master.Flags
-}
-
-func (f *Flags) set(fs *flag.FlagSet) {
-	f.Master.Set(fs)
-}
-
 type Cmd struct {
-	flags *Flags
+	flags *core.Flags
 }
 
 func New() *Cmd {
-	return &Cmd{flags: &Flags{Master: master.NewFlags()}}
+	return &Cmd{flags: core.NewFlags()}
 }
 
 func (c *Cmd) FlagSet(fs *flag.FlagSet) {
-	c.flags.set(fs)
+	c.flags.Set(fs)
 }
 
 func (c *Cmd) Command(flags *config.Flags) cmd.Command {
@@ -38,14 +31,14 @@ func (c *Cmd) Command(flags *config.Flags) cmd.Command {
 }
 
 type Main struct {
-	flags *Flags
+	flags *core.Flags
 	cf    *config.Flags
 }
 
 func (m *Main) Run(args []string) int {
 	log.Debugf("munbot version %s", master.Version())
 	mbot := master.New()
-	if err := mbot.Init(m.cf, m.flags.Master); err != nil {
+	if err := mbot.Init(m.cf, m.flags); err != nil {
 		log.Error(err)
 		return 10
 	}
