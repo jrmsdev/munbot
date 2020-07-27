@@ -16,6 +16,10 @@ func newConfigure(m *Machine) *ConfigureState {
 	return &ConfigureState{m: m}
 }
 
+func (s *ConfigureState) String() string {
+	return "ConfigureState"
+}
+
 func (s *ConfigureState) Error() error {
 	return s.err
 }

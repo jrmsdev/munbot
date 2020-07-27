@@ -23,11 +23,11 @@ func New() *Master {
 	return &Master{sm: state.NewMachine()}
 }
 
+func (m *Master) Run() error {
+	return m.sm.Run()
+}
+
 func (m *Master) Configure(cf *config.Flags, fl *Flags) error {
 	m.sm.Config = config.New()
 	return nil
-}
-
-func (m *Master) Run() error {
-	return m.sm.Run()
 }

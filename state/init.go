@@ -16,6 +16,10 @@ func newInit(m *Machine) *InitState {
 	return &InitState{m: m}
 }
 
+func (s *InitState) String() string {
+	return "InitState"
+}
+
 func (s *InitState) Error() error {
 	return s.err
 }
