@@ -4,6 +4,12 @@
 // Core runtime.
 package core
 
+import (
+	"context"
+
+	"github.com/munbot/master/core/lock"
+)
+
 var rt *runtime
 
 func init() {
@@ -15,4 +21,8 @@ type runtime struct {
 
 func newRuntime() *runtime {
 	return &runtime{}
+}
+
+func Lock(ctx context.Context) (context.Context, error) {
+	return lock.NewContext(ctx)
 }
