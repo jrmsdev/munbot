@@ -5,13 +5,20 @@ package state
 
 import (
 	"context"
+	"time"
 
 	"github.com/munbot/master/config"
 	"github.com/munbot/master/core"
 	"github.com/munbot/master/log"
 )
 
+type hist struct {
+	Time time.Time `json:"time"`
+	State string `json:"state"`
+}
+
 type Machine struct {
+	hist        []*hist
 	st          State
 	init        State
 	configure   State
@@ -24,16 +31,18 @@ type Machine struct {
 
 func NewMachine() *Machine {
 	m := &Machine{}
+	m.hist = make([]*hist, 0)
 	m.init = newInit(m)
 	m.configure = newConfigure(m)
 	m.start = newStart(m)
-	m.st = m.init
+	m.setState(m.init)
 	return m
 }
 
 func (m *Machine) setState(s State) {
 	log.Debugf("%v set %s", m.st, s)
 	m.st = s
+	m.hist = append(m.hist, &hist{time.Now(), s.String()})
 }
 
 func (m *Machine) Run(ctx context.Context) error {
