@@ -19,7 +19,7 @@ func Version() *version.Info {
 }
 
 type Master struct {
-	sm *state.Machine
+	sm state.Machine
 }
 
 func New() *Master {
@@ -27,10 +27,7 @@ func New() *Master {
 }
 
 func (m *Master) Init(cf *config.Flags, fl *core.Flags) error {
-	m.sm.Config = config.New()
-	m.sm.ConfigFlags = cf
-	m.sm.CoreFlags = fl
-	return nil
+	return m.sm.Init(cf, fl)
 }
 
 func (m *Master) Run() error {

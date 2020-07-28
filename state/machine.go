@@ -12,12 +12,17 @@ import (
 	"github.com/munbot/master/log"
 )
 
+type Machine interface {
+	Init(*config.Flags, *core.Flags) error
+	Run(context.Context) error
+}
+
 type hist struct {
 	Time time.Time `json:"time"`
 	State string `json:"state"`
 }
 
-type Machine struct {
+type sm struct {
 	hist        []*hist
 	st          State
 	init        State
@@ -29,8 +34,8 @@ type Machine struct {
 	Runtime     *core.Runtime
 }
 
-func NewMachine() *Machine {
-	m := &Machine{}
+func NewMachine() Machine {
+	m := &sm{}
 	m.hist = make([]*hist, 0)
 	m.init = newInit(m)
 	m.configure = newConfigure(m)
@@ -39,13 +44,20 @@ func NewMachine() *Machine {
 	return m
 }
 
-func (m *Machine) setState(s State) {
+func (m *sm) setState(s State) {
 	log.Debugf("%v set %s", m.st, s)
 	m.st = s
 	m.hist = append(m.hist, &hist{time.Now(), s.String()})
 }
 
-func (m *Machine) Run(ctx context.Context) error {
+func (m *sm) Init(cf *config.Flags, fl *core.Flags) error {
+	m.Config = config.New()
+	m.ConfigFlags = cf
+	m.CoreFlags = fl
+	return nil
+}
+
+func (m *sm) Run(ctx context.Context) error {
 	var err error
 	rc := OK
 	for rc == OK {

@@ -15,11 +15,11 @@ var InitPanic = errors.New("init: run Master.Init first")
 var InitError = errors.New("init: runtime already done")
 
 type InitState struct {
-	m   *Machine
+	m   *sm
 	err error
 }
 
-func newInit(m *Machine) *InitState {
+func newInit(m *sm) *InitState {
 	return &InitState{m: m}
 }
 

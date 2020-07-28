@@ -8,11 +8,11 @@ import (
 )
 
 type StartState struct {
-	m   *Machine
+	m   *sm
 	err error
 }
 
-func newStart(m *Machine) *StartState {
+func newStart(m *sm) *StartState {
 	return &StartState{m: m}
 }
 

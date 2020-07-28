@@ -8,11 +8,11 @@ import (
 )
 
 type XXXState struct {
-	m   *Machine
+	m   *sm
 	err error
 }
 
-func newXXX(m *Machine) *XXXState {
+func newXXX(m *sm) *XXXState {
 	return &XXXState{m: m}
 }
 
