@@ -37,7 +37,6 @@ func (s *ConfigureState) Run(ctx context.Context) Status {
 	default:
 		if err := s.configure(); err != nil {
 			s.err = err
-			log.Error(s.err)
 			return ERROR
 		}
 	}
@@ -47,8 +46,8 @@ func (s *ConfigureState) Run(ctx context.Context) Status {
 func (s *ConfigureState) configure() error {
 	s.m.Config.SetDefaults(config.Defaults)
 	if err := s.m.Config.Load(s.m.ConfigFlags.Profile); err != nil {
-		return err
+		return log.Error(s.err)
 	}
 	s.m.CoreFlags.Parse(s.m.Config)
-	return nil
+	return s.m.Runtime.Configure(s.m.Config, s.m.ConfigFlags, s.m.CoreFlags)
 }

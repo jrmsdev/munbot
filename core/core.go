@@ -9,6 +9,7 @@ import (
 	"errors"
 	"time"
 
+	"github.com/munbot/master/config"
 	"github.com/munbot/master/utils/lock"
 	"github.com/munbot/master/utils/uuid"
 )
@@ -34,9 +35,12 @@ func tryLock(mu *lock.Locker) (string, error) {
 }
 
 type Runtime struct {
-	ctx  context.Context
-	mu   *lock.Locker
-	uuid string
+	ctx      context.Context
+	mu       *lock.Locker
+	uuid     string
+	cfg      *config.Config
+	cfgFlags *config.Flags
+	flags    *Flags
 }
 
 func NewRuntime(ctx context.Context) *Runtime {
@@ -59,4 +63,14 @@ func (rt *Runtime) Lock() error {
 	var err error
 	rt.ctx, err = lockContext(rt)
 	return err
+}
+
+func (rt *Runtime) Configure(cfg *config.Config, cfl *config.Flags, f *Flags) error {
+	if rt.uuid == "" {
+		return errors.New("core runtime not locked")
+	}
+	rt.cfg = cfg
+	rt.cfgFlags = cfl
+	rt.flags = f
+	return nil
 }
