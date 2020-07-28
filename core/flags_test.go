@@ -20,7 +20,7 @@ func TestFlagsSet(t *testing.T) {
 	f := NewFlags()
 	f.Set(newTestFS())
 	assert.Equal("", f.ApiAddr, "default api.addr")
-	assert.Equal(0, f.ApiPort, "default api.port")
+	assert.Equal(uint(0), f.ApiPort, "default api.port")
 }
 
 func TestFlagsParse(t *testing.T) {
@@ -30,7 +30,7 @@ func TestFlagsParse(t *testing.T) {
 	c := config.New()
 	f.Parse(c)
 	assert.Equal("ECFGMISS:default.netaddr", f.ApiAddr, "default api.addr")
-	assert.Equal(int(0), f.ApiPort, "default api.port")
+	assert.Equal(uint(0), f.ApiPort, "default api.port")
 }
 
 func TestFlagsDefaults(t *testing.T) {
@@ -41,5 +41,5 @@ func TestFlagsDefaults(t *testing.T) {
 	c.SetDefaults(config.Defaults)
 	f.Parse(c)
 	assert.Equal("0.0.0.0", f.ApiAddr, "default api.addr")
-	assert.Equal(int(6492), f.ApiPort, "default api.port")
+	assert.Equal(uint(6492), f.ApiPort, "default api.port")
 }

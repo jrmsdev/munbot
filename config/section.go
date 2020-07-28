@@ -56,3 +56,14 @@ func (s *Section) GetInt(name string) int {
 	}
 	return r
 }
+
+// GetUint returns the uint value for the named option.
+// Default value: 0.
+func (s *Section) GetUint(name string) uint {
+	r, err := strconv.ParseUint(s.Get(name), 10, 0)
+	if err != nil {
+		log.Errorf("config option %s.%s parse error: %s", s.name, name, err)
+		return 0
+	}
+	return uint(r)
+}

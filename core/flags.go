@@ -14,7 +14,7 @@ type Flags struct {
 	ApiEnable  bool
 	apiDisable bool
 	ApiAddr    string
-	ApiPort    int
+	ApiPort    uint
 }
 
 func NewFlags() *Flags {
@@ -25,7 +25,7 @@ func NewFlags() *Flags {
 func (f *Flags) Set(fs *flag.FlagSet) {
 	fs.BoolVar(&f.apiDisable, "api.disable", false, "disable api")
 	fs.StringVar(&f.ApiAddr, "api.addr", "", "api tcp `address` to bind to")
-	fs.IntVar(&f.ApiPort, "api.port", 0, "api tcp `port` to bind to")
+	fs.UintVar(&f.ApiPort, "api.port", 0, "api tcp `port` to bind to")
 }
 
 // Parse parses the flags that were not set via the flags handler (cmd args
@@ -43,6 +43,6 @@ func (f *Flags) parseApi(s *config.Section) {
 		f.ApiAddr = s.Get("netaddr")
 	}
 	if f.ApiPort == 0 {
-		f.ApiPort = s.GetInt("netport")
+		f.ApiPort = s.GetUint("netport")
 	}
 }

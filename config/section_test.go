@@ -54,3 +54,15 @@ func (s *Suite) TestSectionGetInt() {
 	s.Equal(int(0), x.GetInt("opt"), "test opt int error")
 	s.Equal(int(128), x.GetInt("opt.int"), "test opt int")
 }
+
+func (s *Suite) TestSectionGetUint() {
+	fh := s.fs.Add("test/config.json")
+	fh.WriteString(`{"test":{"opt":"testing", "opt.uint":"128"}}`)
+	c := New()
+	err := c.Load(s.profile)
+	s.require.NoError(err, "load error")
+	x := c.Section("test")
+
+	s.Equal(uint(0), x.GetUint("opt"), "test opt uint error")
+	s.Equal(uint(128), x.GetUint("opt.uint"), "test opt uint")
+}
