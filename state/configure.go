@@ -12,6 +12,8 @@ import (
 	"github.com/munbot/master/log"
 )
 
+var _ State = &ConfigureState{}
+
 var ConfigureError = errors.New("internal error: run Master.Configure first")
 
 type ConfigureState struct {

@@ -7,6 +7,8 @@ import (
 	"context"
 )
 
+var _ State = &StartState{}
+
 type StartState struct {
 	m   *sm
 	err error

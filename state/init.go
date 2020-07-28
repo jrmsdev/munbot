@@ -11,6 +11,8 @@ import (
 	"github.com/munbot/master/log"
 )
 
+var _ State = &InitState{}
+
 var InitPanic = errors.New("init: run Master.Init first")
 var InitError = errors.New("init: runtime already done")
 

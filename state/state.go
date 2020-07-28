@@ -16,6 +16,7 @@ const (
 	EXIT
 	ERROR
 	PANIC
+	lastStatus // for testing purposes
 )
 
 var stMap = map[Status]string{
