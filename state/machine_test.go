@@ -61,5 +61,50 @@ func (s *MachineSuite) TestRunCtxDone() {
 	s.EqualError(err, "context canceled")
 }
 
+func (s *MachineSuite) TestRunExitNoNewState() {
+	require := s.Require()
+	sm := NewMachine().(*sm)
+	cfg := &config.Flags{}
+	cfl := &core.Flags{}
+	err := sm.Init(cfg, cfl)
+	require.NoError(err)
+
+	st := newMockState()
+	st.ExitStatus = OK
+	sm.st = st
+	err = sm.Run(context.TODO())
+	s.NoError(err)
+}
+
 func (s *MachineSuite) TestRunError() {
+	require := s.Require()
+	sm := NewMachine().(*sm)
+	cfg := &config.Flags{}
+	cfl := &core.Flags{}
+	err := sm.Init(cfg, cfl)
+	require.NoError(err)
+
+	st := newMockState()
+	st.ExitStatus = ERROR
+	sm.st = st
+	err = sm.Run(context.TODO())
+	s.EqualError(err, "mock state error")
+}
+
+func (s *MachineSuite) TestRunPanic() {
+	require := s.Require()
+	sm := NewMachine().(*sm)
+	cfg := &config.Flags{}
+	cfl := &core.Flags{}
+	err := sm.Init(cfg, cfl)
+	require.NoError(err)
+
+	st := newMockState()
+	st.ExitStatus = PANIC
+	sm.st = st
+	f := func() {
+		err := sm.Run(context.TODO())
+		s.EqualError(err, "mock state panic")
+	}
+	s.PanicsWithValue("oops!!", f)
 }

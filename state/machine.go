@@ -26,6 +26,7 @@ type hist struct {
 
 type sm struct {
 	hist        []*hist
+	newst       bool
 	st          State
 	init        State
 	configure   State
@@ -50,6 +51,7 @@ func (m *sm) setState(s State) {
 	log.Debugf("%v set %s", m.st, s)
 	m.st = s
 	m.hist = append(m.hist, &hist{time.Now(), s.String()})
+	m.newst = true
 }
 
 func (m *sm) Init(cf *config.Flags, fl *core.Flags) error {
@@ -68,10 +70,16 @@ func (m *sm) Run(ctx context.Context) error {
 			err = ctx.Err()
 			rc = DONE
 		default:
-			n := m.st.String()
-			log.Debugf("%s run", n)
-			rc = m.st.Run(ctx)
-			log.Debugf("%s status %s", n, stMap[rc])
+			if m.newst {
+				m.newst = false
+				n := m.st.String()
+				log.Debugf("%s run", n)
+				rc = m.st.Run(ctx)
+				log.Debugf("%s status %s", n, stMap[rc])
+			} else {
+				log.Debug("no new state to run... exit!")
+				rc = EXIT
+			}
 		}
 	}
 	if rc == ERROR {
