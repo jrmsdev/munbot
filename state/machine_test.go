@@ -103,8 +103,7 @@ func (s *MachineSuite) TestRunPanic() {
 	st.ExitStatus = PANIC
 	sm.st = st
 	f := func() {
-		err := sm.Run(context.TODO())
-		s.EqualError(err, "mock state panic")
+		sm.Run(context.TODO())
 	}
-	s.PanicsWithValue("oops!!", f)
+	s.PanicsWithError("mock state panic", f)
 }

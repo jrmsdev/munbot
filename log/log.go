@@ -44,13 +44,15 @@ func SetPrefix(name string) {
 }
 
 func Panic(v ...interface{}) {
-	output(cdepth, fmt.Sprintf("[PANIC] %s", fmt.Sprint(v...)))
-	panic("oops!!")
+	err := errors.New(fmt.Sprint(v...))
+	output(cdepth, fmt.Sprintf("[PANIC] %s", err))
+	panic(err)
 }
 
 func Panicf(format string, v ...interface{}) {
-	output(cdepth, fmt.Sprintf("[PANIC] %s", fmt.Sprintf(format, v...)))
-	panic("oops!!")
+	err := errors.New(fmt.Sprintf(format, v...))
+	output(cdepth, fmt.Sprintf("[PANIC] %s", err))
+	panic(err)
 }
 
 func Print(v ...interface{}) {

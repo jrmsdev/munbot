@@ -147,14 +147,14 @@ func (s *Suite) TestPanic() {
 	p := func() {
 		Panic("test")
 	}
-	s.PanicsWithValue("oops!!", p, "log panic")
+	s.PanicsWithError("test", p, "log panic")
 	s.Regexp("\\d\\d \\[PANIC\\] test\n$", s.buf.String(), "panic msg")
 
 	s.buf.Reset()
 	pf := func() {
 		Panicf("te%s", "st")
 	}
-	s.PanicsWithValue("oops!!", pf, "log panicf")
+	s.PanicsWithError("test", pf, "log panicf")
 	s.Regexp("\\d\\d \\[PANIC\\] test\n$", s.buf.String(), "panicf msg")
 }
 
