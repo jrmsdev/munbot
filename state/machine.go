@@ -20,8 +20,8 @@ type Machine interface {
 }
 
 type hist struct {
-	Time time.Time `json:"time"`
-	State string `json:"state"`
+	Time  time.Time `json:"time"`
+	State string    `json:"state"`
 }
 
 type sm struct {
