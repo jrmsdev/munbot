@@ -41,7 +41,8 @@ func (s *ConfigureState) Run(ctx context.Context) Status {
 			return ERROR
 		}
 	}
-	return EXIT
+	s.m.setState(s.m.start)
+	return OK
 }
 
 func (s *ConfigureState) configure() error {

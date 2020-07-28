@@ -1,0 +1,34 @@
+// Copyright (c) Jeremías Casteglione <jrmsdev@gmail.com>
+// See LICENSE file.
+
+package state
+
+import (
+	"context"
+)
+
+type XXXState struct {
+	m   *Machine
+	err error
+}
+
+func newXXX(m *Machine) *XXXState {
+	return &XXXState{m: m}
+}
+
+func (s *XXXState) String() string {
+	return "XXX"
+}
+
+func (s *XXXState) Error() error {
+	return s.err
+}
+
+func (s *XXXState) Run(ctx context.Context) Status {
+	select {
+	case <-ctx.Done():
+		return DONE
+	default:
+	}
+	return EXIT
+}

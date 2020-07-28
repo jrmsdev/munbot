@@ -15,6 +15,7 @@ type Machine struct {
 	st          State
 	init        State
 	configure   State
+	start       State
 	Config      *config.Config
 	ConfigFlags *config.Flags
 	CoreFlags   *core.Flags
@@ -25,6 +26,7 @@ func NewMachine() *Machine {
 	m := &Machine{}
 	m.init = newInit(m)
 	m.configure = newConfigure(m)
+	m.start = newStart(m)
 	m.st = m.init
 	return m
 }
