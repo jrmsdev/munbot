@@ -18,7 +18,7 @@ type key int
 
 const lockKey key = 0
 
-func lockContext(rt *Runtime) (context.Context, error) {
+func lockContext(rt *Core) (context.Context, error) {
 	var err error
 	rt.uuid, err = tryLock(rt.mu)
 	if err != nil {
@@ -34,7 +34,7 @@ func tryLock(mu *lock.Locker) (string, error) {
 	return "", errors.New("core lock timeout")
 }
 
-type Runtime struct {
+type Core struct {
 	ctx      context.Context
 	mu       *lock.Locker
 	uuid     string
@@ -43,29 +43,29 @@ type Runtime struct {
 	flags    *Flags
 }
 
-func NewRuntime(ctx context.Context) *Runtime {
-	return &Runtime{ctx: ctx, mu: lock.New()}
+func NewRuntime(ctx context.Context) Runtime {
+	return &Core{ctx: ctx, mu: lock.New()}
 }
 
-func (rt *Runtime) String() string {
+func (rt *Core) String() string {
 	return "core.runtime:" + rt.uuid
 }
 
-func (rt *Runtime) UUID() string {
+func (rt *Core) UUID() string {
 	return rt.uuid
 }
 
-func (rt *Runtime) Context() context.Context {
+func (rt *Core) Context() context.Context {
 	return rt.ctx
 }
 
-func (rt *Runtime) Lock() error {
+func (rt *Core) Lock() error {
 	var err error
 	rt.ctx, err = lockContext(rt)
 	return err
 }
 
-func (rt *Runtime) Configure(cfg *config.Config, cfl *config.Flags, f *Flags) error {
+func (rt *Core) Configure(cfg *config.Config, cfl *config.Flags, f *Flags) error {
 	if rt.uuid == "" {
 		return errors.New("core runtime not locked")
 	}

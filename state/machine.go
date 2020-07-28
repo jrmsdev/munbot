@@ -34,7 +34,7 @@ type sm struct {
 	Config      *config.Config
 	ConfigFlags *config.Flags
 	CoreFlags   *core.Flags
-	Runtime     *core.Runtime
+	Runtime     core.Runtime
 }
 
 func NewMachine() Machine {
