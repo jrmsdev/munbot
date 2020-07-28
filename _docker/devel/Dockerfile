@@ -32,13 +32,7 @@ RUN apk add --no-cache git \
 RUN printf '\n%%munbot ALL=(ALL) NOPASSWD: ALL\n' >>/etc/sudoers
 
 RUN ln -vs /usr/share/doc/go/doc /usr/lib/go/doc
-RUN mkdir -vp -m 0750 /godoc/vendor/src /godoc/src/github.com/munbot/master \
-	&& chown -vR munbot:munbot /godoc
 
-VOLUME /godoc/vendor/src
-VOLUME /godoc/src/github.com/munbot/master
-
-EXPOSE 9090
 EXPOSE 6060
 EXPOSE 6492
 
@@ -60,8 +54,8 @@ ADD --chown=munbot tmp/go.mod .
 ADD --chown=munbot tmp/go.sum .
 RUN go mod download && rm -vf go.mod go.sum
 
-RUN mkdir -vp -m 0750 /home/munbot/.config/munbot/master/ssl
-VOLUME /home/munbot/.config/munbot/master/ssl
+RUN mkdir -vp -m 0750 /home/munbot/.config/munbot/default/ssl
+VOLUME /home/munbot/.config/munbot/default/ssl
 
 # maybe? go get -u -v github.com/go-bindata/go-bindata/...
 
