@@ -39,11 +39,9 @@ func (m *Main) Run(args []string) int {
 	log.Debugf("munbot version %s", master.Version())
 	mbot := master.New()
 	if err := mbot.Init(m.cf, m.flags); err != nil {
-		log.Error(err)
 		return 10
 	}
 	if err := mbot.Run(); err != nil {
-		log.Error(err)
 		return 11
 	}
 	return 0

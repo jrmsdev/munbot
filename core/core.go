@@ -47,6 +47,14 @@ func (rt *Runtime) String() string {
 	return "core.runtime:" + rt.uuid
 }
 
+func (rt *Runtime) UUID() string {
+	return rt.uuid
+}
+
+func (rt *Runtime) Context() context.Context {
+	return rt.ctx
+}
+
 func (rt *Runtime) Lock() error {
 	var err error
 	rt.ctx, err = lockContext(rt)

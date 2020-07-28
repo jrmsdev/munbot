@@ -6,6 +6,9 @@ package state
 import (
 	"context"
 	"errors"
+
+	"github.com/munbot/master/config"
+	"github.com/munbot/master/log"
 )
 
 var ConfigureError = errors.New("internal error: run Master.Configure first")
@@ -32,6 +35,20 @@ func (s *ConfigureState) Run(ctx context.Context) Status {
 	case <-ctx.Done():
 		return DONE
 	default:
+		if err := s.configure(); err != nil {
+			s.err = err
+			log.Error(s.err)
+			return ERROR
+		}
 	}
 	return EXIT
+}
+
+func (s *ConfigureState) configure() error {
+	s.m.Config.SetDefaults(config.Defaults)
+	if err := s.m.Config.Load(s.m.ConfigFlags.Profile); err != nil {
+		return err
+	}
+	s.m.CoreFlags.Parse(s.m.Config)
+	return nil
 }

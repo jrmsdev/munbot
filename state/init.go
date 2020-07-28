@@ -11,8 +11,8 @@ import (
 	"github.com/munbot/master/log"
 )
 
-var InitError = errors.New("init: run Master.Configure first")
-var InitDoneError = errors.New("init: runtime already done")
+var InitPanic = errors.New("init: run Master.Init first")
+var InitError = errors.New("init: runtime already done")
 
 type InitState struct {
 	m   *Machine
@@ -36,17 +36,20 @@ func (s *InitState) Run(ctx context.Context) Status {
 	case <-ctx.Done():
 		return DONE
 	default:
-		if s.m.Config == nil {
-			s.err = InitError
+		if s.m.Config == nil || s.m.ConfigFlags == nil || s.m.CoreFlags == nil {
+			s.err = InitPanic
+			log.Error(s.err)
 			return PANIC
 		}
 		if s.m.Runtime != nil {
-			s.err = InitDoneError
+			s.err = InitError
+			log.Error(s.err)
 			return ERROR
 		}
 		s.m.Runtime = core.NewRuntime(ctx)
 		if err := s.m.Runtime.Lock(); err != nil {
 			s.err = err
+			log.Error(s.err)
 			return ERROR
 		}
 		log.Debug(s.m.Runtime)
