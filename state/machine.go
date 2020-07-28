@@ -12,6 +12,8 @@ import (
 	"github.com/munbot/master/log"
 )
 
+var _ Machine = &sm{}
+
 type Machine interface {
 	Init(*config.Flags, *core.Flags) error
 	Run(context.Context) error
