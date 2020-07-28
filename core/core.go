@@ -65,7 +65,7 @@ func (rt *Runtime) Lock() error {
 	return err
 }
 
-func Configure(rt *Runtime, cfg *config.Config, cfl *config.Flags, f *Flags) error {
+func (rt *Runtime) Configure(cfg *config.Config, cfl *config.Flags, f *Flags) error {
 	if rt.uuid == "" {
 		return errors.New("core runtime not locked")
 	}

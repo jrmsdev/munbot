@@ -8,7 +8,6 @@ import (
 	"errors"
 
 	"github.com/munbot/master/config"
-	"github.com/munbot/master/core"
 	"github.com/munbot/master/log"
 )
 
@@ -53,5 +52,5 @@ func (s *ConfigureState) configure() error {
 		return log.Error(s.err)
 	}
 	s.m.CoreFlags.Parse(s.m.Config)
-	return core.Configure(s.m.Runtime, s.m.Config, s.m.ConfigFlags, s.m.CoreFlags)
+	return s.m.Runtime.Configure(s.m.Config, s.m.ConfigFlags, s.m.CoreFlags)
 }
