@@ -65,12 +65,17 @@ func (rt *Runtime) Lock() error {
 	return err
 }
 
-func (rt *Runtime) Configure(cfg *config.Config, cfl *config.Flags, f *Flags) error {
+func Configure(rt *Runtime, cfg *config.Config, cfl *config.Flags, f *Flags) error {
 	if rt.uuid == "" {
 		return errors.New("core runtime not locked")
 	}
-	rt.cfg = cfg
-	rt.cfgFlags = cfl
-	rt.flags = f
+	select {
+	case <-rt.ctx.Done():
+		return rt.ctx.Err()
+	default:
+		rt.cfg = cfg
+		rt.cfgFlags = cfl
+		rt.flags = f
+	}
 	return nil
 }
