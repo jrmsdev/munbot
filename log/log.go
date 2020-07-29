@@ -114,3 +114,13 @@ func Warnf(format string, v ...interface{}) {
 		output(cdepth, fmt.Sprintf("[WARNING] %s", fmt.Sprintf(format, v...)))
 	}
 }
+
+func init() {
+	env := os.Getenv("MUNBOT_LOG")
+	switch env {
+	case "debug":
+		DebugEnable()
+	case "quiet":
+		SetQuiet()
+	}
+}
