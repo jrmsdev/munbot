@@ -10,11 +10,11 @@ import (
 var _ State = &StartState{}
 
 type StartState struct {
-	m   *sm
+	m   *SM
 	err error
 }
 
-func newStart(m *sm) *StartState {
+func newStart(m *SM) *StartState {
 	return &StartState{m: m}
 }
 

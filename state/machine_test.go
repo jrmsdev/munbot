@@ -25,7 +25,7 @@ func (s *MachineSuite) SetupTest() {
 }
 
 func (s *MachineSuite) TestNew() {
-	sm := NewMachine().(*sm)
+	sm := NewMachine().(*SM)
 	s.IsType(&InitState{}, sm.init)
 	s.IsType(&ConfigureState{}, sm.configure)
 	s.IsType(&StartState{}, sm.start)
@@ -38,7 +38,7 @@ func (s *MachineSuite) TestNew() {
 
 func (s *MachineSuite) TestInit() {
 	require := s.Require()
-	sm := NewMachine().(*sm)
+	sm := NewMachine().(*SM)
 	cfg := &config.Flags{}
 	cfl := &core.Flags{}
 	err := sm.Init(cfg, cfl)
@@ -63,7 +63,7 @@ func (s *MachineSuite) TestRunCtxDone() {
 
 func (s *MachineSuite) TestRunExitNoNewState() {
 	require := s.Require()
-	sm := NewMachine().(*sm)
+	sm := NewMachine().(*SM)
 	cfg := &config.Flags{}
 	cfl := &core.Flags{}
 	err := sm.Init(cfg, cfl)
@@ -78,7 +78,7 @@ func (s *MachineSuite) TestRunExitNoNewState() {
 
 func (s *MachineSuite) TestRunError() {
 	require := s.Require()
-	sm := NewMachine().(*sm)
+	sm := NewMachine().(*SM)
 	cfg := &config.Flags{}
 	cfl := &core.Flags{}
 	err := sm.Init(cfg, cfl)
@@ -93,7 +93,7 @@ func (s *MachineSuite) TestRunError() {
 
 func (s *MachineSuite) TestRunPanic() {
 	require := s.Require()
-	sm := NewMachine().(*sm)
+	sm := NewMachine().(*SM)
 	cfg := &config.Flags{}
 	cfl := &core.Flags{}
 	err := sm.Init(cfg, cfl)

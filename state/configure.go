@@ -16,11 +16,11 @@ var _ State = &ConfigureState{}
 var ConfigureError = errors.New("internal error: run Master.Configure first")
 
 type ConfigureState struct {
-	m   *sm
+	m   *SM
 	err error
 }
 
-func newConfigure(m *sm) *ConfigureState {
+func newConfigure(m *SM) *ConfigureState {
 	return &ConfigureState{m: m}
 }
 

@@ -13,6 +13,9 @@ import (
 
 var _ core.Runtime = &MockRuntime{}
 
+// MockRuntime runs a real core runtime but you can mock some parts of it.
+// If MockContext is set, it will be "loaded" before calling any real method.
+// But it will be loaded only once, then MockContext is set as nil.
 type MockRuntime struct {
 	*core.Core
 	ctx                context.Context
@@ -21,6 +24,7 @@ type MockRuntime struct {
 	WithConfigureError bool
 }
 
+// NewMockRuntime creates a new mockable runtime with a Background context.
 func NewMockRuntime() *MockRuntime {
 	ctx := context.Background()
 	return &MockRuntime{
@@ -39,6 +43,7 @@ func (rt *MockRuntime) withContext() {
 	}
 }
 
+// Lock calls real Lock method or returns an error if WithLockError is true.
 func (rt *MockRuntime) Lock() error {
 	if rt.WithLockError {
 		return errors.New("mock lock error")
@@ -46,6 +51,7 @@ func (rt *MockRuntime) Lock() error {
 	return rt.Core.Lock()
 }
 
+// Configure calls real Configure method or returns an error if WithConfigureError.
 func (rt *MockRuntime) Configure(cfg *config.Config, cfl *config.Flags, f *core.Flags) error {
 	if rt.WithConfigureError {
 		return errors.New("mock configure error")
