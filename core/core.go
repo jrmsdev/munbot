@@ -92,14 +92,14 @@ func (rt *Core) Lock(ctx context.Context) (context.Context, error) {
 	return rt.ctx, nil
 }
 
-var ErrLockTimeout error = errors.New("core runtime: lock timeout")
+var ErrLock error = errors.New("core runtime: lock failed")
 
 func (rt *Core) tryLock() error {
 	if rt.mu.TryLockTimeout(300 * time.Millisecond) {
 		rt.locked = uuid.Rand()
 		return nil
 	}
-	return ErrLockTimeout
+	return ErrLock
 }
 
 var ErrCtxNoLock error = errors.New("core runtime: context not locked")
