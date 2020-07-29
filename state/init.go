@@ -51,7 +51,11 @@ func (s *InitState) Run(ctx context.Context) (context.Context, Status) {
 			return ctx, ERROR
 		}
 		log.Debug(rt)
-		s.m.SetState(Configure)
+		if err := s.m.SetState(Configure); err != nil {
+			s.err = err
+			log.Error(s.err)
+			return ctx, ERROR
+		}
 	}
 	return ctx, OK
 }

@@ -43,7 +43,11 @@ func (s *ConfigureState) Run(ctx context.Context) (context.Context, Status) {
 			return ctx, ERROR
 		}
 	}
-	s.m.SetState(Start)
+	if err := s.m.SetState(Start); err != nil {
+		s.err = err
+		log.Error(s.err)
+		return ctx, ERROR
+	}
 	return ctx, OK
 }
 
