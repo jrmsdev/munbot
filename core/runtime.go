@@ -13,6 +13,7 @@ type Runtime interface {
 	String() string
 	UUID() string
 	Context() context.Context
+	WithContext(context.Context) (context.Context, error)
 	Lock() error
 	Configure(*config.Config, *config.Flags, *Flags) error
 }

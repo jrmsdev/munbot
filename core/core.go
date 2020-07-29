@@ -15,40 +15,26 @@ import (
 )
 
 type key int
-
 const lockKey key = 0
 
-func lockContext(rt *Core) (context.Context, error) {
-	var err error
-	rt.uuid, err = tryLock(rt.mu)
-	if err != nil {
-		return nil, err
-	}
-	return context.WithValue(rt.ctx, lockKey, rt.uuid), nil
-}
-
-func tryLock(mu *lock.Locker) (string, error) {
-	if mu.TryLockTimeout(time.Second) {
-		return uuid.Rand(), nil
-	}
-	return "", errors.New("core lock timeout")
-}
+var _ Runtime = &Core{}
 
 type Core struct {
 	ctx      context.Context
 	mu       *lock.Locker
 	uuid     string
+	locked   string
 	cfg      *config.Config
 	cfgFlags *config.Flags
 	flags    *Flags
 }
 
 func NewRuntime(ctx context.Context) Runtime {
-	return &Core{ctx: ctx, mu: lock.New()}
+	return &Core{ctx: ctx, mu: lock.New(), uuid: uuid.Rand()}
 }
 
 func (rt *Core) String() string {
-	return "core.runtime:" + rt.uuid
+	return "Core:" + rt.uuid
 }
 
 func (rt *Core) UUID() string {
@@ -59,14 +45,61 @@ func (rt *Core) Context() context.Context {
 	return rt.ctx
 }
 
+func (rt *Core) WithContext(ctx context.Context) (context.Context, error) {
+	lockId := rt.fromContext(ctx, lockKey)
+	if lockId == "" {
+		if rt.locked != "" {
+			// we are locked but the new context is not, so copy our lock key to
+			// the new context
+			ctx = rt.ctxCopy(ctx, lockKey)
+		}
+	} else {
+		if rt.locked == "" {
+			// the new context is locked but we are not, try to lock ourselves
+			if err := rt.Lock(); err != nil {
+				return nil, err
+			}
+		}
+		// use new context lock key for future validations
+		rt.locked = lockId
+	}
+	rt.ctx = ctx
+	return rt.ctx, nil
+}
+
+func (rt *Core) ctxCopy(dst context.Context, k key) context.Context {
+	if v, ok := rt.ctx.Value(k).(string); ok {
+		dst = context.WithValue(dst, k, v)
+	}
+	return dst
+}
+
+func (rt *Core) fromContext(ctx context.Context, k key) string {
+	s, ok := ctx.Value(k).(string)
+	if !ok {
+		return ""
+	}
+	return s
+}
+
 func (rt *Core) Lock() error {
-	var err error
-	rt.ctx, err = lockContext(rt)
-	return err
+	if err := rt.tryLock(); err != nil {
+		return err
+	}
+	rt.ctx = context.WithValue(rt.ctx, lockKey, rt.locked)
+	return nil
+}
+
+func (rt *Core) tryLock() error {
+	if rt.mu.TryLockTimeout(300*time.Millisecond) {
+		rt.locked = uuid.Rand()
+		return nil
+	}
+	return errors.New("core lock timeout")
 }
 
 func (rt *Core) Configure(cfg *config.Config, cfl *config.Flags, f *Flags) error {
-	if rt.uuid == "" {
+	if rt.locked == "" {
 		return errors.New("core runtime not locked")
 	}
 	select {
