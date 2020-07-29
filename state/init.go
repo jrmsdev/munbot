@@ -35,6 +35,7 @@ var InitPanic error = errors.New("init: run Master.Init first")
 func (s *InitState) Run(ctx context.Context) (context.Context, Status) {
 	select {
 	case <-ctx.Done():
+		log.Debug("context done")
 		return ctx, DONE
 	default:
 		if s.m.Config() == nil || s.m.ConfigFlags() == nil || s.m.CoreFlags() == nil {
@@ -45,15 +46,15 @@ func (s *InitState) Run(ctx context.Context) (context.Context, Status) {
 		rt := s.m.Runtime()
 		var err error
 		if ctx, err = rt.Lock(ctx); err != nil {
+			log.Errorf("%s: %s", s, err)
 			s.err = err
-			log.Error(s.err)
 			return ctx, ERROR
 		}
 		log.Debug(rt)
 	}
 	if err := s.m.SetState(Configure); err != nil {
+		log.Errorf("%s: %s", err, Configure)
 		s.err = err
-		log.Error(s.err)
 		return ctx, ERROR
 	}
 	return ctx, OK

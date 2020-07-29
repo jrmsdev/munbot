@@ -44,8 +44,7 @@ func (s *ConfigureState) Run(ctx context.Context) (context.Context, Status) {
 		}
 	}
 	if err := s.m.SetState(Start); err != nil {
-		s.err = err
-		log.Error(s.err)
+		s.err = log.Errorf("%s: %s", err, Start)
 		return ctx, ERROR
 	}
 	return ctx, OK

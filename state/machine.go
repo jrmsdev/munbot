@@ -58,10 +58,8 @@ var ErrSetInvalid error = errors.New("sm: set invalid state")
 var ErrSetTwice error = errors.New("sm: set state twice")
 
 func (m *SM) SetState(stid StateID) error {
+	log.Debugf("set state %s -> %s", m.stid, stid)
 	var s State
-	if m.newst {
-		return ErrSetTwice
-	}
 	if stid == m.stid {
 		return ErrSetSameState
 	}

@@ -21,9 +21,6 @@ func TestSuite(t *testing.T) {
 	suite.Run(t, &MachineSuite{Suite: suite.New()})
 }
 
-//~ func (s *MachineSuite) SetupTest() {
-//~ }
-
 func (s *MachineSuite) TestNew() {
 	sm := NewMachine().(*SM)
 	s.IsType(&InitState{}, sm.init)
@@ -46,17 +43,11 @@ func (s *MachineSuite) TestSetState() {
 	sm.SetState(Init)
 	s.Equal(Init, sm.State())
 	err = sm.SetState(Init)
-	s.Equal(ErrSetTwice, err)
-	sm.newst = false
-	err = sm.SetState(Init)
 	s.Equal(ErrSetSameState, err)
-	sm.newst = false
 	sm.SetState(Configure)
 	s.Equal(Configure, sm.State())
-	sm.newst = false
 	sm.SetState(Start)
 	s.Equal(Start, sm.State())
-	sm.newst = false
 	err = sm.SetState(-1)
 	s.Equal(ErrSetInvalid, err)
 }

@@ -4,6 +4,7 @@
 package state_test
 
 import (
+	"context"
 	"testing"
 
 	"github.com/munbot/master/state"
@@ -16,6 +17,7 @@ type InitSuite struct {
 	*suite.Suite
 	mocksm *machine.MockSM
 	sm     state.Machine
+	ctx    context.Context
 }
 
 func TestSuite(t *testing.T) {
@@ -25,10 +27,31 @@ func TestSuite(t *testing.T) {
 func (s *InitSuite) SetupTest() {
 	s.mocksm = machine.NewMockSM()
 	s.sm = s.mocksm
+	s.ctx = context.Background()
+}
+
+func (s *InitSuite) TearDownTest() {
+	s.mocksm = nil
+	s.sm = nil
+	s.ctx = nil
 }
 
 func (s *InitSuite) TestNew() {
 	st := state.NewInitState(s.sm)
 	s.Equal(state.Init.String(), st.String())
 	s.Nil(st.Error())
+}
+
+func (s *InitSuite) TestRun() {
+	s.NoError(s.sm.Init(nil, nil))
+	st := state.NewInitState(s.sm)
+	_, rc := st.Run(s.ctx)
+	s.NoError(st.Error())
+	s.Equal(state.OK, rc)
+}
+
+func (s *InitSuite) TestRunPanic() {
+	st := state.NewInitState(s.sm)
+	_, rc := st.Run(s.ctx)
+	s.Equal(state.PANIC, rc)
 }
