@@ -15,6 +15,12 @@ func TestStatusMap(t *testing.T) {
 	}
 }
 
+func TestStateIDMap(t *testing.T) {
+	if len(stidMap) != int(lastStateID) {
+		t.Errorf("len stidMap(%d) != lastStateID(%d)", len(stidMap), lastStateID)
+	}
+}
+
 var _ State = &MockState{}
 
 type MockState struct {

@@ -11,15 +11,16 @@ var _ State = &StartState{}
 
 type StartState struct {
 	m   *SM
+	id  StateID
 	err error
 }
 
 func newStart(m *SM) *StartState {
-	return &StartState{m: m}
+	return &StartState{m: m, id: Start}
 }
 
 func (s *StartState) String() string {
-	return "Start"
+	return s.id.String()
 }
 
 func (s *StartState) Error() error {

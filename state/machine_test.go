@@ -36,6 +36,11 @@ func (s *MachineSuite) TestNew() {
 	s.Nil(sm.coreFlags)
 }
 
+func (s *MachineSuite) TestSetState() {
+	sm := NewMachine().(*SM)
+	sm.SetState(Init)
+}
+
 func (s *MachineSuite) TestInit() {
 	require := s.Require()
 	sm := NewMachine()

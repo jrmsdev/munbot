@@ -15,15 +15,16 @@ var _ State = &InitState{}
 
 type InitState struct {
 	m   Machine
+	id  StateID
 	err error
 }
 
 func NewInitState(m Machine) *InitState {
-	return &InitState{m: m}
+	return &InitState{m: m, id: Init}
 }
 
 func (s *InitState) String() string {
-	return "Init"
+	return s.id.String()
 }
 
 func (s *InitState) Error() error {

@@ -11,15 +11,16 @@ var _ State = &XXXState{}
 
 type XXXState struct {
 	m   *sm
+	id  StateID
 	err error
 }
 
 func newXXX(m *sm) *XXXState {
-	return &XXXState{m: m}
+	return &XXXState{m: m, id: XXX}
 }
 
 func (s *XXXState) String() string {
-	return "XXX"
+	return s.id.String()
 }
 
 func (s *XXXState) Error() error {

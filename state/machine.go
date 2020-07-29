@@ -5,7 +5,7 @@ package state
 
 import (
 	"context"
-	"time"
+	//~ "errors"
 
 	"github.com/munbot/master/config"
 	"github.com/munbot/master/core"
@@ -21,18 +21,14 @@ type Machine interface {
 	Runtime() core.Runtime
 	Init(*config.Flags, *core.Flags) error
 	Run(context.Context) error
-	SetState(StateID)
-}
-
-type hist struct {
-	Time  time.Time `json:"time"`
-	State string    `json:"state"`
+	State() StateID
+	SetState(StateID) error
 }
 
 // SM implements the state.Machine interface.
 type SM struct {
-	hist      []*hist
 	newst     bool
+	stid      StateID
 	st        State
 	init      State
 	configure State
@@ -46,7 +42,6 @@ type SM struct {
 func NewMachine() Machine {
 	m := &SM{}
 	m.rt = core.NewRuntime()
-	m.hist = make([]*hist, 0)
 	m.init = NewInitState(m)
 	m.configure = newConfigure(m)
 	m.start = newStart(m)
@@ -54,9 +49,13 @@ func NewMachine() Machine {
 	return m
 }
 
-func (m *SM) SetState(sid StateID) {
+func (m *SM) State() StateID {
+	return m.stid
+}
+
+func (m *SM) SetState(stid StateID) error {
 	var s State
-	switch sid {
+	switch stid {
 	case Init:
 		s = m.init
 	case Configure:
@@ -66,8 +65,9 @@ func (m *SM) SetState(sid StateID) {
 	}
 	log.Debugf("%v set %s", m.st, s)
 	m.st = s
-	m.hist = append(m.hist, &hist{time.Now(), s.String()})
+	m.stid = stid
 	m.newst = true
+	return nil
 }
 
 func (m *SM) Config() *config.Config {
@@ -107,14 +107,14 @@ func (m *SM) Run(ctx context.Context) error {
 				n := m.st.String()
 				log.Debugf("%s run", n)
 				ctx, rc = m.st.Run(ctx)
-				log.Debugf("%s status %s", n, stMap[rc])
+				log.Debugf("%s status %s", n, rc)
 			} else {
 				log.Debug("no new state to run... exit!")
 				rc = EXIT
 			}
 		}
 	}
-	log.Debugf("exit status %s", stMap[rc])
+	log.Debug(rc)
 	if rc == ERROR {
 		err = m.st.Error()
 	} else if rc == PANIC {

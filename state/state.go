@@ -27,6 +27,10 @@ var stMap = map[Status]string{
 	PANIC: "PANIC",
 }
 
+func (s Status) String() string {
+	return stMap[s]
+}
+
 type State interface {
 	Error() error
 	Run(context.Context) (context.Context, Status)
@@ -39,4 +43,15 @@ const (
 	Init StateID = iota
 	Configure
 	Start
+	lastStateID // for testing purposes
 )
+
+var stidMap = map[StateID]string{
+	Init:      "Init",
+	Configure: "Configure",
+	Start:     "Start",
+}
+
+func (s StateID) String() string {
+	return stidMap[s]
+}
