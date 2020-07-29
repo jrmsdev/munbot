@@ -56,8 +56,8 @@ func (s *InitSuite) TestRun() {
 
 func (s *InitSuite) TestRunPanic() {
 	st := state.NewInitState(s.sm)
-	_, rc := st.Run(s.ctx)
-	s.Equal(state.PANIC, rc)
+	f := func() { st.Run(s.ctx) }
+	s.PanicsWithError("init: run Master.Init first", f)
 }
 
 func (s *InitSuite) TestRunCtxDone() {
@@ -67,4 +67,14 @@ func (s *InitSuite) TestRunCtxDone() {
 	_, rc := st.Run(ctx2)
 	s.NoError(st.Error())
 	s.Equal(state.DONE, rc)
+}
+
+func (s *InitSuite) TestRunSetStateError() {
+	require := s.Require()
+	require.NoError(s.mocksm.Init(nil, nil))
+	s.mocksm.WithSetStateError = true
+	st := state.NewInitState(s.mocksm)
+	_, rc := st.Run(s.ctx)
+	s.EqualError(st.Error(), "mock set state error: Configure")
+	s.Equal(state.ERROR, rc)
 }

@@ -15,7 +15,6 @@ const (
 	DONE
 	EXIT
 	ERROR
-	PANIC
 	lastStatus // for testing purposes
 )
 
@@ -24,7 +23,6 @@ var stMap = map[Status]string{
 	DONE:  "DONE",
 	EXIT:  "EXIT",
 	ERROR: "ERROR",
-	PANIC: "PANIC",
 }
 
 func (s Status) String() string {

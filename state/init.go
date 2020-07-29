@@ -39,22 +39,18 @@ func (s *InitState) Run(ctx context.Context) (context.Context, Status) {
 		return ctx, DONE
 	default:
 		if s.m.Config() == nil || s.m.ConfigFlags() == nil || s.m.CoreFlags() == nil {
-			s.err = InitPanic
-			log.Error(s.err)
-			return ctx, PANIC
+			log.Panic(InitPanic)
 		}
 		rt := s.m.Runtime()
 		var err error
 		if ctx, err = rt.Lock(ctx); err != nil {
-			log.Errorf("%s: %s", s, err)
-			s.err = err
+			s.err = log.Errorf("%s: %s", s, err)
 			return ctx, ERROR
 		}
 		log.Debug(rt)
 	}
 	if err := s.m.SetState(Configure); err != nil {
-		log.Errorf("%s: %s", err, Configure)
-		s.err = err
+		s.err = log.Errorf("%s: %s", err, Configure)
 		return ctx, ERROR
 	}
 	return ctx, OK

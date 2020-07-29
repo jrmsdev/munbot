@@ -23,9 +23,10 @@ var _ state.Machine = &MockSM{}
 // method an a context.Background() will be created be to call the real method.
 type MockSM struct {
 	*state.SM
-	MockRuntime   *runtime.MockRuntime
-	WithInitError bool
-	WithRunError  bool
+	MockRuntime       *runtime.MockRuntime
+	WithInitError     bool
+	WithRunError      bool
+	WithSetStateError bool
 }
 
 // NewMockSM creates a new mockable state.Machine implementation.
@@ -61,4 +62,11 @@ func (m *MockSM) Run(ctx context.Context) error {
 		ctx = context.Background()
 	}
 	return m.SM.Run(ctx)
+}
+
+func (m *MockSM) SetState(stid state.StateID) error {
+	if m.WithSetStateError {
+		return errors.New("mock set state error")
+	}
+	return m.SM.SetState(stid)
 }

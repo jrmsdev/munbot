@@ -113,20 +113,3 @@ func (s *MachineSuite) TestRunError() {
 	err = s.sm.Run(context.TODO())
 	s.EqualError(err, "mock state error")
 }
-
-func (s *MachineSuite) TestRunPanic() {
-	require := s.Require()
-	cfg := &config.Flags{}
-	cfl := &core.Flags{}
-	err := s.sm.Init(cfg, cfl)
-	require.NoError(err)
-
-	st := newMockState()
-	st.ExitStatus = PANIC
-	s.sm.st = st
-	s.sm.newst = true
-	f := func() {
-		s.sm.Run(context.TODO())
-	}
-	s.PanicsWithError("mock state panic", f)
-}

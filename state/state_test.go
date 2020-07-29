@@ -52,9 +52,6 @@ func (s *MockState) Error() error {
 	if s.ExitStatus == ERROR {
 		return errors.New("mock state error")
 	}
-	if s.ExitStatus == PANIC {
-		return errors.New("mock state panic")
-	}
 	return nil
 }
 
