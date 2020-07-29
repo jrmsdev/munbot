@@ -7,6 +7,8 @@ import (
 	"context"
 	"errors"
 	"testing"
+
+	"github.com/munbot/master/core"
 )
 
 func TestStatusMap(t *testing.T) {
@@ -23,7 +25,7 @@ func TestStateIDMap(t *testing.T) {
 }
 
 func TestAllState(t *testing.T) {
-	sm := NewMachine().(*SM)
+	sm := NewMachine(core.NewRuntime()).(*SM)
 	sm.stid = __zero
 	for st := range stidMap {
 		sm.newst = false

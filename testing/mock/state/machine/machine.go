@@ -11,6 +11,8 @@ import (
 	"github.com/munbot/master/config"
 	"github.com/munbot/master/core"
 	"github.com/munbot/master/state"
+
+	"github.com/munbot/master/testing/mock/core/runtime"
 )
 
 var _ state.Machine = &MockSM{}
@@ -21,13 +23,16 @@ var _ state.Machine = &MockSM{}
 // method an a context.Background() will be created be to call the real method.
 type MockSM struct {
 	*state.SM
+	MockRuntime   *runtime.MockRuntime
 	WithInitError bool
 	WithRunError  bool
 }
 
 // NewMockSM creates a new mockable state.Machine implementation.
+// A runtime.NewMockRuntime() will be used for state.NewMachine(rt)
 func NewMockSM() *MockSM {
-	return &MockSM{SM: state.NewMachine().(*state.SM)}
+	rt := runtime.NewMockRuntime()
+	return &MockSM{SM: state.NewMachine(rt).(*state.SM), MockRuntime: rt}
 }
 
 // Init calls real method or returns an error if WithInitError.

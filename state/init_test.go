@@ -7,6 +7,7 @@ import (
 	"context"
 	"testing"
 
+	"github.com/munbot/master/core"
 	"github.com/munbot/master/state"
 
 	"github.com/munbot/master/testing/mock/state/machine"
@@ -15,6 +16,7 @@ import (
 
 type InitSuite struct {
 	*suite.Suite
+	rt     core.Runtime
 	mocksm *machine.MockSM
 	sm     state.Machine
 	ctx    context.Context
@@ -26,11 +28,13 @@ func TestSuite(t *testing.T) {
 
 func (s *InitSuite) SetupTest() {
 	s.mocksm = machine.NewMockSM()
+	s.rt = s.mocksm.MockRuntime
 	s.sm = s.mocksm
 	s.ctx = context.Background()
 }
 
 func (s *InitSuite) TearDownTest() {
+	s.rt = nil
 	s.mocksm = nil
 	s.sm = nil
 	s.ctx = nil

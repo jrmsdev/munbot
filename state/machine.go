@@ -27,6 +27,7 @@ type Machine interface {
 
 // SM implements the state.Machine interface.
 type SM struct {
+	rt        core.Runtime
 	newst     bool
 	stid      StateID
 	st        State
@@ -36,12 +37,11 @@ type SM struct {
 	cfg       *config.Config
 	cfgFlags  *config.Flags
 	coreFlags *core.Flags
-	rt        core.Runtime
 }
 
-func NewMachine() Machine {
+func NewMachine(rt core.Runtime) Machine {
 	m := &SM{}
-	m.rt = core.NewRuntime()
+	m.rt = rt
 	m.init = NewInitState(m)
 	m.configure = newConfigure(m)
 	m.start = newStart(m)

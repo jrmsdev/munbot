@@ -19,11 +19,13 @@ func Version() *version.Info {
 }
 
 type Master struct {
+	rt core.Runtime
 	sm state.Machine
 }
 
 func New() *Master {
-	return &Master{sm: state.NewMachine()}
+	rt := core.NewRuntime()
+	return &Master{rt: rt, sm: state.NewMachine(rt)}
 }
 
 func (m *Master) Init(cf *config.Flags, fl *core.Flags) error {
