@@ -22,7 +22,7 @@ type InitSuite struct {
 	ctx    context.Context
 }
 
-func TestSuite(t *testing.T) {
+func TestInitSuite(t *testing.T) {
 	suite.Run(t, &InitSuite{Suite: suite.New()})
 }
 
@@ -58,4 +58,13 @@ func (s *InitSuite) TestRunPanic() {
 	st := state.NewInitState(s.sm)
 	_, rc := st.Run(s.ctx)
 	s.Equal(state.PANIC, rc)
+}
+
+func (s *InitSuite) TestRunCtxDone() {
+	st := state.NewInitState(s.sm)
+	ctx2, cancel := context.WithCancel(s.ctx)
+	cancel()
+	_, rc := st.Run(ctx2)
+	s.NoError(st.Error())
+	s.Equal(state.DONE, rc)
 }

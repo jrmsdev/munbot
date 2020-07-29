@@ -110,8 +110,13 @@ func (m *SM) Run(ctx context.Context) error {
 		select {
 		case <-ctx.Done():
 			err = ctx.Err()
-			rc = DONE
-			log.Debugf("context done: %v", err)
+			if err != nil {
+				log.Debugf("context error: %v", err)
+				rc = ERROR
+			} else {
+				rc = DONE
+				log.Debug("context done")
+			}
 		default:
 			if m.newst {
 				m.newst = false
@@ -119,16 +124,15 @@ func (m *SM) Run(ctx context.Context) error {
 				log.Debugf("%s run", n)
 				ctx, rc = m.st.Run(ctx)
 				log.Debugf("%s status %s", n, rc)
+				err = m.st.Error()
 			} else {
 				log.Debug("no new state to run... exit!")
 				rc = EXIT
 			}
 		}
 	}
-	if rc == ERROR {
-		err = m.st.Error()
-	} else if rc == PANIC {
-		log.Panic(m.st.Error())
+	if rc == PANIC {
+		log.Panic(err)
 	}
 	return err
 }
