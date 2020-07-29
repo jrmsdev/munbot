@@ -114,7 +114,7 @@ func (m *SM) Run(ctx context.Context) error {
 		case <-ctx.Done():
 			err = ctx.Err()
 			rc = DONE
-			log.Debug("context done: %v", err)
+			log.Debugf("context done: %v", err)
 		default:
 			if m.newst {
 				m.newst = false
