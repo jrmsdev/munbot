@@ -40,7 +40,8 @@ type State interface {
 type StateID int
 
 const (
-	Init StateID = iota
+	__zero StateID = iota // as int are init as 0 we need to start at 1
+	Init
 	Configure
 	Start
 	lastStateID // for testing purposes

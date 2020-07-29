@@ -16,8 +16,9 @@ func TestStatusMap(t *testing.T) {
 }
 
 func TestStateIDMap(t *testing.T) {
-	if len(stidMap) != int(lastStateID) {
-		t.Errorf("len stidMap(%d) != lastStateID(%d)", len(stidMap), lastStateID)
+	count := int(lastStateID) - 1
+	if len(stidMap) != count {
+		t.Errorf("len stidMap(%d) != count(%d)", len(stidMap), count)
 	}
 }
 

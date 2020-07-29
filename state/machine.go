@@ -5,7 +5,7 @@ package state
 
 import (
 	"context"
-	//~ "errors"
+	"errors"
 
 	"github.com/munbot/master/config"
 	"github.com/munbot/master/core"
@@ -53,8 +53,14 @@ func (m *SM) State() StateID {
 	return m.stid
 }
 
+var ErrSetSameState error = errors.New("sm: set same state")
+var ErrSetInvalid error = errors.New("sm: set invalid state")
+
 func (m *SM) SetState(stid StateID) error {
 	var s State
+	if stid == m.stid {
+		return ErrSetSameState
+	}
 	switch stid {
 	case Init:
 		s = m.init
@@ -62,6 +68,8 @@ func (m *SM) SetState(stid StateID) error {
 		s = m.configure
 	case Start:
 		s = m.start
+	default:
+		return ErrSetInvalid
 	}
 	log.Debugf("%v set %s", m.st, s)
 	m.st = s

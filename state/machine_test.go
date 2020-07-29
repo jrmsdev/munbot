@@ -29,11 +29,13 @@ func (s *MachineSuite) TestNew() {
 	s.IsType(&InitState{}, sm.init)
 	s.IsType(&ConfigureState{}, sm.configure)
 	s.IsType(&StartState{}, sm.start)
-	s.IsType(sm.st, sm.init)
+	s.IsType(sm.init, sm.st)
 	s.IsType(&core.Core{}, sm.rt)
 	s.Nil(sm.cfg)
 	s.Nil(sm.cfgFlags)
 	s.Nil(sm.coreFlags)
+	s.Equal(Init, sm.stid)
+	s.True(sm.newst)
 }
 
 func (s *MachineSuite) TestSetState() {
@@ -92,6 +94,7 @@ func (s *MachineSuite) TestRunError() {
 	st := newMockState()
 	st.ExitStatus = ERROR
 	sm.st = st
+	sm.newst = true
 	err = sm.Run(context.TODO())
 	s.EqualError(err, "mock state error")
 }
@@ -107,6 +110,7 @@ func (s *MachineSuite) TestRunPanic() {
 	st := newMockState()
 	st.ExitStatus = PANIC
 	sm.st = st
+	sm.newst = true
 	f := func() {
 		sm.Run(context.TODO())
 	}
