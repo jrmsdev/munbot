@@ -12,23 +12,23 @@ import (
 	"github.com/munbot/master/testing/suite"
 )
 
-type InitSuite struct {
+type XXXSuite struct {
 	*suite.Suite
 	mocksm *machine.MockSM
 	sm     state.Machine
 }
 
 func TestSuite(t *testing.T) {
-	suite.Run(t, &InitSuite{Suite: suite.New()})
+	suite.Run(t, &XXXSuite{Suite: suite.New()})
 }
 
-func (s *InitSuite) SetupTest() {
+func (s *XXXSuite) SetupTest() {
 	s.mocksm = machine.NewMockSM()
 	s.sm = s.mocksm
 }
 
-func (s *InitSuite) TestNew() {
-	st := state.NewInitState(s.sm)
-	s.Equal(state.Init.String(), st.String())
+func (s *XXXSuite) TestNew() {
+	st := state.NewXXXState(s.sm)
+	s.Equal(state.XXX.String(), st.String())
 	s.Nil(st.Error())
 }

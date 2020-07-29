@@ -15,7 +15,7 @@ type XXXState struct {
 	err error
 }
 
-func newXXX(m *sm) *XXXState {
+func NewXXXState(m *sm) *XXXState {
 	return &XXXState{m: m, id: XXX}
 }
 
