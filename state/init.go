@@ -12,7 +12,6 @@ import (
 
 var _ State = &InitState{}
 
-
 type InitState struct {
 	m   Machine
 	id  StateID

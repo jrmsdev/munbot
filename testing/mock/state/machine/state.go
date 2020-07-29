@@ -12,6 +12,7 @@ import (
 
 var _ state.State = &MockState{}
 
+// FIXME: MockState not implemented/used.
 type MockState struct {
 	ExitStatus state.Status
 }

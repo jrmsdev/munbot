@@ -22,6 +22,20 @@ func TestStateIDMap(t *testing.T) {
 	}
 }
 
+func TestAllState(t *testing.T) {
+	sm := NewMachine().(*SM)
+	sm.stid = __zero
+	for st := range stidMap {
+		sm.newst = false
+		if err := sm.SetState(st); err != nil {
+			t.Fatalf("%v: %v", st, err)
+		}
+		if sm.State() != st {
+			t.Errorf("sm.State() expect: %v - got: %v", st, sm.State())
+		}
+	}
+}
+
 var _ State = &MockState{}
 
 type MockState struct {

@@ -28,5 +28,6 @@ func (s *InitSuite) SetupTest() {
 }
 
 func (s *InitSuite) TestNew() {
-	state.NewInitState(s.sm)
+	st := state.NewInitState(s.sm)
+	s.Equal(state.Init.String(), st.String())
 }
