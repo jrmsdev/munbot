@@ -31,16 +31,34 @@ func (s *MachineSuite) TestNew() {
 	s.IsType(&StartState{}, sm.start)
 	s.IsType(sm.init, sm.st)
 	s.IsType(&core.Core{}, sm.rt)
+	s.Equal(sm.rt, sm.Runtime())
 	s.Nil(sm.cfg)
 	s.Nil(sm.cfgFlags)
 	s.Nil(sm.coreFlags)
 	s.Equal(Init, sm.stid)
+	s.Equal(Init, sm.State())
 	s.True(sm.newst)
 }
 
 func (s *MachineSuite) TestSetState() {
+	var err error
 	sm := NewMachine().(*SM)
 	sm.SetState(Init)
+	s.Equal(Init, sm.State())
+	err = sm.SetState(Init)
+	s.Equal(ErrSetTwice, err)
+	sm.newst = false
+	err = sm.SetState(Init)
+	s.Equal(ErrSetSameState, err)
+	sm.newst = false
+	sm.SetState(Configure)
+	s.Equal(Configure, sm.State())
+	sm.newst = false
+	sm.SetState(Start)
+	s.Equal(Start, sm.State())
+	sm.newst = false
+	err = sm.SetState(-1)
+	s.Equal(ErrSetInvalid, err)
 }
 
 func (s *MachineSuite) TestInit() {

@@ -29,7 +29,6 @@ type Machine interface {
 type SM struct {
 	newst     bool
 	stid      StateID
-	setStDone bool
 	st        State
 	init      State
 	configure State
@@ -60,7 +59,7 @@ var ErrSetTwice error = errors.New("sm: set state twice")
 
 func (m *SM) SetState(stid StateID) error {
 	var s State
-	if m.setStDone {
+	if m.newst {
 		return ErrSetTwice
 	}
 	if stid == m.stid {
@@ -118,7 +117,6 @@ func (m *SM) Run(ctx context.Context) error {
 		default:
 			if m.newst {
 				m.newst = false
-				m.setStDone = false
 				n := m.st.String()
 				log.Debugf("%s run", n)
 				ctx, rc = m.st.Run(ctx)
