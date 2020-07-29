@@ -10,12 +10,14 @@ import (
 	"github.com/munbot/master/core"
 	"github.com/munbot/master/state"
 
+	"github.com/munbot/master/testing/mock/core/runtime"
 	"github.com/munbot/master/testing/mock/state/machine"
 	"github.com/munbot/master/testing/suite"
 )
 
 type InitSuite struct {
 	*suite.Suite
+	mockrt *runtime.MockRuntime
 	rt     core.Runtime
 	mocksm *machine.MockSM
 	sm     state.Machine
@@ -28,8 +30,9 @@ func TestInitSuite(t *testing.T) {
 
 func (s *InitSuite) SetupTest() {
 	s.mocksm = machine.NewMockSM()
-	s.rt = s.mocksm.MockRuntime
 	s.sm = s.mocksm
+	s.mockrt = s.mocksm.MockRuntime
+	s.rt = s.mockrt
 	s.ctx = context.Background()
 }
 
@@ -76,5 +79,15 @@ func (s *InitSuite) TestRunSetStateError() {
 	st := state.NewInitState(s.mocksm)
 	_, rc := st.Run(s.ctx)
 	s.EqualError(st.Error(), "mock set state error: Configure")
+	s.Equal(state.ERROR, rc)
+}
+
+func (s *InitSuite) TestRunLockError() {
+	require := s.Require()
+	require.NoError(s.mocksm.Init(nil, nil))
+	s.mockrt.WithLockError = true
+	st := state.NewInitState(s.mocksm)
+	_, rc := st.Run(s.ctx)
+	s.EqualError(st.Error(), "Init: mock lock error")
 	s.Equal(state.ERROR, rc)
 }
