@@ -21,8 +21,8 @@ func TestSuite(t *testing.T) {
 	suite.Run(t, &MachineSuite{Suite: suite.New()})
 }
 
-func (s *MachineSuite) SetupTest() {
-}
+//~ func (s *MachineSuite) SetupTest() {
+//~ }
 
 func (s *MachineSuite) TestNew() {
 	sm := NewMachine().(*SM)
@@ -30,22 +30,22 @@ func (s *MachineSuite) TestNew() {
 	s.IsType(&ConfigureState{}, sm.configure)
 	s.IsType(&StartState{}, sm.start)
 	s.IsType(sm.st, sm.init)
-	s.Nil(sm.Config)
-	s.Nil(sm.ConfigFlags)
-	s.Nil(sm.CoreFlags)
-	s.Nil(sm.Runtime)
+	s.IsType(&core.Core{}, sm.rt)
+	s.Nil(sm.cfg)
+	s.Nil(sm.cfgFlags)
+	s.Nil(sm.coreFlags)
 }
 
 func (s *MachineSuite) TestInit() {
 	require := s.Require()
-	sm := NewMachine().(*SM)
+	sm := NewMachine()
 	cfg := &config.Flags{}
 	cfl := &core.Flags{}
 	err := sm.Init(cfg, cfl)
 	require.NoError(err)
-	s.IsType(config.New(), sm.Config)
-	s.Equal(cfg, sm.ConfigFlags)
-	s.Equal(cfl, sm.CoreFlags)
+	s.IsType(config.New(), sm.Config())
+	s.Equal(cfg, sm.ConfigFlags())
+	s.Equal(cfl, sm.CoreFlags())
 }
 
 func (s *MachineSuite) TestRunCtxDone() {
@@ -55,7 +55,7 @@ func (s *MachineSuite) TestRunCtxDone() {
 	cfl := &core.Flags{}
 	err := m.Init(cfg, cfl)
 	require.NoError(err)
-	ctx, cancel := context.WithCancel(context.TODO())
+	ctx, cancel := context.WithCancel(context.Background())
 	cancel()
 	err = m.Run(ctx)
 	s.EqualError(err, "context canceled")

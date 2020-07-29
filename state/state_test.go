@@ -35,8 +35,8 @@ func (s *MockState) Error() error {
 	return nil
 }
 
-func (s *MockState) Run(context.Context) Status {
-	return s.ExitStatus
+func (s *MockState) Run(ctx context.Context) (context.Context, Status) {
+	return ctx, s.ExitStatus
 }
 
 func (s *MockState) String() string {

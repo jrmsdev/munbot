@@ -14,6 +14,6 @@ type Runtime interface {
 	UUID() string
 	Context() context.Context
 	WithContext(context.Context) (context.Context, error)
-	Lock() error
+	Lock(context.Context) (context.Context, error)
 	Configure(*config.Config, *config.Flags, *Flags) error
 }

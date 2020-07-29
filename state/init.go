@@ -7,21 +7,18 @@ import (
 	"context"
 	"errors"
 
-	"github.com/munbot/master/core"
 	"github.com/munbot/master/log"
 )
 
 var _ State = &InitState{}
 
-var InitPanic = errors.New("init: run Master.Init first")
-var InitError = errors.New("init: runtime already done")
 
 type InitState struct {
-	m   *SM
+	m   Machine
 	err error
 }
 
-func newInit(m *SM) *InitState {
+func NewInitState(m Machine) *InitState {
 	return &InitState{m: m}
 }
 
@@ -33,29 +30,27 @@ func (s *InitState) Error() error {
 	return s.err
 }
 
-func (s *InitState) Run(ctx context.Context) Status {
+var InitPanic error = errors.New("init: run Master.Init first")
+
+func (s *InitState) Run(ctx context.Context) (context.Context, Status) {
 	select {
 	case <-ctx.Done():
-		return DONE
+		return ctx, DONE
 	default:
-		if s.m.Config == nil || s.m.ConfigFlags == nil || s.m.CoreFlags == nil {
+		if s.m.Config() == nil || s.m.ConfigFlags() == nil || s.m.CoreFlags() == nil {
 			s.err = InitPanic
 			log.Error(s.err)
-			return PANIC
+			return ctx, PANIC
 		}
-		if s.m.Runtime != nil {
-			s.err = InitError
-			log.Error(s.err)
-			return ERROR
-		}
-		s.m.Runtime = core.NewRuntime(ctx)
-		if err := s.m.Runtime.Lock(); err != nil {
+		rt := s.m.Runtime()
+		var err error
+		if ctx, err = rt.Lock(ctx); err != nil {
 			s.err = err
 			log.Error(s.err)
-			return ERROR
+			return ctx, ERROR
 		}
-		log.Debug(s.m.Runtime)
-		s.m.setState(s.m.configure)
+		log.Debug(rt)
+		s.m.SetState(Configure)
 	}
-	return OK
+	return ctx, OK
 }

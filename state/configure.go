@@ -32,25 +32,28 @@ func (s *ConfigureState) Error() error {
 	return s.err
 }
 
-func (s *ConfigureState) Run(ctx context.Context) Status {
+func (s *ConfigureState) Run(ctx context.Context) (context.Context, Status) {
 	select {
 	case <-ctx.Done():
-		return DONE
+		return ctx, DONE
 	default:
 		if err := s.configure(); err != nil {
 			s.err = err
-			return ERROR
+			return ctx, ERROR
 		}
 	}
-	s.m.setState(s.m.start)
-	return OK
+	s.m.SetState(Start)
+	return ctx, OK
 }
 
 func (s *ConfigureState) configure() error {
-	s.m.Config.SetDefaults(config.Defaults)
-	if err := s.m.Config.Load(s.m.ConfigFlags.Profile); err != nil {
+	cfg := s.m.Config()
+	cfg.SetDefaults(config.Defaults)
+	cfl := s.m.ConfigFlags()
+	if err := cfg.Load(cfl.Profile); err != nil {
 		return log.Error(s.err)
 	}
-	s.m.CoreFlags.Parse(s.m.Config)
-	return s.m.Runtime.Configure(s.m.Config, s.m.ConfigFlags, s.m.CoreFlags)
+	kfl := s.m.CoreFlags()
+	kfl.Parse(cfg)
+	return s.m.Runtime().Configure(cfg, cfl, kfl)
 }

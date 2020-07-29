@@ -29,6 +29,14 @@ var stMap = map[Status]string{
 
 type State interface {
 	Error() error
-	Run(context.Context) Status
+	Run(context.Context) (context.Context, Status)
 	String() string
 }
+
+type StateID int
+
+const (
+	Init StateID = iota
+	Configure
+	Start
+)

@@ -26,11 +26,11 @@ func (s *StartState) Error() error {
 	return s.err
 }
 
-func (s *StartState) Run(ctx context.Context) Status {
+func (s *StartState) Run(ctx context.Context) (context.Context, Status) {
 	select {
 	case <-ctx.Done():
-		return DONE
+		return ctx, DONE
 	default:
 	}
-	return EXIT
+	return ctx, EXIT
 }
