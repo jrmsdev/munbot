@@ -1,7 +1,7 @@
 // Copyright (c) Jeremías Casteglione <jrmsdev@gmail.com>
 // See LICENSE file.
 
-package state
+package core
 
 //~ import (
 	//~ "github.com/munbot/master/config"
@@ -11,10 +11,11 @@ var _ State = &SInit{}
 
 type SInit struct {
 	m Machine
+	rt *Mem
 }
 
-func NewInit(m Machine) State {
-	return &SInit{m: m}
+func NewInit(m Machine, rt *Mem) State {
+	return &SInit{m: m, rt: rt}
 }
 
 func (s *SInit) Init() error {

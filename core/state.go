@@ -1,8 +1,7 @@
 // Copyright (c) Jeremías Casteglione <jrmsdev@gmail.com>
 // See LICENSE file.
 
-// Package state implements the core machine states.
-package state
+package core
 
 type State interface {
 	Init() error
@@ -11,22 +10,22 @@ type State interface {
 	Stop() error
 }
 
-type ID int
+type StateID int
 
 const (
-	New ID = iota
+	New StateID = iota
 	Init
 )
 
-var idMap map[ID]string = map[ID]string{
+var sidMap map[StateID]string = map[StateID]string{
 	New:  "New",
 	Init: "Init",
 }
 
-func Name(s ID) string {
-	n, ok := idMap[s]
+func StateName(sid StateID) string {
+	n, ok := sidMap[sid]
 	if !ok {
-		return "invalid state: " + string(s)
+		return "invalid state: " + string(sid)
 	}
 	return n
 }

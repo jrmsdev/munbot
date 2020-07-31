@@ -9,112 +9,102 @@ import (
 	"errors"
 
 	"github.com/munbot/master/config"
-	"github.com/munbot/master/core/state"
 	"github.com/munbot/master/log"
 	"github.com/munbot/master/utils/lock"
 	"github.com/munbot/master/utils/uuid"
 )
 
 var _ Runtime = &Core{}
-var _ state.Machine = &Core{}
+var _ Machine = &Core{}
 
 type Core struct {
+	rt       *Mem
 	ctx      context.Context
 	mu       *lock.Locker
 	uuid     string
 	locked   string
-	cfg      *config.Config
-	cfgFlags *config.Flags
-	flags    *Flags
-	state    state.State
-	stid     state.ID
-	sInit    state.State
+	state    State
+	stid     StateID
+	sInit    State
 }
 
 func NewRuntime() Runtime {
-	rt := &Core{
+	k := &Core{
+		rt: newMem(),
 		mu: lock.New(),
 		uuid: uuid.Rand(),
 	}
-	rt.sInit = state.NewInit(rt)
-	rt.SetState(state.Init)
-	return rt
+	k.sInit = NewInit(k, k.rt)
+	k.SetState(Init)
+	return k
 }
 
-func (rt *Core) String() string {
-	return "Core:" + rt.uuid
+func (k *Core) String() string {
+	return "Core:" + k.uuid
 }
 
-func (rt *Core) UUID() string {
-	return rt.uuid
+func (k *Core) UUID() string {
+	return k.uuid
 }
 
-func (rt *Core) Config() *config.Config {
-	return rt.cfg
-}
-
-func (rt *Core) ConfigFlags() *config.Flags {
-	return rt.cfgFlags
-}
-
-func (rt *Core) SetState(s state.ID) {
-	log.Debugf("state %s set %s", state.Name(rt.stid), state.Name(s))
-	if s == rt.stid {
-		log.Panicf("core: state %s set twice", state.Name(s))
+func (k *Core) SetState(s StateID) {
+	log.Debugf("state %s set %s", StateName(k.stid), StateName(s))
+	if s == k.stid {
+		log.Panicf("core: state %s set twice", StateName(s))
 	}
 	switch s {
-	case state.Init:
-		rt.state = rt.sInit
+	case Init:
+		k.state = k.sInit
 	default:
-		log.Panicf("core: set %s", state.Name(s))
+		log.Panicf("core: set %s", StateName(s))
 	}
-	rt.stid = s
+	k.stid = s
 }
 
-func (rt *Core) Init(ctx context.Context) (context.Context, error) {
+func (k *Core) Init(ctx context.Context) (context.Context, error) {
 	select {
 	case <-ctx.Done():
 		return ctx, ctx.Err()
 	}
-	if err := rt.state.Init(); err != nil {
+	if err := k.state.Init(); err != nil {
 		return ctx, err
 	}
-	return rt.WithContext(ctx)
+	return k.WithContext(ctx)
 }
 
 var ErrCtxNoLock error = errors.New("core: no context locked")
 
-func (rt *Core) Configure(kfl *Flags, cfl *config.Flags, cfg *config.Config) error {
-	if rt.locked == "" || rt.ctx == nil {
+func (k *Core) Configure(kfl *Flags, cfl *config.Flags, cfg *config.Config) error {
+	if k.locked == "" || k.ctx == nil {
 		return ErrCtxNoLock
 	}
 	select {
-	case <-rt.ctx.Done():
-		return rt.ctx.Err()
+	case <-k.ctx.Done():
+		return k.ctx.Err()
 	default:
 		// TODO: read config, parse flags, etc...
-		if err := rt.state.Configure(); err != nil {
+		if err := k.state.Configure(); err != nil {
 			return err
 		}
 	}
-	rt.flags = kfl
-	rt.cfgFlags = cfl
-	rt.cfg = cfg
+	k.rt.Flags = kfl
+	k.rt.CfgFlags = cfl
+	k.rt.Cfg = cfg
 	return nil
 }
 
-func (rt *Core) Start() error {
+func (k *Core) Start() error {
 	select {
-	case <-rt.ctx.Done():
-		return rt.ctx.Err()
+	case <-k.ctx.Done():
+		return k.ctx.Err()
 	}
-	return rt.state.Start()
+	return k.state.Start()
 }
 
-func (rt *Core) Stop() error {
+func (k *Core) Stop() error {
 	select {
-	case <-rt.ctx.Done():
-		return rt.ctx.Err()
+	case <-k.ctx.Done():
+		return k.ctx.Err()
 	}
-	return rt.state.Stop()
+	return k.state.Stop()
 }
