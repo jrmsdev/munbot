@@ -45,6 +45,7 @@ func New(m *Mem) *Core {
 	k.sInit = newInit(k, k.rt)
 	k.sRun = newRun(k, k.rt)
 	k.state = k.sInit
+	k.stid = Init
 	return k
 }
 
@@ -128,9 +129,15 @@ func (k *Core) Configure(kfl *Flags, cfl *config.Flags, cfg *config.Config) erro
 	k.rt.Cfg = cfg
 	k.rt.CfgFlags = cfl
 	k.rt.CoreFlags = kfl
+	return k.doConfigure()
+}
+
+func (k *Core) doConfigure() error {
+	k.rt.Cfg.SetDefaults(config.Defaults)
 	if err := k.rt.Cfg.Load(k.rt.CfgFlags.Profile); err != nil {
 		return k.error(err)
 	}
+	k.rt.CoreFlags.Parse(k.rt.Cfg)
 	return nil
 }
 
