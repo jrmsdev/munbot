@@ -8,10 +8,10 @@ import (
 	"fmt"
 )
 
-var ErrInit error = errors.New("Init")
-var ErrConfigure error = errors.New("Configure")
-var ErrStart error = errors.New("Start")
-var ErrStop error = errors.New("Stop")
+var ErrInit error = errors.New("can not run Init in this state")
+var ErrConfigure error = errors.New("can not run Configure in this state")
+var ErrStart error = errors.New("can not run Start in this state")
+var ErrStop error = errors.New("can not run Stop in this state")
 
 type State interface {
 	Init() error

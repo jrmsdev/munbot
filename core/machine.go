@@ -8,7 +8,7 @@ import (
 )
 
 type Machine interface {
-	SetState(StateID)
+	SetState(StateID) error
 	Context() context.Context
 	WithContext(context.Context) (context.Context, error)
 }

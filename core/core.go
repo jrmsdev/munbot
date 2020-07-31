@@ -61,10 +61,16 @@ func (k *Core) error(err error) error {
 	return err
 }
 
-func (k *Core) SetState(s StateID) {
+func (k *Core) errorf(f string, args ...interface{}) error {
+	err := errors.New(fmt.Sprintf(f, args...))
+	log.Output(2, fmt.Sprintf("[ERROR] core %s: %s", StateName(k.stid), err))
+	return err
+}
+
+func (k *Core) SetState(s StateID) error {
 	log.Debugf("state %s set %s", StateName(k.stid), StateName(s))
 	if s == k.stid {
-		log.Panicf("core: state %s set twice", StateName(s))
+		return k.errorf("core: state %s set twice", StateName(s))
 	}
 	switch s {
 	case Init:
@@ -74,9 +80,10 @@ func (k *Core) SetState(s StateID) {
 	case Run:
 		k.state = k.sRun
 	default:
-		log.Panicf("core: set %s", StateName(s))
+		k.errorf("core: set %s", StateName(s))
 	}
 	k.stid = s
+	return nil
 }
 
 func (k *Core) Init(ctx context.Context) (context.Context, error) {

@@ -23,8 +23,7 @@ func (s *SConfigure) Init() error {
 }
 
 func (s *SConfigure) Configure() error {
-	s.m.SetState(Run)
-	return nil
+	return s.m.SetState(Run)
 }
 
 func (s *SConfigure) Start() error {
