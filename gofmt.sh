@@ -8,6 +8,7 @@ exec gofmt -w -l -s \
 	core \
 	log \
 	mb \
+	robot \
 	testing \
 	utils \
 	version \

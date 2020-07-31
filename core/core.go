@@ -20,15 +20,15 @@ var _ Runtime = &Core{}
 var _ Machine = &Core{}
 
 type Core struct {
-	rt         *Mem
-	ctx        context.Context
-	mu         *lock.Locker
-	uuid       string
-	locked     string
-	state      State
-	stid       StateID
-	sInit      State
-	sRun       State
+	rt     *Mem
+	ctx    context.Context
+	mu     *lock.Locker
+	uuid   string
+	locked string
+	state  State
+	stid   StateID
+	sInit  State
+	sRun   State
 }
 
 func NewRuntime() Runtime {
