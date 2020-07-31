@@ -7,6 +7,7 @@ import (
 	"errors"
 
 	"github.com/munbot/master/config"
+	"github.com/munbot/master/robot/master"
 	"github.com/munbot/master/utils/lock"
 )
 
@@ -23,6 +24,7 @@ type Mem struct {
 	Cfg       *config.Config
 	CfgFlags  *config.Flags
 	CoreFlags *Flags
+	Master    master.Munbot
 }
 
 func newMem() *Mem {

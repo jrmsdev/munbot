@@ -11,6 +11,7 @@ import (
 
 	"github.com/munbot/master/config"
 	"github.com/munbot/master/log"
+	"github.com/munbot/master/robot/master"
 	"github.com/munbot/master/utils/lock"
 	"github.com/munbot/master/utils/uuid"
 	"github.com/munbot/master/version"
@@ -104,7 +105,12 @@ func (k *Core) Init(ctx context.Context) (context.Context, error) {
 	if err != nil {
 		return ctx, k.error(err)
 	}
-	return ctx, nil
+	return ctx, k.doInit()
+}
+
+func (k *Core) doInit() error {
+	k.rt.Master = master.New()
+	return nil
 }
 
 var ErrCtxNoLock error = errors.New("core: no context locked")

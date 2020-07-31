@@ -9,6 +9,6 @@ var _ Munbot = &Robot{}
 type Robot struct {
 }
 
-func New() *Robot {
+func New() Munbot {
 	return &Robot{}
 }
