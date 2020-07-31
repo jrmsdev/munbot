@@ -6,7 +6,6 @@ package core
 import (
 	"context"
 	"errors"
-	"time"
 )
 
 const lockKey ctxkey = 0
@@ -22,7 +21,7 @@ func (rt *Core) lock(ctx context.Context) (context.Context, error) {
 }
 
 func (rt *Core) tryLock() error {
-	if rt.mu.TryLockTimeout(300 * time.Millisecond) {
+	if rt.mu.TryLock(nil) {
 		rt.locked = rt.uuid
 		return nil
 	}

@@ -13,12 +13,12 @@ type State interface {
 type StateID int
 
 const (
-	New StateID = iota
+	Dead StateID = iota
 	Init
 )
 
 var sidMap map[StateID]string = map[StateID]string{
-	New:  "New",
+	Dead:  "Dead",
 	Init: "Init",
 }
 

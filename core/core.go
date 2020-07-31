@@ -29,8 +29,12 @@ type Core struct {
 }
 
 func NewRuntime() Runtime {
+	return New(mem)
+}
+
+func New(m *Mem) *Core {
 	k := &Core{
-		rt: newMem(),
+		rt: m,
 		mu: lock.New(),
 		uuid: uuid.Rand(),
 	}
@@ -81,16 +85,8 @@ func (k *Core) Configure(kfl *Flags, cfl *config.Flags, cfg *config.Config) erro
 	select {
 	case <-k.ctx.Done():
 		return k.ctx.Err()
-	default:
-		// TODO: read config, parse flags, etc...
-		if err := k.state.Configure(); err != nil {
-			return err
-		}
 	}
-	k.rt.Flags = kfl
-	k.rt.CfgFlags = cfl
-	k.rt.Cfg = cfg
-	return nil
+	return k.state.Configure()
 }
 
 func (k *Core) Start() error {
