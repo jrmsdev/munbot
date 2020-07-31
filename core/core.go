@@ -6,6 +6,7 @@ package core
 
 import (
 	"context"
+	"errors"
 
 	"github.com/munbot/master/config"
 	"github.com/munbot/master/utils/lock"
@@ -35,4 +36,52 @@ func (rt *Core) String() string {
 
 func (rt *Core) UUID() string {
 	return rt.uuid
+}
+
+func (rt *Core) Init(ctx context.Context) (context.Context, error) {
+	select {
+	case <-ctx.Done():
+		return ctx, ctx.Err()
+	}
+	var err error
+	ctx, err = rt.WithContext(ctx)
+	if err != nil {
+		return ctx, err
+	}
+	err = rt.state.Init()
+	return ctx, err
+}
+
+var ErrCtxNoLock error = errors.New("core: no context locked")
+
+func (rt *Core) Configure(kfl *Flags, cfl *config.Flags, cfg *config.Config) error {
+	if rt.locked == "" || rt.ctx == nil {
+		return ErrCtxNoLock
+	}
+	select {
+	case <-rt.ctx.Done():
+		return rt.ctx.Err()
+	default:
+		rt.cfg = cfg
+		rt.cfgFlags = cfl
+		rt.flags = kfl
+	}
+	// TODO: read config, parse flags, etc...
+	return rt.state.Configure(rt.flags, rt.cfgFlags, rt.cfg)
+}
+
+func (rt *Core) Start() error {
+	select {
+	case <-rt.ctx.Done():
+		return rt.ctx.Err()
+	}
+	return rt.state.Start()
+}
+
+func (rt *Core) Stop() error {
+	select {
+	case <-rt.ctx.Done():
+		return rt.ctx.Err()
+	}
+	return rt.state.Stop()
 }
