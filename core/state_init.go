@@ -3,18 +3,14 @@
 
 package core
 
-//~ import (
-	//~ "github.com/munbot/master/config"
-//~ )
-
 var _ State = &SInit{}
 
 type SInit struct {
-	m Machine
+	m  Machine
 	rt *Mem
 }
 
-func NewInit(m Machine, rt *Mem) State {
+func newInit(m Machine, rt *Mem) State {
 	return &SInit{m: m, rt: rt}
 }
 

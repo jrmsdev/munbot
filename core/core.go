@@ -19,15 +19,16 @@ var _ Runtime = &Core{}
 var _ Machine = &Core{}
 
 type Core struct {
-	rt       *Mem
-	ctx      context.Context
-	mu       *lock.Locker
-	uuid     string
-	locked   string
-	state    State
-	stid     StateID
-	sInit    State
+	rt         *Mem
+	ctx        context.Context
+	mu         *lock.Locker
+	uuid       string
+	locked     string
+	state      State
+	stid       StateID
+	sInit      State
 	sConfigure State
+	sRun       State
 }
 
 func NewRuntime() Runtime {
@@ -36,12 +37,13 @@ func NewRuntime() Runtime {
 
 func New(m *Mem) *Core {
 	k := &Core{
-		rt: m,
-		mu: lock.New(),
+		rt:   m,
+		mu:   lock.New(),
 		uuid: uuid.Rand(),
 	}
-	k.sInit = NewInit(k, k.rt)
-	k.sConfigure = NewConfigure(k, k.rt)
+	k.sInit = newInit(k, k.rt)
+	k.sConfigure = newConfigure(k, k.rt)
+	k.sRun = newRun(k, k.rt)
 	k.SetState(Init)
 	return k
 }
@@ -69,6 +71,8 @@ func (k *Core) SetState(s StateID) {
 		k.state = k.sInit
 	case Configure:
 		k.state = k.sConfigure
+	case Run:
+		k.state = k.sRun
 	default:
 		log.Panicf("core: set %s", StateName(s))
 	}

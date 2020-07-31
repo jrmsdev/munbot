@@ -30,10 +30,10 @@ const (
 )
 
 var sidMap map[StateID]string = map[StateID]string{
-	Dead:  "Dead",
-	Init: "Init",
+	Dead:      "Dead",
+	Init:      "Init",
 	Configure: "Configure",
-	Run: "Run",
+	Run:       "Run",
 }
 
 func StateName(sid StateID) string {
