@@ -25,14 +25,12 @@ type StateID int
 const (
 	Dead StateID = iota
 	Init
-	Configure
 	Run
 )
 
 var sidMap map[StateID]string = map[StateID]string{
 	Dead:      "Dead",
 	Init:      "Init",
-	Configure: "Configure",
 	Run:       "Run",
 }
 

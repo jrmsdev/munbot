@@ -13,6 +13,7 @@ import (
 	"github.com/munbot/master/log"
 	"github.com/munbot/master/utils/lock"
 	"github.com/munbot/master/utils/uuid"
+	"github.com/munbot/master/version"
 )
 
 var _ Runtime = &Core{}
@@ -27,7 +28,6 @@ type Core struct {
 	state      State
 	stid       StateID
 	sInit      State
-	sConfigure State
 	sRun       State
 }
 
@@ -36,15 +36,15 @@ func NewRuntime() Runtime {
 }
 
 func New(m *Mem) *Core {
+	log.Debugf("munbot version %s", version.String())
 	k := &Core{
 		rt:   m,
 		mu:   lock.New(),
 		uuid: uuid.Rand(),
 	}
 	k.sInit = newInit(k, k.rt)
-	k.sConfigure = newConfigure(k, k.rt)
 	k.sRun = newRun(k, k.rt)
-	k.SetState(Init)
+	k.state = k.sInit
 	return k
 }
 
@@ -75,8 +75,6 @@ func (k *Core) SetState(s StateID) error {
 	switch s {
 	case Init:
 		k.state = k.sInit
-	case Configure:
-		k.state = k.sConfigure
 	case Run:
 		k.state = k.sRun
 	default:
@@ -125,6 +123,12 @@ func (k *Core) Configure(kfl *Flags, cfl *config.Flags, cfg *config.Config) erro
 	}
 	defer k.rt.Unlock()
 	if err := k.state.Configure(); err != nil {
+		return k.error(err)
+	}
+	k.rt.Cfg = cfg
+	k.rt.CfgFlags = cfl
+	k.rt.CoreFlags = kfl
+	if err := k.rt.Cfg.Load(k.rt.CfgFlags.Profile); err != nil {
 		return k.error(err)
 	}
 	return nil

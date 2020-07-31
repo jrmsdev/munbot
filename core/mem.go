@@ -19,10 +19,10 @@ func init() {
 var ErrMemLock error = errors.New("core: mem lock failed")
 
 type Mem struct {
-	mu       *lock.Locker
-	Flags    *Flags
-	Cfg      *config.Config
-	CfgFlags *config.Flags
+	mu        *lock.Locker
+	Cfg       *config.Config
+	CfgFlags  *config.Flags
+	CoreFlags *Flags
 }
 
 func newMem() *Mem {

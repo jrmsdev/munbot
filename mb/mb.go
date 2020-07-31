@@ -12,7 +12,6 @@ import (
 	"github.com/munbot/master/cmd"
 	"github.com/munbot/master/config"
 	"github.com/munbot/master/core"
-	"github.com/munbot/master/log"
 )
 
 type Cmd struct {
@@ -48,7 +47,6 @@ func newMain(kf *core.Flags, cf *config.Flags) *Main {
 }
 
 func (m *Main) Run(args []string) int {
-	log.Debugf("munbot version %s", master.Version())
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 	mbot := master.NewMaster(m.rt)

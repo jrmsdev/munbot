@@ -15,11 +15,11 @@ func newInit(m Machine, rt *Mem) State {
 }
 
 func (s *SInit) Init() error {
-	return s.m.SetState(Configure)
+	return nil
 }
 
 func (s *SInit) Configure() error {
-	return ErrConfigure
+	return s.m.SetState(Run)
 }
 
 func (s *SInit) Start() error {
