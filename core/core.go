@@ -56,6 +56,10 @@ func (k *Core) SetState(s StateID) {
 	if s == k.stid {
 		log.Panicf("core: state %s set twice", StateName(s))
 	}
+	if err := k.rt.Lock(); err != nil {
+		log.Panic(err)
+	}
+	defer k.rt.Unlock()
 	switch s {
 	case Init:
 		k.state = k.sInit
@@ -70,6 +74,10 @@ func (k *Core) Init(ctx context.Context) (context.Context, error) {
 	case <-ctx.Done():
 		return ctx, ctx.Err()
 	}
+	if err := k.rt.Lock(); err != nil {
+		return ctx, err
+	}
+	defer k.rt.Unlock()
 	if err := k.state.Init(); err != nil {
 		return ctx, err
 	}
@@ -86,6 +94,10 @@ func (k *Core) Configure(kfl *Flags, cfl *config.Flags, cfg *config.Config) erro
 	case <-k.ctx.Done():
 		return k.ctx.Err()
 	}
+	if err := k.rt.Lock(); err != nil {
+		return err
+	}
+	defer k.rt.Unlock()
 	return k.state.Configure()
 }
 
@@ -94,6 +106,10 @@ func (k *Core) Start() error {
 	case <-k.ctx.Done():
 		return k.ctx.Err()
 	}
+	if err := k.rt.Lock(); err != nil {
+		return err
+	}
+	defer k.rt.Unlock()
 	return k.state.Start()
 }
 
@@ -102,5 +118,9 @@ func (k *Core) Stop() error {
 	case <-k.ctx.Done():
 		return k.ctx.Err()
 	}
+	if err := k.rt.Lock(); err != nil {
+		return err
+	}
+	defer k.rt.Unlock()
 	return k.state.Stop()
 }
