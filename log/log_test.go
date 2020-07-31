@@ -38,7 +38,7 @@ func (s *Suite) SetupTest() {
 	s.buf.Reset()
 	s.logger = nil
 	s.logger = gol.New(s.buf, "", gol.LstdFlags)
-	output = s.logger.Output
+	Output = s.logger.Output
 	setFlags = s.logger.SetFlags
 	setPrefix = s.logger.SetPrefix
 	debug = false

@@ -19,7 +19,8 @@ var (
 	verbose    bool = true
 )
 
-var output func(int, string) error = gol.Output
+var Output func(int, string) error = gol.Output
+
 var setFlags func(int) = gol.SetFlags
 var setPrefix func(string) = gol.SetPrefix
 
@@ -45,73 +46,73 @@ func SetPrefix(name string) {
 
 func Panic(v ...interface{}) {
 	err := errors.New(fmt.Sprint(v...))
-	output(cdepth, fmt.Sprintf("[PANIC] %s", err))
+	Output(cdepth, fmt.Sprintf("[PANIC] %s", err))
 	panic(err)
 }
 
 func Panicf(format string, v ...interface{}) {
 	err := errors.New(fmt.Sprintf(format, v...))
-	output(cdepth, fmt.Sprintf("[PANIC] %s", err))
+	Output(cdepth, fmt.Sprintf("[PANIC] %s", err))
 	panic(err)
 }
 
 func Print(v ...interface{}) {
 	if verbose {
-		output(cdepth, fmt.Sprint(v...))
+		Output(cdepth, fmt.Sprint(v...))
 	}
 }
 
 func Printf(format string, v ...interface{}) {
 	if verbose {
-		output(cdepth, fmt.Sprintf(format, v...))
+		Output(cdepth, fmt.Sprintf(format, v...))
 	}
 }
 
 func Debug(v ...interface{}) {
 	if debug {
-		output(cdepth, fmt.Sprint(v...))
+		Output(cdepth, fmt.Sprint(v...))
 	}
 }
 
 func Debugf(format string, v ...interface{}) {
 	if debug {
-		output(cdepth, fmt.Sprintf(format, v...))
+		Output(cdepth, fmt.Sprintf(format, v...))
 	}
 }
 
 func Error(v ...interface{}) error {
 	err := errors.New(fmt.Sprint(v...))
-	output(cdepth, fmt.Sprintf("[ERROR] %s", err))
+	Output(cdepth, fmt.Sprintf("[ERROR] %s", err))
 	return err
 }
 
 func Errorf(format string, v ...interface{}) error {
 	err := errors.New(fmt.Sprintf(format, v...))
-	output(cdepth, fmt.Sprintf("[ERROR] %s", err))
+	Output(cdepth, fmt.Sprintf("[ERROR] %s", err))
 	return err
 }
 
 var osExit func(int) = os.Exit
 
 func Fatal(v ...interface{}) {
-	output(cdepth, fmt.Sprintf("[FATAL] %s", fmt.Sprint(v...)))
+	Output(cdepth, fmt.Sprintf("[FATAL] %s", fmt.Sprint(v...)))
 	osExit(2)
 }
 
 func Fatalf(format string, v ...interface{}) {
-	output(cdepth, fmt.Sprintf("[FATAL] %s", fmt.Sprintf(format, v...)))
+	Output(cdepth, fmt.Sprintf("[FATAL] %s", fmt.Sprintf(format, v...)))
 	osExit(2)
 }
 
 func Warn(v ...interface{}) {
 	if verbose {
-		output(cdepth, fmt.Sprintf("[WARNING] %s", fmt.Sprint(v...)))
+		Output(cdepth, fmt.Sprintf("[WARNING] %s", fmt.Sprint(v...)))
 	}
 }
 
 func Warnf(format string, v ...interface{}) {
 	if verbose {
-		output(cdepth, fmt.Sprintf("[WARNING] %s", fmt.Sprintf(format, v...)))
+		Output(cdepth, fmt.Sprintf("[WARNING] %s", fmt.Sprintf(format, v...)))
 	}
 }
 
