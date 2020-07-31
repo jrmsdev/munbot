@@ -3,9 +3,13 @@
 
 package core
 
-//~ import (
+import (
+	"errors"
+
 	//~ "github.com/munbot/master/config"
-//~ )
+)
+
+var ErrSInit error = errors.New("core: run Init first")
 
 var _ State = &SInit{}
 
@@ -23,13 +27,13 @@ func (s *SInit) Init() error {
 }
 
 func (s *SInit) Configure() error {
-	return nil
+	return ErrSInit
 }
 
 func (s *SInit) Start() error {
-	return nil
+	return ErrSInit
 }
 
 func (s *SInit) Stop() error {
-	return nil
+	return ErrSInit
 }

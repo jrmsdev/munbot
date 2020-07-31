@@ -56,10 +56,6 @@ func (k *Core) SetState(s StateID) {
 	if s == k.stid {
 		log.Panicf("core: state %s set twice", StateName(s))
 	}
-	if err := k.rt.Lock(); err != nil {
-		log.Panic(err)
-	}
-	defer k.rt.Unlock()
 	switch s {
 	case Init:
 		k.state = k.sInit
@@ -70,57 +66,77 @@ func (k *Core) SetState(s StateID) {
 }
 
 func (k *Core) Init(ctx context.Context) (context.Context, error) {
+	log.Debug("init")
 	select {
 	case <-ctx.Done():
 		return ctx, ctx.Err()
-	}
-	if err := k.rt.Lock(); err != nil {
-		return ctx, err
+	default:
+		if err := k.rt.Lock(); err != nil {
+			return ctx, log.Error(err)
+		}
 	}
 	defer k.rt.Unlock()
 	if err := k.state.Init(); err != nil {
-		return ctx, err
+		return ctx, log.Error(err)
 	}
-	return k.WithContext(ctx)
+	var err error
+	ctx, err = k.WithContext(ctx)
+	if err != nil {
+		return ctx, log.Error(err)
+	}
+	return ctx, nil
 }
 
 var ErrCtxNoLock error = errors.New("core: no context locked")
 
 func (k *Core) Configure(kfl *Flags, cfl *config.Flags, cfg *config.Config) error {
+	log.Debug("configure")
 	if k.locked == "" || k.ctx == nil {
-		return ErrCtxNoLock
+		return log.Error(ErrCtxNoLock)
 	}
 	select {
 	case <-k.ctx.Done():
 		return k.ctx.Err()
-	}
-	if err := k.rt.Lock(); err != nil {
-		return err
+	default:
+		if err := k.rt.Lock(); err != nil {
+			return log.Error(err)
+		}
 	}
 	defer k.rt.Unlock()
-	return k.state.Configure()
+	if err := k.state.Configure(); err != nil {
+		return log.Error(err)
+	}
+	return nil
 }
 
 func (k *Core) Start() error {
 	select {
 	case <-k.ctx.Done():
 		return k.ctx.Err()
-	}
-	if err := k.rt.Lock(); err != nil {
-		return err
+	default:
+		if err := k.rt.Lock(); err != nil {
+			return log.Error(err)
+		}
 	}
 	defer k.rt.Unlock()
-	return k.state.Start()
+	if err := k.state.Start(); err != nil {
+		return log.Error(err)
+	}
+	return nil
 }
 
 func (k *Core) Stop() error {
 	select {
 	case <-k.ctx.Done():
 		return k.ctx.Err()
-	}
-	if err := k.rt.Lock(); err != nil {
-		return err
+	default:
+		if err := k.rt.Lock(); err != nil {
+			return log.Error(err)
+		}
 	}
 	defer k.rt.Unlock()
-	return k.state.Stop()
+	if err := k.state.Stop(); err != nil {
+		return log.Error(err)
+	}
+	return nil
 }
