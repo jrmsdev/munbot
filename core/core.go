@@ -9,11 +9,13 @@ import (
 	"errors"
 
 	"github.com/munbot/master/config"
+	"github.com/munbot/master/core/state"
 	"github.com/munbot/master/utils/lock"
 	"github.com/munbot/master/utils/uuid"
 )
 
 var _ Runtime = &Core{}
+var _ state.Machine = &Core{}
 
 type Core struct {
 	ctx      context.Context
@@ -23,7 +25,7 @@ type Core struct {
 	cfg      *config.Config
 	cfgFlags *config.Flags
 	flags    *Flags
-	state    State
+	state    state.State
 }
 
 func NewRuntime() Runtime {
@@ -38,18 +40,23 @@ func (rt *Core) UUID() string {
 	return rt.uuid
 }
 
+func (rt *Core) Config() *config.Config {
+	return rt.cfg
+}
+
+func (rt *Core) ConfigFlags() *config.Flags {
+	return rt.cfgFlags
+}
+
 func (rt *Core) Init(ctx context.Context) (context.Context, error) {
 	select {
 	case <-ctx.Done():
 		return ctx, ctx.Err()
 	}
-	var err error
-	ctx, err = rt.WithContext(ctx)
-	if err != nil {
+	if err := rt.state.Init(); err != nil {
 		return ctx, err
 	}
-	err = rt.state.Init()
-	return ctx, err
+	return rt.WithContext(ctx)
 }
 
 var ErrCtxNoLock error = errors.New("core: no context locked")
@@ -67,7 +74,7 @@ func (rt *Core) Configure(kfl *Flags, cfl *config.Flags, cfg *config.Config) err
 		rt.flags = kfl
 	}
 	// TODO: read config, parse flags, etc...
-	return rt.state.Configure(rt.flags, rt.cfgFlags, rt.cfg)
+	return rt.state.Configure()
 }
 
 func (rt *Core) Start() error {

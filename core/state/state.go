@@ -1,15 +1,11 @@
 // Copyright (c) Jeremías Casteglione <jrmsdev@gmail.com>
 // See LICENSE file.
 
-package core
-
-import (
-	"github.com/munbot/master/config"
-)
+package state
 
 type State interface {
 	Init() error
-	Configure(*Flags, *config.Flags, *config.Config) error
+	Configure() error
 	Start() error
 	Stop() error
 }
