@@ -1,6 +1,7 @@
 // Copyright (c) Jeremías Casteglione <jrmsdev@gmail.com>
 // See LICENSE file.
 
+// Package state implements the core machine states.
 package state
 
 type State interface {

@@ -37,6 +37,7 @@ func NewRuntime() Runtime {
 		uuid: uuid.Rand(),
 	}
 	rt.sInit = state.NewInit(rt)
+	rt.SetState(state.Init)
 	return rt
 }
 
@@ -75,7 +76,6 @@ func (rt *Core) Init(ctx context.Context) (context.Context, error) {
 	case <-ctx.Done():
 		return ctx, ctx.Err()
 	}
-	rt.SetState(state.Init)
 	if err := rt.state.Init(); err != nil {
 		return ctx, err
 	}
@@ -92,12 +92,15 @@ func (rt *Core) Configure(kfl *Flags, cfl *config.Flags, cfg *config.Config) err
 	case <-rt.ctx.Done():
 		return rt.ctx.Err()
 	default:
-		rt.cfg = cfg
-		rt.cfgFlags = cfl
-		rt.flags = kfl
+		// TODO: read config, parse flags, etc...
+		if err := rt.state.Configure(); err != nil {
+			return err
+		}
 	}
-	// TODO: read config, parse flags, etc...
-	return rt.state.Configure()
+	rt.flags = kfl
+	rt.cfgFlags = cfl
+	rt.cfg = cfg
+	return nil
 }
 
 func (rt *Core) Start() error {
