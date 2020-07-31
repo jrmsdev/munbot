@@ -27,6 +27,7 @@ type Core struct {
 	state    State
 	stid     StateID
 	sInit    State
+	sConfigure State
 }
 
 func NewRuntime() Runtime {
@@ -40,6 +41,7 @@ func New(m *Mem) *Core {
 		uuid: uuid.Rand(),
 	}
 	k.sInit = NewInit(k, k.rt)
+	k.sConfigure = NewConfigure(k, k.rt)
 	k.SetState(Init)
 	return k
 }
@@ -65,6 +67,8 @@ func (k *Core) SetState(s StateID) {
 	switch s {
 	case Init:
 		k.state = k.sInit
+	case Configure:
+		k.state = k.sConfigure
 	default:
 		log.Panicf("core: set %s", StateName(s))
 	}

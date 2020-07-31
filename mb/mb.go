@@ -28,12 +28,7 @@ func (c *Cmd) FlagSet(fs *flag.FlagSet) {
 }
 
 func (c *Cmd) Command(flags *config.Flags) cmd.Command {
-	return &Main{
-		kf:  c.flags,
-		cf:  flags,
-		rt:  core.NewRuntime(),
-		cfg: config.New(),
-	}
+	return newMain(c.flags, flags)
 }
 
 type Main struct {
@@ -41,6 +36,15 @@ type Main struct {
 	cf  *config.Flags
 	rt  core.Runtime
 	cfg *config.Config
+}
+
+func newMain(kf *core.Flags, cf *config.Flags) *Main {
+	return &Main{
+		kf:  kf,
+		cf:  cf,
+		rt:  core.NewRuntime(),
+		cfg: config.New(),
+	}
 }
 
 func (m *Main) Run(args []string) int {

@@ -5,6 +5,7 @@ package core
 
 import (
 	"errors"
+	"fmt"
 )
 
 var ErrInit error = errors.New("Init")
@@ -24,17 +25,21 @@ type StateID int
 const (
 	Dead StateID = iota
 	Init
+	Configure
+	Run
 )
 
 var sidMap map[StateID]string = map[StateID]string{
 	Dead:  "Dead",
 	Init: "Init",
+	Configure: "Configure",
+	Run: "Run",
 }
 
 func StateName(sid StateID) string {
 	n, ok := sidMap[sid]
 	if !ok {
-		return "invalid state: " + string(sid)
+		return fmt.Sprintf("invalid state id: %v", sid)
 	}
 	return n
 }

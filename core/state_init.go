@@ -19,6 +19,7 @@ func NewInit(m Machine, rt *Mem) State {
 }
 
 func (s *SInit) Init() error {
+	s.m.SetState(Configure)
 	return nil
 }
 
