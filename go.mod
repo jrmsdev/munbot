@@ -6,4 +6,5 @@ require (
 	github.com/gofrs/uuid v3.3.0+incompatible
 	github.com/stretchr/testify v1.6.1
 	github.com/subchen/go-trylock/v2 v2.0.0
+	gobot.io/x/gobot v1.14.0
 )

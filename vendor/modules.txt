@@ -1,7 +1,13 @@
 # github.com/davecgh/go-spew v1.1.0
 github.com/davecgh/go-spew/spew
+# github.com/gobuffalo/uuid v2.0.5+incompatible
+github.com/gobuffalo/uuid
 # github.com/gofrs/uuid v3.3.0+incompatible
 github.com/gofrs/uuid
+# github.com/hashicorp/errwrap v1.0.0
+github.com/hashicorp/errwrap
+# github.com/hashicorp/go-multierror v1.0.0
+github.com/hashicorp/go-multierror
 # github.com/pmezard/go-difflib v1.0.0
 github.com/pmezard/go-difflib/difflib
 # github.com/stretchr/objx v0.1.0
@@ -13,5 +19,7 @@ github.com/stretchr/testify/require
 github.com/stretchr/testify/suite
 # github.com/subchen/go-trylock/v2 v2.0.0
 github.com/subchen/go-trylock/v2
+# gobot.io/x/gobot v1.14.0
+gobot.io/x/gobot
 # gopkg.in/yaml.v3 v3.0.0-20200313102051-9f266ea9e77c
 gopkg.in/yaml.v3
