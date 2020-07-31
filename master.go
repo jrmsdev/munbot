@@ -9,7 +9,6 @@ import (
 
 	"github.com/munbot/master/config"
 	"github.com/munbot/master/core"
-	"github.com/munbot/master/state"
 	"github.com/munbot/master/version"
 )
 
@@ -20,18 +19,28 @@ func Version() *version.Info {
 
 type Master struct {
 	rt core.Runtime
-	sm state.Machine
 }
 
 func New() *Master {
-	rt := core.NewRuntime()
-	return &Master{rt: rt, sm: state.NewMachine(rt)}
+	return NewMaster(core.NewRuntime())
 }
 
-func (m *Master) Init(cf *config.Flags, fl *core.Flags) error {
-	return m.sm.Init(cf, fl)
+func NewMaster(rt core.Runtime) *Master {
+	return &Master{rt: rt}
 }
 
-func (m *Master) Run() error {
-	return m.sm.Run(context.Background())
+func (m *Master) Init(ctx context.Context) (context.Context, error) {
+	return m.rt.WithContext(ctx)
+}
+
+func (m *Master) Configure(kf *core.Flags, cf *config.Flags, c *config.Config) error {
+	return m.rt.Configure(kf, cf, c)
+}
+
+func (m *Master) Start() error {
+	return m.rt.Start()
+}
+
+func (m *Master) Stop() error {
+	return m.rt.Stop()
 }

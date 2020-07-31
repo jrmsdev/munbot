@@ -10,10 +10,10 @@ import (
 )
 
 type Runtime interface {
-	String() string
-	UUID() string
 	Context() context.Context
 	WithContext(context.Context) (context.Context, error)
-	Lock(context.Context) (context.Context, error)
-	Configure(*config.Config, *config.Flags, *Flags) error
+	Init() error
+	Configure(*Flags, *config.Flags, *config.Config) error
+	Start() error
+	Stop() error
 }
