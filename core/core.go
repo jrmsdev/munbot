@@ -7,6 +7,7 @@ package core
 import (
 	"context"
 	"errors"
+	"fmt"
 
 	"github.com/munbot/master/config"
 	"github.com/munbot/master/log"
@@ -51,6 +52,11 @@ func (k *Core) UUID() string {
 	return k.uuid
 }
 
+func (k *Core) error(err error) error {
+	log.Output(2, fmt.Sprintf("[ERROR] core %s: %s", StateName(k.stid), err))
+	return err
+}
+
 func (k *Core) SetState(s StateID) {
 	log.Debugf("state %s set %s", StateName(k.stid), StateName(s))
 	if s == k.stid {
@@ -72,17 +78,17 @@ func (k *Core) Init(ctx context.Context) (context.Context, error) {
 		return ctx, ctx.Err()
 	default:
 		if err := k.rt.Lock(); err != nil {
-			return ctx, log.Error(err)
+			return ctx, k.error(err)
 		}
 	}
 	defer k.rt.Unlock()
 	if err := k.state.Init(); err != nil {
-		return ctx, log.Error(err)
+		return ctx, k.error(err)
 	}
 	var err error
 	ctx, err = k.WithContext(ctx)
 	if err != nil {
-		return ctx, log.Error(err)
+		return ctx, k.error(err)
 	}
 	return ctx, nil
 }
@@ -92,19 +98,19 @@ var ErrCtxNoLock error = errors.New("core: no context locked")
 func (k *Core) Configure(kfl *Flags, cfl *config.Flags, cfg *config.Config) error {
 	log.Debug("configure")
 	if k.locked == "" || k.ctx == nil {
-		return log.Error(ErrCtxNoLock)
+		return k.error(ErrCtxNoLock)
 	}
 	select {
 	case <-k.ctx.Done():
 		return k.ctx.Err()
 	default:
 		if err := k.rt.Lock(); err != nil {
-			return log.Error(err)
+			return k.error(err)
 		}
 	}
 	defer k.rt.Unlock()
 	if err := k.state.Configure(); err != nil {
-		return log.Error(err)
+		return k.error(err)
 	}
 	return nil
 }
@@ -115,12 +121,12 @@ func (k *Core) Start() error {
 		return k.ctx.Err()
 	default:
 		if err := k.rt.Lock(); err != nil {
-			return log.Error(err)
+			return k.error(err)
 		}
 	}
 	defer k.rt.Unlock()
 	if err := k.state.Start(); err != nil {
-		return log.Error(err)
+		return k.error(err)
 	}
 	return nil
 }
@@ -131,12 +137,12 @@ func (k *Core) Stop() error {
 		return k.ctx.Err()
 	default:
 		if err := k.rt.Lock(); err != nil {
-			return log.Error(err)
+			return k.error(err)
 		}
 	}
 	defer k.rt.Unlock()
 	if err := k.state.Stop(); err != nil {
-		return log.Error(err)
+		return k.error(err)
 	}
 	return nil
 }

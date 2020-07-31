@@ -3,6 +3,15 @@
 
 package core
 
+import (
+	"errors"
+)
+
+var ErrInit error = errors.New("Init")
+var ErrConfigure error = errors.New("Configure")
+var ErrStart error = errors.New("Start")
+var ErrStop error = errors.New("Stop")
+
 type State interface {
 	Init() error
 	Configure() error
