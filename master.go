@@ -30,7 +30,7 @@ func NewMaster(rt core.Runtime) *Master {
 }
 
 func (m *Master) Init(ctx context.Context) (context.Context, error) {
-	return m.rt.WithContext(ctx)
+	return m.rt.Init(ctx)
 }
 
 func (m *Master) Configure(kf *core.Flags, cf *config.Flags, c *config.Config) error {

@@ -3,10 +3,20 @@
 
 package core
 
-func (rt *Core) Init() error {
+import (
+	"context"
+)
+
+func (rt *Core) Init(ctx context.Context) (context.Context, error) {
 	select {
-	case <-rt.ctx.Done():
-		return rt.ctx.Err()
+	case <-ctx.Done():
+		return ctx, ctx.Err()
 	}
-	return nil
+	var err error
+	ctx, err = rt.WithContext(ctx)
+	if err != nil {
+		return ctx, err
+	}
+	err = rt.state.Init()
+	return ctx, err
 }

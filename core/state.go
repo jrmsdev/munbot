@@ -4,13 +4,11 @@
 package core
 
 import (
-	"context"
-
 	"github.com/munbot/master/config"
 )
 
-type Runtime interface {
-	Init(context.Context) (context.Context, error)
+type State interface {
+	Init() error
 	Configure(*Flags, *config.Flags, *config.Config) error
 	Start() error
 	Stop() error

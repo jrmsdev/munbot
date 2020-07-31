@@ -22,6 +22,7 @@ type Core struct {
 	cfg      *config.Config
 	cfgFlags *config.Flags
 	flags    *Flags
+	state    State
 }
 
 func NewRuntime() Runtime {

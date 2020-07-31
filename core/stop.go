@@ -8,5 +8,5 @@ func (rt *Core) Stop() error {
 	case <-rt.ctx.Done():
 		return rt.ctx.Err()
 	}
-	return nil
+	return rt.state.Stop()
 }

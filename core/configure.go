@@ -23,5 +23,6 @@ func (rt *Core) Configure(kfl *Flags, cfl *config.Flags, cfg *config.Config) err
 		rt.cfgFlags = cfl
 		rt.flags = kfl
 	}
-	return nil
+	// TODO: read config, parse flags, etc...
+	return rt.state.Configure(rt.flags, rt.cfgFlags, rt.cfg)
 }
