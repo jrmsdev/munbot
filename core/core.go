@@ -10,6 +10,7 @@ import (
 
 	"github.com/munbot/master/config"
 	"github.com/munbot/master/core/state"
+	"github.com/munbot/master/log"
 	"github.com/munbot/master/utils/lock"
 	"github.com/munbot/master/utils/uuid"
 )
@@ -26,10 +27,17 @@ type Core struct {
 	cfgFlags *config.Flags
 	flags    *Flags
 	state    state.State
+	stid     state.ID
+	sInit    state.State
 }
 
 func NewRuntime() Runtime {
-	return &Core{mu: lock.New(), uuid: uuid.Rand()}
+	rt := &Core{
+		mu: lock.New(),
+		uuid: uuid.Rand(),
+	}
+	rt.sInit = state.NewInit(rt)
+	return rt
 }
 
 func (rt *Core) String() string {
@@ -48,11 +56,26 @@ func (rt *Core) ConfigFlags() *config.Flags {
 	return rt.cfgFlags
 }
 
+func (rt *Core) SetState(s state.ID) {
+	log.Debugf("state %s set %s", state.Name(rt.stid), state.Name(s))
+	if s == rt.stid {
+		log.Panicf("core: state %s set twice", state.Name(s))
+	}
+	switch s {
+	case state.Init:
+		rt.state = rt.sInit
+	default:
+		log.Panicf("core: set %s", state.Name(s))
+	}
+	rt.stid = s
+}
+
 func (rt *Core) Init(ctx context.Context) (context.Context, error) {
 	select {
 	case <-ctx.Done():
 		return ctx, ctx.Err()
 	}
+	rt.SetState(state.Init)
 	if err := rt.state.Init(); err != nil {
 		return ctx, err
 	}

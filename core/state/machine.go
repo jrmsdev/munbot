@@ -10,6 +10,7 @@ import (
 )
 
 type Machine interface {
+	SetState(ID)
 	Context() context.Context
 	WithContext(context.Context) (context.Context, error)
 	Config() *config.Config

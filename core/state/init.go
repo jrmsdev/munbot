@@ -10,6 +10,11 @@ package state
 var _ State = &SInit{}
 
 type SInit struct {
+	m Machine
+}
+
+func NewInit(m Machine) State {
+	return &SInit{m: m}
 }
 
 func (s *SInit) Init() error {
