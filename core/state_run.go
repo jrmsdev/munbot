@@ -3,6 +3,10 @@
 
 package core
 
+import (
+	"github.com/munbot/master/log"
+)
+
 var _ State = &SRun{}
 
 type SRun struct {
@@ -23,10 +27,12 @@ func (s *SRun) Configure() error {
 }
 
 func (s *SRun) Start() error {
+	log.Print("Start")
 	return nil
 }
 
 func (s *SRun) Run() error {
+	log.Print("Run")
 	return nil
 }
 

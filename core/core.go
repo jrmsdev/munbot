@@ -40,7 +40,7 @@ func NewRuntime() Runtime {
 }
 
 func New(m *Mem) *Core {
-	log.Debugf("munbot version %s", version.String())
+	log.Printf("Munbot version %s", version.String())
 	k := &Core{
 		rt:   m,
 		mu:   lock.New(),

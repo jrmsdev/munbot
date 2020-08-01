@@ -5,6 +5,7 @@ package core
 
 import (
 	"github.com/munbot/master/config"
+	"github.com/munbot/master/log"
 	"github.com/munbot/master/robot/master"
 )
 
@@ -20,11 +21,13 @@ func newInit(m Machine, rt *Mem) State {
 }
 
 func (s *SInit) Init() error {
+	log.Print("Init")
 	s.rt.Master = master.New()
 	return nil
 }
 
 func (s *SInit) Configure() error {
+	log.Print("Configure")
 	cfg := s.m.Config()
 	cfl := s.m.ConfigFlags()
 	kfl := s.m.CoreFlags()

@@ -18,7 +18,7 @@ func String() string {
 	v := new(Info)
 	b := v.Build().String()
 	if b != "" {
-		b = " [" + b + "]"
+		b = " (" + b + ")"
 	}
 	return fmt.Sprintf("%s%s", v, b)
 }
