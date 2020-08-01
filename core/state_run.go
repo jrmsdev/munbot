@@ -51,6 +51,12 @@ func (s *SRun) Start() error {
 			fail <- err
 		}
 	}(s.wg, s.start, s.fail)
+	time.Sleep(s.wait)
+	select {
+	case err := <-s.fail:
+		return err
+	default:
+	}
 	return nil
 }
 
@@ -70,7 +76,6 @@ func (s *SRun) Run() error {
 				check = false
 				select {
 				case err = <-s.fail:
-					check = false
 				default:
 				}
 			}
