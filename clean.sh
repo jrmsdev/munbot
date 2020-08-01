@@ -1,3 +1,3 @@
 #!/bin/sh
-rm -vrf ./_build ./_testing
+rm -vrf ./_build ./_testing ./_docker/devel/tmp
 exec go clean -mod vendor -cache -testcache ./...
