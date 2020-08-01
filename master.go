@@ -9,6 +9,7 @@ import (
 
 	"github.com/munbot/master/config"
 	"github.com/munbot/master/core"
+	"github.com/munbot/master/core/flags"
 	"github.com/munbot/master/version"
 )
 
@@ -33,7 +34,7 @@ func (m *Master) Init(ctx context.Context) (context.Context, error) {
 	return m.rt.Init(ctx)
 }
 
-func (m *Master) Configure(kf *core.Flags, cf *config.Flags, c *config.Config) error {
+func (m *Master) Configure(kf *flags.Flags, cf *config.Flags, c *config.Config) error {
 	return m.rt.Configure(kf, cf, c)
 }
 

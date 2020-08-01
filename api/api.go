@@ -6,6 +6,7 @@ package api
 
 import (
 	"github.com/munbot/master/config"
+	"github.com/munbot/master/core/flags"
 )
 
 var _ Server = &Api{}
@@ -17,7 +18,7 @@ func New() Server {
 	return &Api{}
 }
 
-func (a *Api) Configure(cfg *config.Section) error {
+func (a *Api) Configure(kfl *flags.Flags, cfg *config.Section) error {
 	return nil
 }
 

@@ -7,11 +7,12 @@ import (
 	"context"
 
 	"github.com/munbot/master/config"
+	"github.com/munbot/master/core/flags"
 )
 
 type Runtime interface {
 	Init(context.Context) (context.Context, error)
-	Configure(*Flags, *config.Flags, *config.Config) error
+	Configure(*flags.Flags, *config.Flags, *config.Config) error
 	Start() error
 	Stop() error
 }

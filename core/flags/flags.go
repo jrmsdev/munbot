@@ -1,7 +1,7 @@
 // Copyright (c) Jeremías Casteglione <jrmsdev@gmail.com>
 // See LICENSE file.
 
-package core
+package flags
 
 import (
 	"flag"
@@ -17,7 +17,7 @@ type Flags struct {
 	ApiPort    uint
 }
 
-func NewFlags() *Flags {
+func New() *Flags {
 	return &Flags{ApiEnable: true}
 }
 

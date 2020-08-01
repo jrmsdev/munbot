@@ -8,6 +8,8 @@ import (
 	"gobot.io/x/gobot"
 
 	"github.com/munbot/master/api"
+	"github.com/munbot/master/config"
+	"github.com/munbot/master/core/flags"
 )
 
 var _ Munbot = &Robot{}
@@ -26,4 +28,8 @@ func NewRobot() *Robot {
 		Master: gobot.NewMaster(),
 		api: api.New(),
 	}
+}
+
+func (m *Robot) Configure(kfl *flags.Flags, cfl *config.Flags, cfg *config.Config) error {
+	return nil
 }

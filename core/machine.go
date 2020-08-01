@@ -7,6 +7,7 @@ import (
 	"context"
 
 	"github.com/munbot/master/config"
+	"github.com/munbot/master/core/flags"
 )
 
 type Machine interface {
@@ -15,5 +16,5 @@ type Machine interface {
 	WithContext(context.Context) (context.Context, error)
 	Config() *config.Config
 	ConfigFlags() *config.Flags
-	CoreFlags() *Flags
+	CoreFlags() *flags.Flags
 }

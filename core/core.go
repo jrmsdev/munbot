@@ -10,6 +10,7 @@ import (
 	"fmt"
 
 	"github.com/munbot/master/config"
+	"github.com/munbot/master/core/flags"
 	"github.com/munbot/master/log"
 	"github.com/munbot/master/utils/lock"
 	"github.com/munbot/master/utils/uuid"
@@ -26,7 +27,7 @@ type Core struct {
 	uuid   string
 	cfg    *config.Config
 	cfl    *config.Flags
-	kfl    *Flags
+	kfl    *flags.Flags
 	locked string
 	state  State
 	stid   StateID
@@ -79,7 +80,7 @@ func (k Core) ConfigFlags() *config.Flags {
 	return k.cfl
 }
 
-func (k Core) CoreFlags() *Flags {
+func (k Core) CoreFlags() *flags.Flags {
 	return k.kfl
 }
 
@@ -137,7 +138,7 @@ func (k *Core) Init(ctx context.Context) (context.Context, error) {
 
 var ErrCtxNoLock error = errors.New("core: no context locked")
 
-func (k *Core) Configure(kfl *Flags, cfl *config.Flags, cfg *config.Config) error {
+func (k *Core) Configure(kfl *flags.Flags, cfl *config.Flags, cfg *config.Config) error {
 	log.Debugf("[%s] Configure", k.State())
 	if k.locked == "" || k.ctx == nil {
 		return k.error(ErrCtxNoLock)
