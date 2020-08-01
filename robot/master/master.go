@@ -6,8 +6,6 @@ package master
 
 import (
 	"gobot.io/x/gobot"
-
-	"github.com/munbot/master/robot/worker"
 )
 
 var _ Munbot = &Robot{}
@@ -22,8 +20,4 @@ func New() Munbot {
 
 func NewRobot() *Robot {
 	return &Robot{Master: gobot.NewMaster()}
-}
-
-func (m *Robot) AddWorker(bot *gobot.Robot) worker.Munbot {
-	return nil
 }

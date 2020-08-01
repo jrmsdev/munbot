@@ -86,6 +86,14 @@ func (s *SRun) Run() error {
 }
 
 func (s *SRun) Stop() error {
+	var err error
+	if err := s.rt.Master.Stop(); err != nil {
+		err = log.Error(err)
+	}
+	s.wg.Wait()
+	if err != nil {
+		return err
+	}
 	return s.m.SetState(Halt)
 }
 
