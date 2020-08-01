@@ -6,8 +6,6 @@ package core
 import (
 	"errors"
 
-	"github.com/munbot/master/config"
-	"github.com/munbot/master/core/flags"
 	"github.com/munbot/master/robot/master"
 	"github.com/munbot/master/utils/lock"
 )
@@ -22,9 +20,6 @@ var ErrMemLock error = errors.New("core: mem lock failed")
 
 type Mem struct {
 	mu        *lock.Locker
-	Cfg       *config.Config
-	CfgFlags  *config.Flags
-	CoreFlags *flags.Flags
 	Master    master.Munbot
 }
 

@@ -33,12 +33,12 @@ func (s *SInit) Configure() error {
 	kfl := s.m.CoreFlags()
 	cfg.SetDefaults(config.Defaults)
 	if err := cfg.Load(cfl.Profile); err != nil {
-		return err
+		return log.Error(err)
 	}
 	kfl.Parse(cfg)
-	s.rt.Cfg = cfg
-	s.rt.CfgFlags = cfl
-	s.rt.CoreFlags = kfl
+	if err := s.rt.Master.Configure(kfl, cfl); err != nil {
+		return log.Error(err)
+	}
 	return s.m.SetState(Run)
 }
 

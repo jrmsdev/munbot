@@ -9,7 +9,7 @@ import (
 )
 
 type Munbot interface {
-	Configure(kfl *flags.Flags, cfl *config.Flags, cfg *config.Config) error
+	Configure(kfl *flags.Flags, cfl *config.Flags) error
 	Start() error
 	Stop() error
 	Running() bool

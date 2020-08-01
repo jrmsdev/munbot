@@ -5,20 +5,24 @@
 package api
 
 import (
-	"github.com/munbot/master/config"
+	"fmt"
+	"net/http"
+
 	"github.com/munbot/master/core/flags"
 )
 
 var _ Server = &Api{}
 
 type Api struct {
+	server *http.Server
 }
 
 func New() Server {
-	return &Api{}
+	return &Api{server: new(http.Server)}
 }
 
-func (a *Api) Configure(kfl *flags.Flags, cfg *config.Section) error {
+func (a *Api) Configure(kfl *flags.Flags) error {
+	a.server.Addr = fmt.Sprintf("%s:%d", kfl.ApiAddr, kfl.ApiPort)
 	return nil
 }
 
