@@ -8,16 +8,20 @@ import (
 	"fmt"
 )
 
-var ErrInit error = errors.New("can not run Init in this state")
-var ErrConfigure error = errors.New("can not run Configure in this state")
-var ErrStart error = errors.New("can not run Start in this state")
-var ErrStop error = errors.New("can not run Stop in this state")
+var ErrInit error = errors.New("can not Init in this state")
+var ErrConfigure error = errors.New("can not Configure in this state")
+var ErrStart error = errors.New("can not Start in this state")
+var ErrRun error = errors.New("can not Run in this state")
+var ErrStop error = errors.New("can not Stop in this state")
+var ErrHalt error = errors.New("can not Halt in this state")
 
 type State interface {
 	Init() error
 	Configure() error
 	Start() error
+	Run() error
 	Stop() error
+	Halt() error
 }
 
 type StateID int
@@ -26,12 +30,14 @@ const (
 	Dead StateID = iota
 	Init
 	Run
+	Halt
 )
 
 var sidMap map[StateID]string = map[StateID]string{
-	Dead: "Dead",
-	Init: "Init",
-	Run:  "Run",
+	Dead:  "Dead",
+	Init:  "Init",
+	Run:   "Run",
+	Halt:  "Halt",
 }
 
 func StateName(sid StateID) string {

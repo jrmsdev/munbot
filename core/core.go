@@ -32,6 +32,7 @@ type Core struct {
 	stid   StateID
 	sInit  State
 	sRun   State
+	sHalt  State
 }
 
 func NewRuntime() Runtime {
@@ -47,6 +48,8 @@ func New(m *Mem) *Core {
 	}
 	k.sInit = newInit(k, k.rt)
 	k.sRun = newRun(k, k.rt)
+	k.sHalt = newHalt(k, k.rt)
+	// init state
 	k.state = k.sInit
 	k.stid = Init
 	return k
@@ -58,6 +61,14 @@ func (k *Core) String() string {
 
 func (k *Core) UUID() string {
 	return k.uuid
+}
+
+func (k *Core) State() string {
+	return StateName(k.stid)
+}
+
+func (k *Core) StateID() StateID {
+	return k.stid
 }
 
 func (k Core) Config() *config.Config {
@@ -73,7 +84,7 @@ func (k Core) CoreFlags() *Flags {
 }
 
 func (k *Core) error(err error) error {
-	log.Output(2, fmt.Sprintf("[ERROR] core %s: %s", StateName(k.stid), err))
+	log.Output(2, fmt.Sprintf("[ERROR] core: %s", err))
 	return err
 }
 
@@ -84,7 +95,7 @@ func (k *Core) errorf(f string, args ...interface{}) error {
 }
 
 func (k *Core) SetState(s StateID) error {
-	log.Debugf("state %s set %s", StateName(k.stid), StateName(s))
+	log.Debugf("[%s] set state %s", k.State(), StateName(s))
 	if s == k.stid {
 		return k.errorf("core: state %s set twice", StateName(s))
 	}
@@ -93,6 +104,8 @@ func (k *Core) SetState(s StateID) error {
 		k.state = k.sInit
 	case Run:
 		k.state = k.sRun
+	case Halt:
+		k.state = k.sHalt
 	default:
 		k.errorf("core: set %s", StateName(s))
 	}
@@ -101,7 +114,7 @@ func (k *Core) SetState(s StateID) error {
 }
 
 func (k *Core) Init(ctx context.Context) (context.Context, error) {
-	log.Debug("init")
+	log.Debugf("[%s] Init", k.State())
 	select {
 	case <-ctx.Done():
 		return ctx, ctx.Err()
@@ -125,7 +138,7 @@ func (k *Core) Init(ctx context.Context) (context.Context, error) {
 var ErrCtxNoLock error = errors.New("core: no context locked")
 
 func (k *Core) Configure(kfl *Flags, cfl *config.Flags, cfg *config.Config) error {
-	log.Debug("configure")
+	log.Debugf("[%s] Configure", k.State())
 	if k.locked == "" || k.ctx == nil {
 		return k.error(ErrCtxNoLock)
 	}
@@ -138,6 +151,9 @@ func (k *Core) Configure(kfl *Flags, cfl *config.Flags, cfg *config.Config) erro
 		}
 	}
 	defer k.rt.Unlock()
+	k.cfg = cfg
+	k.cfl = cfl
+	k.kfl = kfl
 	if err := k.state.Configure(); err != nil {
 		return k.error(err)
 	}
@@ -145,6 +161,7 @@ func (k *Core) Configure(kfl *Flags, cfl *config.Flags, cfg *config.Config) erro
 }
 
 func (k *Core) Start() error {
+	log.Debugf("[%s] Start", k.State())
 	select {
 	case <-k.ctx.Done():
 		return k.ctx.Err()
@@ -157,10 +174,14 @@ func (k *Core) Start() error {
 	if err := k.state.Start(); err != nil {
 		return k.error(err)
 	}
+	if err := k.state.Run(); err != nil {
+		return k.error(err)
+	}
 	return nil
 }
 
 func (k *Core) Stop() error {
+	log.Debugf("[%s] Stop", k.State())
 	select {
 	case <-k.ctx.Done():
 		return k.ctx.Err()
@@ -171,6 +192,9 @@ func (k *Core) Stop() error {
 	}
 	defer k.rt.Unlock()
 	if err := k.state.Stop(); err != nil {
+		return k.error(err)
+	}
+	if err := k.state.Halt(); err != nil {
 		return k.error(err)
 	}
 	return nil

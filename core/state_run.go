@@ -26,6 +26,14 @@ func (s *SRun) Start() error {
 	return nil
 }
 
+func (s *SRun) Run() error {
+	return nil
+}
+
 func (s *SRun) Stop() error {
-	return ErrStop
+	return s.m.SetState(Halt)
+}
+
+func (s *SRun) Halt() error {
+	return ErrHalt
 }

@@ -43,6 +43,14 @@ func (s *SInit) Start() error {
 	return ErrStart
 }
 
+func (s *SInit) Run() error {
+	return ErrRun
+}
+
 func (s *SInit) Stop() error {
 	return ErrStop
+}
+
+func (s *SInit) Halt() error {
+	return ErrHalt
 }
