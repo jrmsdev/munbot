@@ -6,12 +6,15 @@ package master
 
 import (
 	"gobot.io/x/gobot"
+
+	"github.com/munbot/master/api"
 )
 
 var _ Munbot = &Robot{}
 
 type Robot struct {
 	*gobot.Master
+	api api.Server
 }
 
 func New() Munbot {
@@ -19,5 +22,8 @@ func New() Munbot {
 }
 
 func NewRobot() *Robot {
-	return &Robot{Master: gobot.NewMaster()}
+	return &Robot{
+		Master: gobot.NewMaster(),
+		api: api.New(),
+	}
 }

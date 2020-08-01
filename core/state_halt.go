@@ -3,6 +3,10 @@
 
 package core
 
+import (
+	"github.com/munbot/master/log"
+)
+
 var _ State = &SHalt{}
 
 type SHalt struct {
@@ -35,5 +39,6 @@ func (s *SHalt) Stop() error {
 }
 
 func (s *SHalt) Halt() error {
+	log.Print("Halt")
 	return nil
 }

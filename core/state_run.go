@@ -13,22 +13,22 @@ import (
 var _ State = &SRun{}
 
 type SRun struct {
-	m  Machine
-	rt *Mem
-	wg *sync.WaitGroup
+	m     Machine
+	rt    *Mem
+	wg    *sync.WaitGroup
 	start chan bool
-	fail chan error
-	wait time.Duration
+	fail  chan error
+	wait  time.Duration
 }
 
 func newRun(m Machine, rt *Mem) State {
 	return &SRun{
-		m: m,
-		rt: rt,
-		wg: new(sync.WaitGroup),
+		m:     m,
+		rt:    rt,
+		wg:    new(sync.WaitGroup),
 		start: make(chan bool, 1),
-		fail: make(chan error),
-		wait: 100*time.Millisecond,
+		fail:  make(chan error),
+		wait:  100 * time.Millisecond,
 	}
 }
 
@@ -61,8 +61,8 @@ func (s *SRun) Start() error {
 }
 
 func (s *SRun) Run() error {
-	var err error
 	log.Print("Run")
+	var err error
 	s.start <- true
 	check := true
 	for check {
@@ -86,6 +86,7 @@ func (s *SRun) Run() error {
 }
 
 func (s *SRun) Stop() error {
+	log.Print("Stop")
 	var err error
 	if err := s.rt.Master.Stop(); err != nil {
 		err = log.Error(err)
