@@ -8,7 +8,6 @@ import (
 	"context"
 	"flag"
 
-	"github.com/munbot/master"
 	"github.com/munbot/master/cmd"
 	"github.com/munbot/master/config"
 	"github.com/munbot/master/core"
@@ -50,14 +49,13 @@ func newMain(kf *flags.Flags, cf *config.Flags) *Main {
 func (m *Main) Run(args []string) int {
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
-	mbot := master.NewMaster(m.rt)
-	if _, err := mbot.Init(ctx); err != nil {
+	if _, err := m.rt.Init(ctx); err != nil {
 		return 10
 	}
-	if err := mbot.Configure(m.kf, m.cf, m.cfg); err != nil {
+	if err := m.rt.Configure(m.kf, m.cf, m.cfg); err != nil {
 		return 11
 	}
-	if err := mbot.Start(); err != nil {
+	if err := m.rt.Start(); err != nil {
 		return 12
 	}
 	return 0
