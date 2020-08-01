@@ -7,4 +7,4 @@ go env
 echo '***'
 echo "*** build $@"
 echo '***'
-exec sh -x ./build.sh ${SRC} ${BUILD} -pkgdir ./_build/pkg
+exec sh -x ./build.sh ${SRC} ${BUILD}
