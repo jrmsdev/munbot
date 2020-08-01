@@ -3,6 +3,11 @@
 
 package core
 
+import (
+	"github.com/munbot/master/config"
+	"github.com/munbot/master/robot/master"
+)
+
 var _ State = &SInit{}
 
 type SInit struct {
@@ -15,10 +20,22 @@ func newInit(m Machine, rt *Mem) State {
 }
 
 func (s *SInit) Init() error {
+	s.rt.Master = master.New()
 	return nil
 }
 
 func (s *SInit) Configure() error {
+	cfg := s.m.Config()
+	cfl := s.m.ConfigFlags()
+	kfl := s.m.CoreFlags()
+	cfg.SetDefaults(config.Defaults)
+	if err := cfg.Load(cfl.Profile); err != nil {
+		return err
+	}
+	kfl.Parse(cfg)
+	s.rt.Cfg = cfg
+	s.rt.CfgFlags = cfl
+	s.rt.CoreFlags = kfl
 	return s.m.SetState(Run)
 }
 

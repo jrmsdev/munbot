@@ -11,7 +11,6 @@ import (
 
 	"github.com/munbot/master/config"
 	"github.com/munbot/master/log"
-	"github.com/munbot/master/robot/master"
 	"github.com/munbot/master/utils/lock"
 	"github.com/munbot/master/utils/uuid"
 	"github.com/munbot/master/version"
@@ -25,6 +24,9 @@ type Core struct {
 	ctx    context.Context
 	mu     *lock.Locker
 	uuid   string
+	cfg    *config.Config
+	cfl    *config.Flags
+	kfl    *Flags
 	locked string
 	state  State
 	stid   StateID
@@ -56,6 +58,18 @@ func (k *Core) String() string {
 
 func (k *Core) UUID() string {
 	return k.uuid
+}
+
+func (k Core) Config() *config.Config {
+	return k.cfg
+}
+
+func (k Core) ConfigFlags() *config.Flags {
+	return k.cfl
+}
+
+func (k Core) CoreFlags() *Flags {
+	return k.kfl
 }
 
 func (k *Core) error(err error) error {
@@ -97,20 +111,15 @@ func (k *Core) Init(ctx context.Context) (context.Context, error) {
 		}
 	}
 	defer k.rt.Unlock()
-	if err := k.state.Init(); err != nil {
-		return ctx, k.error(err)
-	}
 	var err error
 	ctx, err = k.WithContext(ctx)
 	if err != nil {
 		return ctx, k.error(err)
 	}
-	return ctx, k.doInit()
-}
-
-func (k *Core) doInit() error {
-	k.rt.Master = master.New()
-	return nil
+	if err = k.state.Init(); err != nil {
+		return ctx, k.error(err)
+	}
+	return ctx, nil
 }
 
 var ErrCtxNoLock error = errors.New("core: no context locked")
@@ -132,18 +141,6 @@ func (k *Core) Configure(kfl *Flags, cfl *config.Flags, cfg *config.Config) erro
 	if err := k.state.Configure(); err != nil {
 		return k.error(err)
 	}
-	k.rt.Cfg = cfg
-	k.rt.CfgFlags = cfl
-	k.rt.CoreFlags = kfl
-	return k.doConfigure()
-}
-
-func (k *Core) doConfigure() error {
-	k.rt.Cfg.SetDefaults(config.Defaults)
-	if err := k.rt.Cfg.Load(k.rt.CfgFlags.Profile); err != nil {
-		return k.error(err)
-	}
-	k.rt.CoreFlags.Parse(k.rt.Cfg)
 	return nil
 }
 
