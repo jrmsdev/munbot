@@ -15,8 +15,8 @@ var _ Munbot = &Robot{}
 
 type Robot struct {
 	*gobot.Robot
-	adaptor adaptor.Munbot
-	driver  driver.Munbot
+	adaptor adaptor.Adaptor
+	driver  driver.Driver
 }
 
 func New() Munbot {

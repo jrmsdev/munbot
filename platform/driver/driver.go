@@ -12,15 +12,15 @@ import (
 	"github.com/munbot/master/platform/adaptor"
 )
 
-var _ Munbot = &Driver{}
+var _ Driver = &Munbot{}
 
-type Munbot interface {
+type Driver interface {
 	gobot.Driver
 }
 
 const Hello string = "hello"
 
-type Driver struct {
+type Munbot struct {
 	gobot.Eventer
 	gobot.Commander
 	name       string
@@ -29,8 +29,8 @@ type Driver struct {
 	halt       chan bool
 }
 
-func New(a adaptor.Munbot) *Driver {
-	m := &Driver{
+func New(a adaptor.Adaptor) *Munbot {
+	m := &Munbot{
 		name:       "Munbot",
 		connection: a,
 		interval:   500 * time.Millisecond,
@@ -48,15 +48,15 @@ func New(a adaptor.Munbot) *Driver {
 	return m
 }
 
-func (m *Driver) Connection() gobot.Connection {
+func (m *Munbot) Connection() gobot.Connection {
 	return m.connection
 }
 
-func (m *Driver) Name() string { return m.name }
+func (m *Munbot) Name() string { return m.name }
 
-func (m *Driver) SetName(name string) { m.name = name }
+func (m *Munbot) SetName(name string) { m.name = name }
 
-func (m *Driver) Start() error {
+func (m *Munbot) Start() error {
 	go func() {
 		for {
 			m.Publish(m.Event(Hello), m.Hello())
@@ -71,19 +71,19 @@ func (m *Driver) Start() error {
 	return nil
 }
 
-func (m *Driver) Halt() error {
+func (m *Munbot) Halt() error {
 	m.halt <- true
 	return nil
 }
 
-func (m *Driver) adaptor() adaptor.Munbot {
-	return m.Connection().(adaptor.Munbot)
+func (m *Munbot) adaptor() adaptor.Adaptor {
+	return m.Connection().(adaptor.Adaptor)
 }
 
-func (m *Driver) Hello() string {
+func (m *Munbot) Hello() string {
 	return "hello from " + m.Name() + "!"
 }
 
-func (m *Driver) Ping() string {
+func (m *Munbot) Ping() string {
 	return m.adaptor().Ping()
 }

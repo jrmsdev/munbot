@@ -8,37 +8,35 @@ import (
 	"gobot.io/x/gobot"
 )
 
-var _ Munbot = &Adaptor{}
-
-type Munbot interface {
+type Adaptor interface {
 	gobot.Adaptor
 	Ping() string
 }
 
-type Adaptor struct {
+type Munbot struct {
 	name string
 }
 
-func New() *Adaptor {
-	return &Adaptor{name: "Adaptor"}
+func New() *Munbot {
+	return &Munbot{name: "Munbot"}
 }
 
-func (m *Adaptor) Name() string {
+func (m *Munbot) Name() string {
 	return m.name
 }
 
-func (m *Adaptor) SetName(name string) {
+func (m *Munbot) SetName(name string) {
 	m.name = name
 }
 
-func (m *Adaptor) Connect() error {
+func (m *Munbot) Connect() error {
 	return nil
 }
 
-func (m *Adaptor) Finalize() error {
+func (m *Munbot) Finalize() error {
 	return nil
 }
 
-func (m *Adaptor) Ping() string {
+func (m *Munbot) Ping() string {
 	return "pong"
 }
