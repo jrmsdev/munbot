@@ -26,6 +26,7 @@ func (s *SInit) Init() error {
 	if s.rt.Master == nil {
 		s.rt.Master = master.New()
 		s.rt.Api = api.New()
+		s.rt.Api.Mount("/", s.rt.Master)
 	}
 	return nil
 }
