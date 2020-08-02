@@ -52,7 +52,7 @@ func (s *SRun) Start() error {
 		defer wg.Done()
 		<-start
 		if err := s.rt.Master.Start(); err != nil {
-			log.Debugf("start master robot: %s", err)
+			log.Errorf("start master robot: %s", err)
 			fail <- failmsg{"master", err}
 		}
 	}(s.wg, s.start, s.fail)
@@ -63,6 +63,7 @@ func (s *SRun) Run() error {
 	log.Print("Run")
 	var fail failmsg
 	s.start <- true
+	close(s.start)
 LOOP:
 	for {
 		select {
@@ -75,10 +76,15 @@ LOOP:
 				select {
 				case fail = <-s.fail:
 				default:
+					if err := s.rt.Api.Stop(); err != nil {
+						log.Error(err)
+					}
 				}
 				break LOOP
 			}
 		}
+	}
+	if fail.err != nil {
 	}
 	s.wg.Wait()
 	return fail.err
