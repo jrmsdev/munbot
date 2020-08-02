@@ -22,6 +22,7 @@ type SRun struct {
 	rt    *Mem
 	wg    *sync.WaitGroup
 	start chan bool
+	startApi chan bool
 	fail  chan failmsg
 	wait  time.Duration
 }
@@ -32,6 +33,7 @@ func newRun(m Machine, rt *Mem) State {
 		rt:    rt,
 		wg:    new(sync.WaitGroup),
 		start: make(chan bool),
+		startApi: make(chan bool),
 		fail:  make(chan failmsg),
 		wait:  300 * time.Millisecond,
 	}
@@ -46,24 +48,40 @@ func (s *SRun) Configure() error {
 }
 
 func (s *SRun) Start() error {
-	log.Print("Start")
+	log.Print("Start...")
+	// start master robot
 	s.wg.Add(1)
 	go func(wg *sync.WaitGroup, start chan bool, fail chan failmsg) {
 		defer wg.Done()
 		<-start
+		log.Debug("robot start...")
 		if err := s.rt.Master.Start(); err != nil {
 			log.Error(err)
 			fail <- failmsg{"master", err}
 		}
 	}(s.wg, s.start, s.fail)
+	// start api server
+	s.wg.Add(1)
+	go func(wg *sync.WaitGroup, start chan bool, fail chan failmsg) {
+		defer wg.Done()
+		<-start
+		log.Debug("api server start...")
+		if err := s.rt.Api.Start(); err != nil {
+			log.Error(err)
+			fail <- failmsg{"api", err}
+		}
+	}(s.wg, s.startApi, s.fail)
 	return nil
 }
 
 func (s *SRun) Run() error {
 	log.Print("Run")
 	var fail failmsg
-	s.start <- true
+	// dispatch master robot
 	close(s.start)
+	// dispatch api server
+	time.Sleep(s.wait)
+	close(s.startApi)
 LOOP:
 	for {
 		select {
@@ -99,10 +117,16 @@ LOOP:
 
 func (s *SRun) Stop() error {
 	log.Print("Stop")
+	// stop api
+	if err := s.rt.Api.Stop(); err != nil {
+		log.Error(err)
+	}
+	// stop robot
 	var err error
 	if err := s.rt.Master.Stop(); err != nil {
 		err = log.Error(err)
 	}
+	// wait for them...
 	s.wg.Wait()
 	if err != nil {
 		return err
