@@ -18,20 +18,20 @@ type failmsg struct {
 var _ State = &SRun{}
 
 type SRun struct {
-	m     Machine
-	rt    *Mem
-	wg    *sync.WaitGroup
-	fail  chan failmsg
-	wait  time.Duration
+	m    Machine
+	rt   *Mem
+	wg   *sync.WaitGroup
+	fail chan failmsg
+	wait time.Duration
 }
 
 func newRun(m Machine, rt *Mem) State {
 	return &SRun{
-		m:     m,
-		rt:    rt,
-		wg:    new(sync.WaitGroup),
-		fail:  make(chan failmsg),
-		wait:  300 * time.Millisecond,
+		m:    m,
+		rt:   rt,
+		wg:   new(sync.WaitGroup),
+		fail: make(chan failmsg),
+		wait: 300 * time.Millisecond,
 	}
 }
 

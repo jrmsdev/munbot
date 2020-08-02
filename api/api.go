@@ -21,7 +21,7 @@ var stopTimeout time.Duration = 30 * time.Second
 func newHTTPServer() *http.Server {
 	return &http.Server{
 		WriteTimeout: serverTimeout,
-		ReadTimeout: serverTimeout,
+		ReadTimeout:  serverTimeout,
 	}
 }
 

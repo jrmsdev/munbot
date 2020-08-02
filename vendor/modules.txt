@@ -1,3 +1,5 @@
+# github.com/bmizerany/pat v0.0.0-20170815010413-6226ea591a40
+github.com/bmizerany/pat
 # github.com/davecgh/go-spew v1.1.0
 github.com/davecgh/go-spew/spew
 # github.com/gobuffalo/uuid v2.0.5+incompatible
@@ -21,5 +23,7 @@ github.com/stretchr/testify/suite
 github.com/subchen/go-trylock/v2
 # gobot.io/x/gobot v1.14.0
 gobot.io/x/gobot
+gobot.io/x/gobot/api
+gobot.io/x/gobot/api/robeaux
 # gopkg.in/yaml.v3 v3.0.0-20200313102051-9f266ea9e77c
 gopkg.in/yaml.v3

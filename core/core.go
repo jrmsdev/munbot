@@ -1,7 +1,7 @@
 // Copyright (c) Jeremías Casteglione <jrmsdev@gmail.com>
 // See LICENSE file.
 
-// Core runtime.
+// Package core implements the runtime state machine.
 package core
 
 import (
@@ -20,17 +20,17 @@ var _ Runtime = &Core{}
 var _ Machine = &Core{}
 
 type Core struct {
-	rt     *Mem
-	ctx    context.Context
-	uuid   string
-	cfg    *config.Config
-	cfl    *config.Flags
-	kfl    *flags.Flags
-	state  State
-	stid   StateID
-	sInit  State
-	sRun   State
-	sHalt  State
+	rt    *Mem
+	ctx   context.Context
+	uuid  string
+	cfg   *config.Config
+	cfl   *config.Flags
+	kfl   *flags.Flags
+	state State
+	stid  StateID
+	sInit State
+	sRun  State
+	sHalt State
 }
 
 func NewRuntime() Runtime {

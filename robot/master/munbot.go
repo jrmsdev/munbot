@@ -4,6 +4,8 @@
 package master
 
 import (
+	"net/http"
+
 	"github.com/munbot/master/config"
 	"github.com/munbot/master/core/flags"
 )
@@ -13,4 +15,5 @@ type Munbot interface {
 	Start() error
 	Stop() error
 	Running() bool
+	ServeHTTP(http.ResponseWriter, *http.Request)
 }
