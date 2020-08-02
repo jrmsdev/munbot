@@ -19,6 +19,7 @@ var _ Munbot = &Robot{}
 type Robot struct {
 	*gobot.Master
 	api *api.API
+	cfginit bool
 }
 
 func New() Munbot {
@@ -32,10 +33,13 @@ func NewRobot() *Robot {
 
 func (m *Robot) Configure(kfl *flags.Flags, cfl *config.Flags, cfg *config.Config) error {
 	if kfl.ApiEnable {
-		if kfl.ApiDebug {
-			m.api.Debug()
+		if !m.cfginit {
+			if kfl.ApiDebug {
+				m.api.Debug()
+			}
+			m.api.AddRobeauxRoutes()
+			m.cfginit = true
 		}
-		m.api.AddRobeauxRoutes()
 	}
 	return nil
 }
