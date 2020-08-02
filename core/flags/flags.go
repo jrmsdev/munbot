@@ -13,6 +13,7 @@ import (
 type Flags struct {
 	ApiEnable  bool
 	apiDisable bool
+	ApiDebug   bool
 	ApiAddr    string
 	ApiPort    uint
 }
@@ -24,6 +25,7 @@ func New() *Flags {
 // Set sets the flags to the provided handler.
 func (f *Flags) Set(fs *flag.FlagSet) {
 	fs.BoolVar(&f.apiDisable, "api.disable", false, "disable api")
+	fs.BoolVar(&f.ApiDebug, "api.debug", false, "debug api")
 	fs.StringVar(&f.ApiAddr, "api.addr", "", "api tcp `address` to bind to")
 	fs.UintVar(&f.ApiPort, "api.port", 0, "api tcp `port` to bind to")
 }
