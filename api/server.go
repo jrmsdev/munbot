@@ -4,11 +4,12 @@
 package api
 
 import (
+	"github.com/munbot/master/config"
 	"github.com/munbot/master/core/flags"
 )
 
 type Server interface {
-	Configure(kfl *flags.Flags) error
+	Configure(kfl *flags.Flags, cfg *config.Section) error
 	Start() error
 	Stop() error
 }

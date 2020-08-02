@@ -10,6 +10,11 @@ import (
 	"github.com/munbot/master/log"
 )
 
+type failmsg struct {
+	name string
+	err error
+}
+
 var _ State = &SRun{}
 
 type SRun struct {
@@ -17,7 +22,7 @@ type SRun struct {
 	rt    *Mem
 	wg    *sync.WaitGroup
 	start chan bool
-	fail  chan error
+	fail  chan failmsg
 	wait  time.Duration
 }
 
@@ -26,9 +31,9 @@ func newRun(m Machine, rt *Mem) State {
 		m:     m,
 		rt:    rt,
 		wg:    new(sync.WaitGroup),
-		start: make(chan bool, 1),
-		fail:  make(chan error),
-		wait:  100 * time.Millisecond,
+		start: make(chan bool),
+		fail:  make(chan failmsg),
+		wait:  300 * time.Millisecond,
 	}
 }
 
@@ -43,46 +48,40 @@ func (s *SRun) Configure() error {
 func (s *SRun) Start() error {
 	log.Print("Start")
 	s.wg.Add(1)
-	go func(wg *sync.WaitGroup, start chan bool, fail chan error) {
+	go func(wg *sync.WaitGroup, start chan bool, fail chan failmsg) {
 		defer wg.Done()
 		<-start
 		if err := s.rt.Master.Start(); err != nil {
 			log.Debugf("start master robot: %s", err)
-			fail <- err
+			fail <- failmsg{"master", err}
 		}
 	}(s.wg, s.start, s.fail)
-	time.Sleep(s.wait)
-	select {
-	case err := <-s.fail:
-		return err
-	default:
-	}
 	return nil
 }
 
 func (s *SRun) Run() error {
 	log.Print("Run")
-	var err error
+	var fail failmsg
 	s.start <- true
-	check := true
-	for check {
+LOOP:
+	for {
 		select {
-		case err = <-s.fail:
-			check = false
+		case fail = <-s.fail:
+			break LOOP
 		default:
 			time.Sleep(s.wait)
 			if !s.rt.Master.Running() {
 				log.Debug("master is not running... abort!")
-				check = false
 				select {
-				case err = <-s.fail:
+				case fail = <-s.fail:
 				default:
 				}
+				break LOOP
 			}
 		}
 	}
 	s.wg.Wait()
-	return err
+	return fail.err
 }
 
 func (s *SRun) Stop() error {

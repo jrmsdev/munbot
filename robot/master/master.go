@@ -7,7 +7,6 @@ package master
 import (
 	"gobot.io/x/gobot"
 
-	"github.com/munbot/master/api"
 	"github.com/munbot/master/config"
 	"github.com/munbot/master/core/flags"
 )
@@ -16,7 +15,6 @@ var _ Munbot = &Robot{}
 
 type Robot struct {
 	*gobot.Master
-	api api.Server
 }
 
 func New() Munbot {
@@ -24,12 +22,9 @@ func New() Munbot {
 }
 
 func NewRobot() *Robot {
-	return &Robot{
-		Master: gobot.NewMaster(),
-		api: api.New(),
-	}
+	return &Robot{Master: gobot.NewMaster()}
 }
 
-func (m *Robot) Configure(kfl *flags.Flags, cfl *config.Flags) error {
-	return m.api.Configure(kfl)
+func (m *Robot) Configure(kfl *flags.Flags, cfl *config.Flags, cfg *config.Config) error {
+	return nil
 }

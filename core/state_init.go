@@ -4,6 +4,7 @@
 package core
 
 import (
+	"github.com/munbot/master/api"
 	"github.com/munbot/master/config"
 	"github.com/munbot/master/log"
 	"github.com/munbot/master/robot/master"
@@ -22,7 +23,10 @@ func newInit(m Machine, rt *Mem) State {
 
 func (s *SInit) Init() error {
 	log.Print("Init")
-	s.rt.Master = master.New()
+	if s.rt.Master == nil {
+		s.rt.Master = master.New()
+		s.rt.Api = api.New()
+	}
 	return nil
 }
 
@@ -36,7 +40,10 @@ func (s *SInit) Configure() error {
 		return log.Error(err)
 	}
 	kfl.Parse(cfg)
-	if err := s.rt.Master.Configure(kfl, cfl); err != nil {
+	if err := s.rt.Master.Configure(kfl, cfl, cfg); err != nil {
+		return log.Error(err)
+	}
+	if err := s.rt.Api.Configure(kfl, cfg.Section("master.api")); err != nil {
 		return log.Error(err)
 	}
 	return s.m.SetState(Run)
