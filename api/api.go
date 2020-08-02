@@ -44,7 +44,7 @@ func New() Server {
 }
 
 func (a *Api) Configure(kfl *flags.Flags, cfg *config.Section) error {
-	a.enable = cfg.GetBool("enable")
+	a.enable = kfl.ApiEnable
 	a.server.Addr = fmt.Sprintf("%s:%d", kfl.ApiAddr, kfl.ApiPort)
 	return nil
 }
