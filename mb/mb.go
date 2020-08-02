@@ -7,11 +7,13 @@ package mb
 import (
 	"context"
 	"flag"
+	"os"
 
 	"github.com/munbot/master/cmd"
 	"github.com/munbot/master/config"
 	"github.com/munbot/master/core"
 	"github.com/munbot/master/core/flags"
+	"github.com/munbot/master/log"
 )
 
 type Cmd struct {
@@ -47,6 +49,10 @@ func newMain(kf *flags.Flags, cf *config.Flags) *Main {
 }
 
 func (m *Main) Run(args []string) int {
+	if len(args) > 0 {
+		log.Errorf("invalid args: %v; check %s -help", args, os.Args[0])
+		return 9
+	}
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 	if _, err := m.rt.Init(ctx); err != nil {
