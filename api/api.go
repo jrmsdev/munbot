@@ -75,7 +75,7 @@ func (a *Api) cleanPath(p string) string {
 func (a *Api) Mount(prefix string, handler http.Handler) {
 	prefix = a.cleanPath(prefix)
 	if prefix == "/" {
-		a.mux.Handle(prefix, handler)
+		a.mux.PathPrefix(prefix).Handler(handler)
 	} else {
 		a.mux.PathPrefix(prefix).Handler(http.StripPrefix(prefix, handler))
 	}
