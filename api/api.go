@@ -10,6 +10,8 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/gorilla/mux"
+
 	"github.com/munbot/master/config"
 	"github.com/munbot/master/core/flags"
 	"github.com/munbot/master/log"
@@ -20,6 +22,7 @@ var stopTimeout time.Duration = 30 * time.Second
 
 func newHTTPServer() *http.Server {
 	return &http.Server{
+		Handler:      mux.NewRouter(),
 		WriteTimeout: serverTimeout,
 		ReadTimeout:  serverTimeout,
 	}

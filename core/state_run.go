@@ -96,9 +96,6 @@ LOOP:
 			}
 		}
 	}
-	// close fail channel just in case...
-	// maybe not a good idea? but at least make them panic...
-	close(s.fail)
 	log.Debugf("fail:%v", fail)
 	if fail.err != nil {
 		log.Debugf("core %s failed: %s", fail.name, fail.err)
@@ -111,6 +108,9 @@ LOOP:
 	}
 	log.Debug("wait for them to finish...")
 	s.wg.Wait()
+	// close fail channel just in case...
+	// maybe not a good idea? but at least make them panic...
+	close(s.fail)
 	return fail.err
 }
 
