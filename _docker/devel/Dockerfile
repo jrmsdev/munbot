@@ -53,7 +53,7 @@ RUN go env && go version
 ADD --chown=munbot tmp/go.mod .
 ADD --chown=munbot tmp/go.sum .
 ADD --chown=munbot tmp/vendor/ ./vendor/
-RUN go mod download && rm -vf go.mod go.sum
+RUN go mod download && (rm -rf ./vendor; rm -vf go.mod go.sum)
 
 RUN mkdir -vp -m 0750 /home/munbot/.config/munbot/default/ssl
 VOLUME /home/munbot/.config/munbot/default/ssl
