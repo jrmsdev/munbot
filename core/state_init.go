@@ -26,7 +26,6 @@ func (s *SInit) Init() error {
 	if s.rt.Master == nil {
 		s.rt.Master = master.New()
 		s.rt.Api = api.New()
-		s.rt.Api.Mount("/", s.rt.Master)
 	}
 	return nil
 }
@@ -46,6 +45,9 @@ func (s *SInit) Configure() error {
 	}
 	if err := s.rt.Api.Configure(kfl, cfg.Section("master.api")); err != nil {
 		return log.Error(err)
+	}
+	if kfl.ApiEnable {
+		s.rt.Api.Mount("/", s.rt.Master)
 	}
 	return s.m.SetState(Run)
 }

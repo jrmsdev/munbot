@@ -31,6 +31,12 @@ func NewRobot() *Robot {
 }
 
 func (m *Robot) Configure(kfl *flags.Flags, cfl *config.Flags, cfg *config.Config) error {
+	if kfl.ApiEnable {
+		if cfl.Debug {
+			m.api.Debug()
+		}
+		m.api.AddRobeauxRoutes()
+	}
 	return nil
 }
 
