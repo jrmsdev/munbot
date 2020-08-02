@@ -18,7 +18,7 @@ var _ Munbot = &Robot{}
 
 type Robot struct {
 	*gobot.Master
-	api *api.API
+	api     *api.API
 	cfginit bool
 }
 

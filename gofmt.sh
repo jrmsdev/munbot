@@ -9,6 +9,7 @@ exec gofmt -w -l -s \
 	core \
 	log \
 	mb \
+	platform \
 	robot \
 	testing \
 	utils \

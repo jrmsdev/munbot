@@ -3,5 +3,10 @@
 
 package worker
 
+import (
+	"gobot.io/x/gobot"
+)
+
 type Munbot interface {
+	Gobot() *gobot.Robot
 }
