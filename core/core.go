@@ -178,6 +178,7 @@ func (k *Core) Start() error {
 	if err := k.state.Run(); err != nil {
 		return k.error(err)
 	}
+	log.Debug("bye")
 	return nil
 }
 

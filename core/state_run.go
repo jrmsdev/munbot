@@ -21,8 +21,6 @@ type SRun struct {
 	m     Machine
 	rt    *Mem
 	wg    *sync.WaitGroup
-	start chan bool
-	startApi chan bool
 	fail  chan failmsg
 	wait  time.Duration
 }
@@ -32,8 +30,6 @@ func newRun(m Machine, rt *Mem) State {
 		m:     m,
 		rt:    rt,
 		wg:    new(sync.WaitGroup),
-		start: make(chan bool),
-		startApi: make(chan bool),
 		fail:  make(chan failmsg),
 		wait:  300 * time.Millisecond,
 	}
@@ -51,37 +47,32 @@ func (s *SRun) Start() error {
 	log.Print("Start...")
 	// start master robot
 	s.wg.Add(1)
-	go func(wg *sync.WaitGroup, start chan bool, fail chan failmsg) {
+	go func(wg *sync.WaitGroup, fail chan failmsg) {
 		defer wg.Done()
-		<-start
 		log.Debug("robot start...")
 		if err := s.rt.Master.Start(); err != nil {
 			log.Error(err)
 			fail <- failmsg{"master", err}
 		}
-	}(s.wg, s.start, s.fail)
+	}(s.wg, s.fail)
+	time.Sleep(s.wait)
 	// start api server
 	s.wg.Add(1)
-	go func(wg *sync.WaitGroup, start chan bool, fail chan failmsg) {
+	go func(wg *sync.WaitGroup, fail chan failmsg) {
 		defer wg.Done()
-		<-start
 		log.Debug("api server start...")
 		if err := s.rt.Api.Start(); err != nil {
 			log.Error(err)
 			fail <- failmsg{"api", err}
 		}
-	}(s.wg, s.startApi, s.fail)
+	}(s.wg, s.fail)
+	time.Sleep(s.wait)
 	return nil
 }
 
 func (s *SRun) Run() error {
-	log.Print("Run")
+	log.Print("Run...")
 	var fail failmsg
-	// dispatch master robot
-	close(s.start)
-	// dispatch api server
-	time.Sleep(s.wait)
-	close(s.startApi)
 LOOP:
 	for {
 		select {
@@ -90,18 +81,25 @@ LOOP:
 		default:
 			time.Sleep(s.wait)
 			if !s.rt.Master.Running() {
-				log.Debug("master is not running... abort!")
+				log.Debug("master is not running...")
 				select {
 				case fail = <-s.fail:
+					log.Debug("there was a failure before abort")
 				default:
+					log.Debug("try to stop api server...")
 					if err := s.rt.Api.Stop(); err != nil {
 						log.Error(err)
 					}
 				}
+				log.Debug("abort!")
 				break LOOP
 			}
 		}
 	}
+	// close fail channel just in case...
+	// maybe not a good idea? but at least make them panic...
+	close(s.fail)
+	log.Debugf("fail:%v", fail)
 	if fail.err != nil {
 		log.Debugf("core %s failed: %s", fail.name, fail.err)
 		if err := s.rt.Api.Stop(); err != nil {
@@ -111,12 +109,13 @@ LOOP:
 			log.Errorf("stop master robot: %s", err)
 		}
 	}
+	log.Debug("wait for them to finish...")
 	s.wg.Wait()
 	return fail.err
 }
 
 func (s *SRun) Stop() error {
-	log.Print("Stop")
+	log.Print("Stop...")
 	// stop api
 	if err := s.rt.Api.Stop(); err != nil {
 		log.Error(err)
