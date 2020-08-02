@@ -12,6 +12,7 @@ import (
 
 	"github.com/munbot/master/config"
 	"github.com/munbot/master/core/flags"
+	"github.com/munbot/master/platform"
 )
 
 var _ Munbot = &Robot{}
@@ -28,18 +29,20 @@ func New() Munbot {
 
 func NewRobot() *Robot {
 	m := gobot.NewMaster()
-	return &Robot{Master: m, api: api.NewAPI(m)}
+	m.AddRobot(platform.NewRobot())
+	api := api.NewAPI(m)
+	return &Robot{Master: m, api: api}
 }
 
 func (m *Robot) Configure(kfl *flags.Flags, cfl *config.Flags, cfg *config.Config) error {
-	if kfl.ApiEnable {
-		if !m.cfginit {
-			if kfl.ApiDebug {
-				m.api.Debug()
-			}
+	if !m.cfginit {
+		if kfl.ApiEnable {
 			m.api.AddRobeauxRoutes()
-			m.cfginit = true
 		}
+		m.cfginit = true
+	}
+	if kfl.ApiDebug {
+		m.api.Debug()
 	}
 	return nil
 }
