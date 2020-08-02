@@ -5,13 +5,16 @@ package api
 
 import (
 	"net/http"
-
-	"github.com/munbot/master/config"
-	"github.com/munbot/master/core/flags"
 )
 
+type ServerConfig struct {
+	Enable bool
+	Addr   string
+	Port   uint
+}
+
 type Server interface {
-	Configure(kfl *flags.Flags, cfg *config.Section) error
+	Configure(*ServerConfig) error
 	Start() error
 	Stop() error
 	Mount(path string, handler http.Handler)

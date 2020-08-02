@@ -13,8 +13,6 @@ import (
 
 	"github.com/gorilla/mux"
 
-	"github.com/munbot/master/config"
-	"github.com/munbot/master/core/flags"
 	"github.com/munbot/master/log"
 )
 
@@ -43,9 +41,9 @@ func New() Server {
 	return a
 }
 
-func (a *Api) Configure(kfl *flags.Flags, cfg *config.Section) error {
-	a.enable = kfl.ApiEnable
-	a.server.Addr = fmt.Sprintf("%s:%d", kfl.ApiAddr, kfl.ApiPort)
+func (a *Api) Configure(c *ServerConfig) error {
+	a.enable = c.Enable
+	a.server.Addr = fmt.Sprintf("%s:%d", c.Addr, c.Port)
 	return nil
 }
 

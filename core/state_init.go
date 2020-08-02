@@ -43,7 +43,12 @@ func (s *SInit) Configure() error {
 	if err := s.rt.Master.Configure(kfl, cfl, cfg); err != nil {
 		return log.Error(err)
 	}
-	if err := s.rt.Api.Configure(kfl, cfg.Section("master.api")); err != nil {
+	apiCfg := &api.ServerConfig{
+		Enable: kfl.ApiEnable,
+		Addr:   kfl.ApiAddr,
+		Port:   kfl.ApiPort,
+	}
+	if err := s.rt.Api.Configure(apiCfg); err != nil {
 		return log.Error(err)
 	}
 	if kfl.ApiEnable {
