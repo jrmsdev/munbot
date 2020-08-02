@@ -8,6 +8,7 @@ import (
 	"context"
 	"fmt"
 	"net/http"
+	"path"
 	"time"
 
 	"github.com/gorilla/mux"
@@ -20,9 +21,9 @@ import (
 var serverTimeout time.Duration = 15 * time.Second
 var stopTimeout time.Duration = 30 * time.Second
 
-func newHTTPServer() *http.Server {
+func newHTTPServer(h http.Handler) *http.Server {
 	return &http.Server{
-		Handler:      mux.NewRouter(),
+		Handler:      h,
 		WriteTimeout: serverTimeout,
 		ReadTimeout:  serverTimeout,
 	}
@@ -32,11 +33,14 @@ var _ Server = &Api{}
 
 type Api struct {
 	enable bool
+	mux    *mux.Router
 	server *http.Server
 }
 
 func New() Server {
-	return &Api{server: newHTTPServer()}
+	a := &Api{mux: mux.NewRouter()}
+	a.server = newHTTPServer(a.mux)
+	return a
 }
 
 func (a *Api) Configure(kfl *flags.Flags, cfg *config.Section) error {
@@ -60,4 +64,21 @@ func (a *Api) Stop() error {
 		return err
 	}
 	return nil
+}
+
+func (a *Api) cleanPath(p string) string {
+	p = path.Clean(p)
+	if p == "." {
+		return "/"
+	}
+	return p
+}
+
+func (a *Api) Mount(prefix string, handler http.Handler) {
+	prefix = a.cleanPath(prefix)
+	if prefix == "/" {
+		a.mux.Handle(prefix, handler)
+	} else {
+		a.mux.PathPrefix(prefix).Handler(http.StripPrefix(prefix, handler))
+	}
 }
