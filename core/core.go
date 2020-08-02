@@ -12,7 +12,6 @@ import (
 	"github.com/munbot/master/config"
 	"github.com/munbot/master/core/flags"
 	"github.com/munbot/master/log"
-	"github.com/munbot/master/utils/lock"
 	"github.com/munbot/master/utils/uuid"
 	"github.com/munbot/master/version"
 )
@@ -23,12 +22,10 @@ var _ Machine = &Core{}
 type Core struct {
 	rt     *Mem
 	ctx    context.Context
-	mu     *lock.Locker
 	uuid   string
 	cfg    *config.Config
 	cfl    *config.Flags
 	kfl    *flags.Flags
-	locked string
 	state  State
 	stid   StateID
 	sInit  State
@@ -42,11 +39,7 @@ func NewRuntime() Runtime {
 
 func New(m *Mem) *Core {
 	log.Printf("Munbot version %s", version.String())
-	k := &Core{
-		rt:   m,
-		mu:   lock.New(),
-		uuid: uuid.Rand(),
-	}
+	k := &Core{rt: m, uuid: uuid.Rand()}
 	k.sInit = newInit(k, k.rt)
 	k.sRun = newRun(k, k.rt)
 	k.sHalt = newHalt(k, k.rt)
@@ -70,6 +63,10 @@ func (k *Core) State() string {
 
 func (k *Core) StateID() StateID {
 	return k.stid
+}
+
+func (k *Core) Context() context.Context {
+	return k.ctx
 }
 
 func (k Core) Config() *config.Config {
@@ -114,38 +111,42 @@ func (k *Core) SetState(s StateID) error {
 	return nil
 }
 
+func (k *Core) WithContext(ctx context.Context) (context.Context, error) {
+	if err := k.rt.Lock(); err != nil {
+		return ctx, err
+	}
+	defer k.rt.Unlock()
+	k.ctx = ctx
+	return k.ctx, nil
+}
+
 func (k *Core) Init(ctx context.Context) (context.Context, error) {
 	log.Debugf("[%s] Init", k.State())
+	var err error
+	ctx, err = k.WithContext(ctx)
+	if err != nil {
+		return ctx, k.error(err)
+	}
 	select {
 	case <-ctx.Done():
-		return ctx, ctx.Err()
+		return ctx, k.error(ctx.Err())
 	default:
 		if err := k.rt.Lock(); err != nil {
 			return ctx, k.error(err)
 		}
 	}
 	defer k.rt.Unlock()
-	var err error
-	ctx, err = k.WithContext(ctx)
-	if err != nil {
-		return ctx, k.error(err)
-	}
 	if err = k.state.Init(); err != nil {
 		return ctx, k.error(err)
 	}
 	return ctx, nil
 }
 
-var ErrCtxNoLock error = errors.New("core: no context locked")
-
 func (k *Core) Configure(kfl *flags.Flags, cfl *config.Flags, cfg *config.Config) error {
 	log.Debugf("[%s] Configure", k.State())
-	if k.locked == "" || k.ctx == nil {
-		return k.error(ErrCtxNoLock)
-	}
 	select {
 	case <-k.ctx.Done():
-		return k.ctx.Err()
+		return k.error(k.ctx.Err())
 	default:
 		if err := k.rt.Lock(); err != nil {
 			return k.error(err)
