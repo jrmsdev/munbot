@@ -20,9 +20,9 @@ func init() {
 var ErrMemLock error = errors.New("core: mem lock failed")
 
 type Mem struct {
-	mu        *lock.Locker
-	Master    master.Munbot
-	Api       api.Server
+	mu     *lock.Locker
+	Master master.Munbot
+	Api    api.Server
 }
 
 func newMem() *Mem {

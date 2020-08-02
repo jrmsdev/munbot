@@ -12,7 +12,7 @@ import (
 
 type failmsg struct {
 	name string
-	err error
+	err  error
 }
 
 var _ State = &SRun{}
@@ -52,7 +52,7 @@ func (s *SRun) Start() error {
 		defer wg.Done()
 		<-start
 		if err := s.rt.Master.Start(); err != nil {
-			log.Errorf("start master robot: %s", err)
+			log.Error(err)
 			fail <- failmsg{"master", err}
 		}
 	}(s.wg, s.start, s.fail)
@@ -85,6 +85,13 @@ LOOP:
 		}
 	}
 	if fail.err != nil {
+		log.Debugf("core %s failed: %s", fail.name, fail.err)
+		if err := s.rt.Api.Stop(); err != nil {
+			log.Errorf("stop master api: %s", err)
+		}
+		if err := s.rt.Master.Stop(); err != nil {
+			log.Errorf("stop master robot: %s", err)
+		}
 	}
 	s.wg.Wait()
 	return fail.err
