@@ -30,6 +30,10 @@ var Defaults value.DB = value.DB{
 	"master.api": value.Map{
 		"enable":  "true",
 		"netaddr": "0.0.0.0",
+		"path":    "/",
+	},
+	"master.auth": value.Map{
+		"path": "/auth",
 	},
 }
 

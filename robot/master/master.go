@@ -22,12 +22,12 @@ var _ Munbot = &Robot{}
 
 type Robot struct {
 	*gobot.Master
-	api     wapp.Api
-	state   string
-	born    time.Time
-	err     error
-	exitc   chan<- bool
-	stop    chan bool
+	api   wapp.Api
+	state string
+	born  time.Time
+	err   error
+	exitc chan<- bool
+	stop  chan bool
 }
 
 func New() Munbot {
@@ -89,9 +89,11 @@ func (m *Robot) ExitNotify(c chan<- bool) {
 }
 
 func (m *Robot) Configure(kfl *flags.Flags, cfl *config.Flags, cfg *config.Config) error {
+	apicfg := cfg.Section("master.api")
 	m.api.Configure(&wapp.Config{
 		Enable: kfl.ApiEnable,
-		Debug: kfl.ApiDebug,
+		Debug:  kfl.ApiDebug,
+		Path:   apicfg.Get("path"),
 	})
 	return nil
 }
