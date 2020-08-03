@@ -33,6 +33,7 @@ func New() Munbot {
 
 func NewRobot() *Robot {
 	m := gobot.NewMaster()
+	m.AutoRun = true
 	api := api.NewAPI(m)
 	r := &Robot{
 		Master: m,
