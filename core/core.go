@@ -108,6 +108,7 @@ func (k *Core) SetState(s StateID) error {
 		k.errorf("core: set %s", StateName(s))
 	}
 	k.stid = s
+	k.rt.Master.CurrentState(k.State())
 	return nil
 }
 

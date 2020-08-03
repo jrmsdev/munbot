@@ -6,6 +6,7 @@ package master
 
 import (
 	"net/http"
+	"time"
 
 	"gobot.io/x/gobot"
 	"gobot.io/x/gobot/api"
@@ -21,6 +22,9 @@ type Robot struct {
 	*gobot.Master
 	api     *api.API
 	cfginit bool
+	state   string
+	born    time.Time
+	err     error
 }
 
 func New() Munbot {
@@ -29,9 +33,16 @@ func New() Munbot {
 
 func NewRobot() *Robot {
 	m := gobot.NewMaster()
-	m.AddRobot(platform.NewRobot())
 	api := api.NewAPI(m)
-	return &Robot{Master: m, api: api}
+	r := &Robot{
+		Master: m,
+		api: api,
+		state: "Init",
+		born: time.Now(),
+	}
+	r.addCommands(r.Master)
+	r.Master.AddRobot(platform.NewRobot())
+	return r
 }
 
 func (m *Robot) Configure(kfl *flags.Flags, cfl *config.Flags, cfg *config.Config) error {
@@ -49,4 +60,8 @@ func (m *Robot) Configure(kfl *flags.Flags, cfl *config.Flags, cfg *config.Confi
 
 func (m *Robot) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	m.api.ServeHTTP(w, r)
+}
+
+func (m *Robot) CurrentState(s string) {
+	m.state = s
 }

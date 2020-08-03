@@ -16,4 +16,5 @@ type Munbot interface {
 	Stop() error
 	Running() bool
 	ServeHTTP(http.ResponseWriter, *http.Request)
+	CurrentState(string)
 }
