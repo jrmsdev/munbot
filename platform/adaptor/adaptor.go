@@ -5,21 +5,31 @@
 package adaptor
 
 import (
+	"time"
+
 	"gobot.io/x/gobot"
 )
 
 type Adaptor interface {
 	gobot.Adaptor
 	Ping() string
+	Interval() time.Duration
+	SetInterval(time.Duration)
 }
 
 type Munbot struct {
-	name string
+	name     string
+	interval time.Duration
 }
 
 func New() *Munbot {
-	return &Munbot{name: "munbot"}
+	return &Munbot{
+		name: "munbot",
+		interval: 500 * time.Millisecond,
+	}
 }
+
+// gobot interface
 
 func (m *Munbot) Name() string {
 	return m.name
@@ -37,6 +47,16 @@ func (m *Munbot) Finalize() error {
 	return nil
 }
 
+// munbot interface
+
 func (m *Munbot) Ping() string {
 	return "pong"
+}
+
+func (m *Munbot) Interval() time.Duration {
+	return m.interval
+}
+
+func (m *Munbot) SetInterval(d time.Duration) {
+	m.interval = d
 }

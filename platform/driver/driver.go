@@ -18,51 +18,43 @@ type Driver interface {
 	gobot.Driver
 }
 
-const Hello string = "hello"
-
 type Munbot struct {
 	gobot.Eventer
 	gobot.Commander
-	name       string
-	connection gobot.Connection
-	interval   time.Duration
-	halt       chan bool
+	name string
+	conn gobot.Connection
+	halt chan bool
 }
 
 func New(a adaptor.Adaptor) *Munbot {
-	m := &Munbot{
-		name:       "munbot",
-		connection: a,
-		interval:   500 * time.Millisecond,
-		halt:       make(chan bool, 0),
-		Eventer:    gobot.NewEventer(),
-		Commander:  gobot.NewCommander(),
+	return &Munbot{
+		name:      "munbot",
+		conn:      a,
+		halt:      make(chan bool, 0),
+		Eventer:   gobot.NewEventer(),
+		Commander: gobot.NewCommander(),
 	}
-
-	m.AddEvent(Hello)
-
-	m.AddCommand(Hello, func(params map[string]interface{}) interface{} {
-		return m.Hello()
-	})
-
-	return m
 }
+
+// gobot interface
 
 func (m *Munbot) Connection() gobot.Connection {
-	return m.connection
+	return m.conn
 }
 
-func (m *Munbot) Name() string { return m.name }
+func (m *Munbot) Name() string {
+	return m.name
+}
 
-func (m *Munbot) SetName(name string) { m.name = name }
+func (m *Munbot) SetName(name string) {
+	m.name = name
+}
 
 func (m *Munbot) Start() error {
 	go func() {
 		for {
-			m.Publish(m.Event(Hello), m.Hello())
-
 			select {
-			case <-time.After(m.interval):
+			case <-time.After(m.interval()):
 			case <-m.halt:
 				return
 			}
@@ -76,12 +68,14 @@ func (m *Munbot) Halt() error {
 	return nil
 }
 
+// munbot interface
+
 func (m *Munbot) adaptor() adaptor.Adaptor {
 	return m.Connection().(adaptor.Adaptor)
 }
 
-func (m *Munbot) Hello() string {
-	return "hello from " + m.Name() + "!"
+func (m *Munbot) interval() time.Duration {
+	return m.adaptor().Interval()
 }
 
 func (m *Munbot) Ping() string {
