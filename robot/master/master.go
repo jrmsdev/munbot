@@ -11,6 +11,7 @@ import (
 	"gobot.io/x/gobot"
 	"gobot.io/x/gobot/api"
 
+	"github.com/munbot/master/api/wapp"
 	"github.com/munbot/master/config"
 	"github.com/munbot/master/core/flags"
 	"github.com/munbot/master/log"
@@ -21,8 +22,7 @@ var _ Munbot = &Robot{}
 
 type Robot struct {
 	*gobot.Master
-	api     *api.API
-	cfginit bool
+	api     wapp.Api
 	state   string
 	born    time.Time
 	err     error
@@ -37,10 +37,9 @@ func New() Munbot {
 func NewRobot() *Robot {
 	m := gobot.NewMaster()
 	m.AutoRun = false
-	api := api.NewAPI(m)
 	r := &Robot{
 		Master: m,
-		api:    api,
+		api:    wapp.New(api.NewAPI(m)),
 		state:  "Init",
 		born:   time.Now(),
 		stop:   make(chan bool, 1),
@@ -90,15 +89,10 @@ func (m *Robot) ExitNotify(c chan<- bool) {
 }
 
 func (m *Robot) Configure(kfl *flags.Flags, cfl *config.Flags, cfg *config.Config) error {
-	if !m.cfginit {
-		if kfl.ApiEnable {
-			m.api.AddRobeauxRoutes()
-		}
-		m.cfginit = true
-	}
-	if kfl.ApiDebug {
-		m.api.Debug()
-	}
+	m.api.Configure(&wapp.Config{
+		Enable: kfl.ApiEnable,
+		Debug: kfl.ApiDebug,
+	})
 	return nil
 }
 
