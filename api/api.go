@@ -48,18 +48,23 @@ func (a *Api) Configure(c *ServerConfig) error {
 }
 
 func (a *Api) Start() error {
-	log.Printf("Api server http://%s/", a.server.Addr)
-	if err := a.server.ListenAndServe(); err != http.ErrServerClosed {
-		return err
+	if a.enable {
+		log.Printf("Api server http://%s/", a.server.Addr)
+		if err := a.server.ListenAndServe(); err != http.ErrServerClosed {
+			return err
+		}
 	}
+	log.Warn("Api server is disabled")
 	return nil
 }
 
 func (a *Api) Stop() error {
-	ctx, cancel := context.WithTimeout(context.Background(), stopTimeout)
-	defer cancel()
-	if err := a.server.Shutdown(ctx); err != http.ErrServerClosed {
-		return err
+	if a.enable {
+		ctx, cancel := context.WithTimeout(context.Background(), stopTimeout)
+		defer cancel()
+		if err := a.server.Shutdown(ctx); err != http.ErrServerClosed {
+			return err
+		}
 	}
 	return nil
 }
