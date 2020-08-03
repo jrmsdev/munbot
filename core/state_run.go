@@ -4,6 +4,8 @@
 package core
 
 import (
+	"os"
+	"os/signal"
 	"sync"
 	"time"
 
@@ -24,6 +26,7 @@ type SRun struct {
 	fail chan failmsg
 	wait time.Duration
 	exit chan bool
+	osint chan os.Signal
 }
 
 func newRun(m Machine, rt *Mem) State {
@@ -34,6 +37,7 @@ func newRun(m Machine, rt *Mem) State {
 		fail: make(chan failmsg, 1),
 		wait: 300 * time.Millisecond,
 		exit: make(chan bool, 1),
+		osint: make(chan os.Signal, 1),
 	}
 }
 
@@ -76,6 +80,7 @@ func (s *SRun) Run() error {
 	log.Print("Run...")
 	var fail failmsg
 	abort := false
+	signal.Notify(s.osint, os.Interrupt)
 LOOP:
 	for {
 		select {
@@ -83,6 +88,10 @@ LOOP:
 			break LOOP
 		case <-s.exit:
 			log.Debug("master exit...")
+			abort = true
+			break LOOP
+		case <-s.osint:
+			log.Debug("os interrupt...")
 			abort = true
 			break LOOP
 		default:
@@ -94,7 +103,6 @@ LOOP:
 					log.Debug("there was a failure before abort")
 				default:
 				}
-				log.Debug("abort!")
 				abort = true
 				break LOOP
 			}
@@ -108,6 +116,7 @@ LOOP:
 		abort = true
 	}
 	if abort {
+		log.Debug("abort!")
 		return s.m.Abort()
 	}
 	return fail.err

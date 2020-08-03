@@ -53,8 +53,9 @@ func (a *Api) Start() error {
 		if err := a.server.ListenAndServe(); err != http.ErrServerClosed {
 			return err
 		}
+	} else {
+		log.Warn("Api server is disabled")
 	}
-	log.Warn("Api server is disabled")
 	return nil
 }
 

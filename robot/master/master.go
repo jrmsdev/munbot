@@ -62,6 +62,7 @@ func (m *Robot) Start() error {
 		}
 	}
 	<-m.stop
+	log.Printf("Uptime %s", time.Since(m.born))
 	return nil
 }
 
