@@ -31,7 +31,7 @@ type Munbot struct {
 
 func New(a adaptor.Adaptor) *Munbot {
 	m := &Munbot{
-		name:       "Munbot",
+		name:       "munbot",
 		connection: a,
 		interval:   500 * time.Millisecond,
 		halt:       make(chan bool, 0),

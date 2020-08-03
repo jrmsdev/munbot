@@ -18,7 +18,7 @@ type Munbot struct {
 }
 
 func New() *Munbot {
-	return &Munbot{name: "Munbot"}
+	return &Munbot{name: "munbot"}
 }
 
 func (m *Munbot) Name() string {
