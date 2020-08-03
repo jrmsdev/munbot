@@ -166,7 +166,7 @@ func (k *Core) Start() error {
 	log.Debugf("[%s] Start", k.State())
 	select {
 	case <-k.ctx.Done():
-		return k.ctx.Err()
+		return k.error(k.ctx.Err())
 	default:
 		if err := k.rt.Lock(); err != nil {
 			return k.error(err)
@@ -187,7 +187,7 @@ func (k *Core) Stop() error {
 	log.Debugf("[%s] Stop", k.State())
 	select {
 	case <-k.ctx.Done():
-		return k.ctx.Err()
+		return k.error(k.ctx.Err())
 	default:
 		if err := k.rt.Lock(); err != nil {
 			return k.error(err)
@@ -199,6 +199,19 @@ func (k *Core) Stop() error {
 	}
 	if err := k.state.Halt(); err != nil {
 		return k.error(err)
+	}
+	return nil
+}
+
+func (k *Core) Abort() error {
+	log.Debugf("[%s] abort...", k.State())
+	log.Debug("state stop...")
+	if err := k.state.Stop(); err != nil {
+		return err
+	}
+	log.Debug("state halt...")
+	if err := k.state.Halt(); err != nil {
+		return err
 	}
 	return nil
 }

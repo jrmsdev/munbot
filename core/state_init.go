@@ -22,7 +22,7 @@ func newInit(m Machine, rt *Mem) State {
 }
 
 func (s *SInit) Init() error {
-	log.Print("Init")
+	log.Print("Init...")
 	if s.rt.Master == nil {
 		s.rt.Master = master.New()
 		s.rt.Api = api.New()
@@ -31,7 +31,7 @@ func (s *SInit) Init() error {
 }
 
 func (s *SInit) Configure() error {
-	log.Print("Configure")
+	log.Print("Configure...")
 	cfg := s.m.Config()
 	cfl := s.m.ConfigFlags()
 	kfl := s.m.CoreFlags()

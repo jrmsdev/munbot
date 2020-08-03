@@ -9,6 +9,7 @@ import (
 )
 
 type Machine interface {
+	Abort() error
 	SetState(StateID) error
 	Config() *config.Config
 	ConfigFlags() *config.Flags
