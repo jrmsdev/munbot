@@ -40,10 +40,10 @@ func NewRobot() *Robot {
 	api := api.NewAPI(m)
 	r := &Robot{
 		Master: m,
-		api: api,
-		state: "Init",
-		born: time.Now(),
-		stop: make(chan bool, 1),
+		api:    api,
+		state:  "Init",
+		born:   time.Now(),
+		stop:   make(chan bool, 1),
 	}
 	r.addCommands(r.Master)
 	r.Master.Start()
@@ -71,7 +71,7 @@ func (m *Robot) Stop() error {
 	for _, bot := range *m.Master.Robots() {
 		log.Debugf("robot %s stop...", bot.Name)
 		if err = bot.Stop(); err != nil {
-			log.Warn("stop robot %s error: %v", bot.Name, err)
+			log.Warnf("stop robot %s error: %v", bot.Name, err)
 		}
 	}
 	defer close(m.stop)
