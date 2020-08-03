@@ -12,7 +12,6 @@ import (
 
 type Adaptor interface {
 	gobot.Adaptor
-	Ping() string
 	Interval() time.Duration
 	SetInterval(time.Duration)
 }
@@ -48,10 +47,6 @@ func (m *Munbot) Finalize() error {
 }
 
 // munbot interface
-
-func (m *Munbot) Ping() string {
-	return "pong"
-}
 
 func (m *Munbot) Interval() time.Duration {
 	return m.interval

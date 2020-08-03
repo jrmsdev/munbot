@@ -77,7 +77,3 @@ func (m *Munbot) adaptor() adaptor.Adaptor {
 func (m *Munbot) interval() time.Duration {
 	return m.adaptor().Interval()
 }
-
-func (m *Munbot) Ping() string {
-	return m.adaptor().Ping()
-}
