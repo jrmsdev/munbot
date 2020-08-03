@@ -23,6 +23,7 @@ type SRun struct {
 	wg   *sync.WaitGroup
 	fail chan failmsg
 	wait time.Duration
+	exit chan bool
 }
 
 func newRun(m Machine, rt *Mem) State {
@@ -30,8 +31,9 @@ func newRun(m Machine, rt *Mem) State {
 		m:    m,
 		rt:   rt,
 		wg:   new(sync.WaitGroup),
-		fail: make(chan failmsg, 0),
+		fail: make(chan failmsg, 1),
 		wait: 300 * time.Millisecond,
+		exit: make(chan bool, 1),
 	}
 }
 
@@ -46,6 +48,7 @@ func (s *SRun) Configure() error {
 func (s *SRun) Start() error {
 	log.Print("Start...")
 	// start master robot
+	s.rt.Master.ExitNotify(s.exit)
 	s.wg.Add(1)
 	go func(wg *sync.WaitGroup, fail chan failmsg) {
 		defer wg.Done()
@@ -77,6 +80,10 @@ LOOP:
 	for {
 		select {
 		case fail = <-s.fail:
+			break LOOP
+		case <-s.exit:
+			log.Debug("master exit...")
+			abort = true
 			break LOOP
 		default:
 			time.Sleep(s.wait)

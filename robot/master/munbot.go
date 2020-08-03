@@ -17,4 +17,5 @@ type Munbot interface {
 	Running() bool
 	ServeHTTP(http.ResponseWriter, *http.Request)
 	CurrentState(string)
+	ExitNotify(chan<- bool)
 }

@@ -33,9 +33,13 @@ func New() Munbot {
 	return r
 }
 
-func (m *Robot) Gobot() *gobot.Robot {
-	return m.Robot
+// munbot interface
+
+func (r *Robot) Gobot() *gobot.Robot {
+	return r.Robot
 }
 
-func (m *Robot) work() {
+// work
+
+func (r *Robot) work() {
 }
