@@ -10,7 +10,7 @@ import (
 )
 
 type Error struct {
-	Msg string `json:"error,omitempty"`
+	Msg string `json:"error"`
 }
 
 func (m *Robot) addCommands(mbot *gobot.Master) {
@@ -19,10 +19,12 @@ func (m *Robot) addCommands(mbot *gobot.Master) {
 }
 
 type Status struct {
+	Born   string `json:"born"`
 	Uptime string `json:"uptime"`
 	State  string `json:"state"`
 	Status string `json:"status"`
 	Error  string `json:"error,omitempty"`
+	Die    string `json:"die,omitempty"`
 }
 
 func (m *Robot) newStatus() *Status {
@@ -33,10 +35,12 @@ func (m *Robot) newStatus() *Status {
 		err = m.err.Error()
 	}
 	return &Status{
+		Born:   m.born.String(),
 		Uptime: time.Since(m.born).String(),
 		State:  m.state,
 		Status: status,
 		Error:  err,
+		Die:    "",
 	}
 }
 
@@ -49,5 +53,8 @@ func (m *Robot) exit(args map[string]interface{}) interface{} {
 		return Error{"nothing to do here"}
 	}
 	m.exitc <- true
-	return m.newStatus()
+	s := m.newStatus()
+	s.Die = time.Now().String()
+	s.Status = "exit"
+	return s
 }
