@@ -52,9 +52,9 @@ func (m *Robot) exit(args map[string]interface{}) interface{} {
 	if m.exitc == nil {
 		return Error{"nothing to do here"}
 	}
-	m.exitc <- true
 	s := m.newStatus()
 	s.Die = time.Now().String()
 	s.Status = "exit"
+	m.exitc <- true
 	return s
 }
