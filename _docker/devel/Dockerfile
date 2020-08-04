@@ -53,8 +53,10 @@ RUN go mod download \
 
 ENV CAROOT /etc/ssl/munbot
 ENV TRUST_STORES ''
-RUN mkcert devel.munbot.local \
-	&& mkcert -client user.munbot.local \
-	&& mkcert -client client.munbot.local
+RUN /munbot/bin/mkcert devel.munbot.local \
+	&& /munbot/bin/mkcert -client -pkcs12 devel.munbot.local \
+	&& echo "CAROOT: $(/munbot/bin/mkcert -CAROOT)" \
+	&& ln -svf ${CAROOT}/rootCA.pem ${CAROOT}/ca.pem \
+	&& mv -vf *.munbot.local* ${CAROOT}/
 
 ENTRYPOINT /usr/local/bin/entrypoint.sh
