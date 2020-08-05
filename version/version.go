@@ -23,6 +23,12 @@ func String() string {
 	return fmt.Sprintf("%s%s", v, b)
 }
 
+var printf func(string, ...interface{}) (int, error)
+
+func init() {
+	printf = fmt.Printf
+}
+
 func Print(progname string) {
-	fmt.Printf("%s version %s\n", progname, String())
+	printf("%s version %s\n", progname, String())
 }
