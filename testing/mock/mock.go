@@ -1,8 +1,7 @@
 // Copyright (c) Jeremías Casteglione <jrmsdev@gmail.com>
 // See LICENSE file.
 
-// Package mock is just a handy shorcut (?) to import
-// github.com/stretchr/testify/mock functionality.
+// Package mock wraps github.com/stretchr/testify/mock package.
 package mock
 
 import (
@@ -11,15 +10,23 @@ import (
 	"github.com/munbot/master/vfs"
 )
 
-type Mock mock.Mock
+// Mock wraps mock.Mock.
+type Mock struct {
+	*mock.Mock
+}
 
-// Filesystes is a handy shortcut for vfs.MockFilesystem.
+// New creates a new mock.Mock wrapper.
+func New() *Mock {
+	return &Mock{new(mock.Mock)}
+}
+
+// Filesystem wraps vfs.MockFilesystem.
 type Filesystem struct {
 	*vfs.MockFilesystem
 }
 
 // NewFilesystem returns a new mock filesystem with the supplied filenames
-// created in the root tree, if any supplied.
+// created in the root tree, if any...
 func NewFilesystem(files ...string) *Filesystem {
 	return &Filesystem{vfs.NewMockFilesystem(files...)}
 }

@@ -9,7 +9,7 @@ import (
 	"github.com/munbot/master/testing/assert"
 )
 
-func TestLocker(t *testing.T) {
+func TestRand(t *testing.T) {
 	assert := assert.New(t)
 	assert.Regexp("^([[:xdigit:]]*)-([[:xdigit:]]*)-([[:xdigit:]]*)-([[:xdigit:]]*)-([[:xdigit:]]*)$", Rand())
 }
