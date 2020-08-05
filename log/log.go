@@ -116,12 +116,17 @@ func Warnf(format string, v ...interface{}) {
 	}
 }
 
-func init() {
-	env := os.Getenv("MUNBOT_LOG")
-	switch env {
+func setMode(n string) {
+	switch n {
 	case "debug":
 		DebugEnable()
+	case "verbose":
+		SetVerbose()
 	case "quiet":
 		SetQuiet()
 	}
+}
+
+func init() {
+	setMode(os.Getenv("MUNBOT_LOG"))
 }
