@@ -9,14 +9,14 @@ import (
 
 	"github.com/munbot/master/config/internal/parser"
 	"github.com/munbot/master/config/profile"
-	"github.com/munbot/master/testing/mock"
+	"github.com/munbot/master/testing/mock/vfs"
 	"github.com/munbot/master/testing/require"
 	"github.com/munbot/master/testing/suite"
 )
 
 type Suite struct {
 	*suite.Suite
-	fs      *mock.Filesystem
+	fs      *vfs.MockFilesystem
 	require *require.Assertions
 	profile *profile.Profile
 }
@@ -27,8 +27,8 @@ func TestSuite(t *testing.T) {
 
 func (s *Suite) SetupTest() {
 	s.require = require.New(s.T())
-	s.fs = mock.NewFilesystem("test/config.json")
-	mock.SetFilesystem(s.fs)
+	s.fs = vfs.NewMockFilesystem("test/config.json")
+	vfs.SetFilesystem(s.fs)
 	s.profile = profile.New("testing")
 	s.profile.Config = "config.json"
 	s.profile.ConfigDir = "test"
@@ -39,7 +39,7 @@ func (s *Suite) SetupTest() {
 func (s *Suite) TearDownTest() {
 	s.require = nil
 	s.fs = nil
-	mock.SetDefaultFilesystem()
+	vfs.SetDefaultFilesystem()
 	s.profile = nil
 	__handler = nil
 	__handler = parser.New()
