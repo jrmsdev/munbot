@@ -4,6 +4,7 @@
 package vfs
 
 import (
+	"io/ioutil"
 	"os"
 	"path/filepath"
 	"testing"
@@ -111,4 +112,15 @@ func TestNativeStatError(t *testing.T) {
 	_, err := fs.Stat(fn)
 	require.Error(err, "stat error")
 	require.True(os.IsNotExist(err), "stat file not found error type")
+}
+
+func TestCreate(t *testing.T) {
+	assert := assert.New(t)
+	require := require.New(t)
+	fh, err := ioutil.TempFile("", "vfs_test_create")
+	require.NoError(err)
+	defer os.Remove(fh.Name())
+	defer fh.Close()
+	_, err = Create(fh.Name())
+	assert.NoError(err)
 }
