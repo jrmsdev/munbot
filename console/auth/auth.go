@@ -53,8 +53,10 @@ func (a *Auth) setup() error {
 	log.Debug("setup")
 	var err error
 	if vfs.Exist(a.priv) {
+		log.Print("Auth load CA")
 		a.id, err = a.loadCA()
 	} else {
+		log.Print("Auth new CA")
 		a.id, err = a.newCA()
 	}
 	if err != nil {
@@ -68,6 +70,24 @@ func (a *Auth) newCA() (*age.X25519Identity, error) {
 	if err != nil {
 		log.Debugf("age error: %v", err)
 		return nil, err
+	}
+	if fh, err := vfs.Create(a.priv); err != nil {
+		log.Debug(err)
+		return nil, err
+	} else {
+		if _, err := fh.WriteString(id.String()); err != nil {
+			log.Debug(err)
+			return nil, err
+		}
+	}
+	if fh, err := vfs.Create(a.pub); err != nil {
+		log.Debug(err)
+		return nil, err
+	} else {
+		if _, err := fh.WriteString(id.Recipient().String()); err != nil {
+			log.Debug(err)
+			return nil, err
+		}
 	}
 	return id, nil
 }
