@@ -11,12 +11,6 @@ import (
 	"github.com/munbot/master/utils/lock"
 )
 
-var mem *Mem
-
-func init() {
-	mem = newMem()
-}
-
 var ErrMemLock error = errors.New("core: mem lock failed")
 
 type Mem struct {
