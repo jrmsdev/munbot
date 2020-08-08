@@ -29,11 +29,12 @@ var Defaults value.DB = value.DB{
 	},
 	"master.api": value.Map{
 		"enable":  "true",
-		"netaddr": "0.0.0.0",
+		"netport": "6490",
 		"path":    "/",
 	},
-	"master.auth": value.Map{
-		"path": "/auth",
+	"master.console": value.Map{
+		"enable":  "true",
+		"netaddr": "0.0.0.0",
 	},
 }
 

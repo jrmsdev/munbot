@@ -40,6 +40,8 @@ func TestFlagsDefaults(t *testing.T) {
 	c := config.New()
 	c.SetDefaults(config.Defaults)
 	f.Parse(c)
-	assert.Equal("0.0.0.0", f.ApiAddr, "default api.addr")
-	assert.Equal(uint(6492), f.ApiPort, "default api.port")
+	assert.Equal("127.0.0.1", f.ApiAddr, "default api.addr")
+	assert.Equal(uint(6490), f.ApiPort, "default api.port")
+	assert.Equal("0.0.0.0", f.ConsoleAddr, "default console.addr")
+	assert.Equal(uint(6492), f.ConsolePort, "default console.port")
 }

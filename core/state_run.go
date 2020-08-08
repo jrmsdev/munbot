@@ -125,14 +125,14 @@ LOOP:
 func (s *SRun) Stop() error {
 	log.Print("Stop...")
 	// stop api
-	log.Debug("try to stop api...")
+	log.Print("Stop master api...")
 	if err := s.rt.Api.Stop(); err != nil {
 		log.Error(err)
 	}
 	// stop robot
 	var err error
 	if s.rt.Master.Running() {
-		log.Debug("try to stop robot...")
+		log.Print("Stop master robot...")
 		if err := s.rt.Master.Stop(); err != nil {
 			err = log.Error(err)
 		}

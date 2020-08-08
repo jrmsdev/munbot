@@ -53,11 +53,16 @@ func setDefaults(p *Profile) *Profile {
 	return p
 }
 
+// GetPath returns the absolute profile named filepath.
+func (p *Profile) GetPath(name string) string {
+	cfgDir := filepath.Clean(p.ConfigDir)
+	return filepath.Join(cfgDir, p.Name, name)
+}
+
 // GetConfigFile returns the absolute filename of the configuration file for the
 // current os user. This is the filename used to save configuration updates.
 func (p *Profile) GetConfigFile() string {
-	cfgDir := filepath.Clean(p.ConfigDir)
-	return filepath.Join(cfgDir, p.Name, p.Config)
+	return p.GetPath(p.Config)
 }
 
 // ListConfigFiles returns a list of all the profiled filenames to read the
