@@ -6,6 +6,7 @@ package auth
 
 import (
 	"errors"
+	"io/ioutil"
 	"os"
 	"path/filepath"
 
@@ -53,11 +54,11 @@ func (a *Auth) setup() error {
 	log.Debug("setup")
 	var err error
 	if vfs.Exist(a.priv) {
-		log.Print("Auth load CA")
 		a.id, err = a.loadCA()
+		log.Printf("Auth load CA %s", a.id.Recipient().String())
 	} else {
-		log.Print("Auth new CA")
 		a.id, err = a.newCA()
+		log.Printf("Auth new CA %s", a.id.Recipient().String())
 	}
 	if err != nil {
 		return err
@@ -93,5 +94,16 @@ func (a *Auth) newCA() (*age.X25519Identity, error) {
 }
 
 func (a *Auth) loadCA() (*age.X25519Identity, error) {
-	return nil, nil
+	fh, err := vfs.Open(a.priv)
+	if err != nil {
+		log.Debug(err)
+		return nil, err
+	}
+	var blob []byte
+	blob, err = ioutil.ReadAll(fh)
+	if err != nil {
+		log.Debug(err)
+		return nil, err
+	}
+	return age.ParseX25519Identity(string(blob))
 }
