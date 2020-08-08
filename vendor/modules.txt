@@ -1,6 +1,11 @@
+# filippo.io/age v1.0.0-beta4
+filippo.io/age
+filippo.io/age/internal/bech32
+filippo.io/age/internal/format
+filippo.io/age/internal/stream
 # github.com/bmizerany/pat v0.0.0-20170815010413-6226ea591a40
 github.com/bmizerany/pat
-# github.com/davecgh/go-spew v1.1.0
+# github.com/davecgh/go-spew v1.1.1
 github.com/davecgh/go-spew/spew
 # github.com/gobuffalo/uuid v2.0.5+incompatible
 github.com/gobuffalo/uuid
@@ -14,6 +19,8 @@ github.com/hashicorp/errwrap
 github.com/hashicorp/go-multierror
 # github.com/pmezard/go-difflib v1.0.0
 github.com/pmezard/go-difflib/difflib
+# github.com/sergi/go-diff v1.1.0
+github.com/sergi/go-diff/diffmatchpatch
 # github.com/stretchr/objx v0.1.0
 github.com/stretchr/objx
 # github.com/stretchr/testify v1.6.1
@@ -27,5 +34,16 @@ github.com/subchen/go-trylock/v2
 gobot.io/x/gobot
 gobot.io/x/gobot/api
 gobot.io/x/gobot/api/robeaux
+# golang.org/x/crypto v0.0.0-20200323165209-0ec3e9974c59
+golang.org/x/crypto/chacha20
+golang.org/x/crypto/chacha20poly1305
+golang.org/x/crypto/curve25519
+golang.org/x/crypto/hkdf
+golang.org/x/crypto/internal/subtle
+golang.org/x/crypto/pbkdf2
+golang.org/x/crypto/poly1305
+golang.org/x/crypto/scrypt
+# golang.org/x/sys v0.0.0-20191001151750-bb3f8db39f24
+golang.org/x/sys/cpu
 # gopkg.in/yaml.v3 v3.0.0-20200313102051-9f266ea9e77c
 gopkg.in/yaml.v3

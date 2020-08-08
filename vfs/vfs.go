@@ -58,3 +58,12 @@ func Open(name string) (File, error) {
 func Create(name string) (File, error) {
 	return fs.OpenFile(name, os.O_RDWR|os.O_CREATE|os.O_TRUNC, 0660)
 }
+
+// Exist checks if the named file exists on current filesystem.
+func Exist(name string) bool {
+	_, err := fs.Stat(name)
+	if err == nil {
+		return true
+	}
+	return false
+}
