@@ -1,7 +1,7 @@
 // Copyright (c) Jeremías Casteglione <jrmsdev@gmail.com>
 // See LICENSE file.
 
-// Package auth implements master's console server authentication.
+// Package auth implements master's authentication.
 package auth
 
 import (

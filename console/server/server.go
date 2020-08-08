@@ -5,7 +5,7 @@
 package server
 
 import (
-	"github.com/munbot/master/console/auth"
+	"github.com/munbot/master/auth"
 )
 
 var _ AuthManager = &auth.Auth{}
