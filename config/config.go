@@ -27,6 +27,9 @@ var Defaults value.DB = value.DB{
 	"master": value.Map{
 		"name": "munbot",
 	},
+	"master.auth": value.Map{
+		"enable": "true",
+	},
 	"master.api": value.Map{
 		"enable":  "true",
 		"netport": "6490",

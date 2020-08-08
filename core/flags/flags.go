@@ -11,6 +11,8 @@ import (
 
 // Flags holds main flags settings.
 type Flags struct {
+	AuthEnable     bool
+	authDisable    bool
 	ApiEnable      bool
 	apiDisable     bool
 	ApiDebug       bool
@@ -24,6 +26,7 @@ type Flags struct {
 
 func New() *Flags {
 	return &Flags{
+		AuthEnable:    true,
 		ApiEnable:     true,
 		ConsoleEnable: true,
 	}
@@ -31,6 +34,7 @@ func New() *Flags {
 
 // Set sets the flags to the provided handler.
 func (f *Flags) Set(fs *flag.FlagSet) {
+	fs.BoolVar(&f.authDisable, "auth.disable", false, "disable auth")
 	fs.BoolVar(&f.apiDisable, "api.disable", false, "disable api")
 	fs.BoolVar(&f.ApiDebug, "api.debug", false, "debug api")
 	fs.StringVar(&f.ApiAddr, "api.addr", "", "api tcp `address` to bind to")
@@ -43,8 +47,16 @@ func (f *Flags) Set(fs *flag.FlagSet) {
 // Parse parses the flags that were not set via the flags handler (cmd args
 // usually) and sets them with their respective values from the configuration.
 func (f *Flags) Parse(c *config.Config) {
+	f.parseAuth(c.Section("master.auth"))
 	f.parseApi(c.Section("master.api"))
 	f.parseConsole(c.Section("master.console"))
+}
+
+func (f *Flags) parseAuth(s *config.Section) {
+	f.AuthEnable = s.GetBool("enable")
+	if f.authDisable {
+		f.AuthEnable = false
+	}
 }
 
 func (f *Flags) parseApi(s *config.Section) {

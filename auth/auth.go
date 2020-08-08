@@ -8,7 +8,6 @@ import (
 	"errors"
 	"io/ioutil"
 	"os"
-	"path/filepath"
 
 	"filippo.io/age"
 
@@ -31,28 +30,12 @@ func New() *Auth {
 	return &Auth{}
 }
 
-// Configure sets up the CA directory.
-func (a *Auth) Configure(cadir string) error {
-	var err error
-	a.dir, err = filepath.Abs(cadir)
-	if a.dir == "." {
-		return ErrCADir
-	}
-	if err != nil {
-		return err
-	}
-	if err = os.MkdirAll(a.dir, 0700); err != nil {
-		return err
-	}
-	log.Debugf("CA dir: %s", a.dir)
-	a.priv = filepath.Join(a.dir, "ca")
-	a.pub = filepath.Join(a.dir, "ca.pub")
-	return a.setup()
-}
-
 func (a *Auth) setup() error {
 	log.Debug("setup")
 	var err error
+	if err = os.MkdirAll(a.dir, 0700); err != nil {
+		return err
+	}
 	if vfs.Exist(a.priv) {
 		a.id, err = a.loadCA()
 		log.Printf("Auth load CA %s", a.id.Recipient().String())

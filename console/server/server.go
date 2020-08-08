@@ -12,7 +12,6 @@ var _ AuthManager = &auth.Auth{}
 
 // AuthManager defines the interface for server's auth manager.
 type AuthManager interface {
-	Configure(cadir string) error
 }
 
 // Config is the server config.
@@ -20,7 +19,7 @@ type Config struct {
 	Enable bool
 	Addr   string
 	Port   uint
-	CADir  string
+	Auth   AuthManager
 }
 
 // Server implements the ssh console server.
@@ -30,13 +29,14 @@ type Server struct {
 }
 
 func New() *Server {
-	return &Server{auth: auth.New()}
+	return &Server{}
 }
 
 func (s *Server) Configure(cfg *Config) error {
 	if cfg.Enable {
 		s.enable = true
-		return s.auth.Configure(cfg.CADir)
+		// TODO: check cfg.Auth is not nil or get a default one
+		s.auth = cfg.Auth
 	}
 	return nil
 }

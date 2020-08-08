@@ -52,6 +52,7 @@ func (s *SRun) Configure() error {
 func (s *SRun) Start() error {
 	log.Print("Start...")
 	// start master robot
+	log.Print("Start master robot...")
 	s.rt.Master.ExitNotify(s.exit)
 	s.wg.Add(1)
 	go func(wg *sync.WaitGroup, fail chan failmsg) {
@@ -64,6 +65,7 @@ func (s *SRun) Start() error {
 	}(s.wg, s.fail)
 	time.Sleep(s.wait)
 	// start api server
+	log.Print("Start master api...")
 	s.wg.Add(1)
 	go func(wg *sync.WaitGroup, fail chan failmsg) {
 		defer wg.Done()
