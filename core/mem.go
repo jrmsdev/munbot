@@ -7,6 +7,7 @@ import (
 	"errors"
 
 	"github.com/munbot/master/api"
+	"github.com/munbot/master/console"
 	"github.com/munbot/master/robot/master"
 	"github.com/munbot/master/utils/lock"
 )
@@ -14,9 +15,10 @@ import (
 var ErrMemLock error = errors.New("core: mem lock failed")
 
 type Mem struct {
-	mu     *lock.Locker
-	Master master.Munbot
-	Api    api.Server
+	mu      *lock.Locker
+	Master  master.Munbot
+	Api     api.Server
+	Console console.Server
 }
 
 func newMem() *Mem {

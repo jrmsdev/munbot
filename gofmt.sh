@@ -6,6 +6,7 @@ exec gofmt -w -l -s \
 	api \
 	cmd \
 	config \
+	console \
 	core \
 	log \
 	mb \

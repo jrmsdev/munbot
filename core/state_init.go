@@ -6,6 +6,7 @@ package core
 import (
 	"github.com/munbot/master/api"
 	"github.com/munbot/master/config"
+	"github.com/munbot/master/console"
 	"github.com/munbot/master/log"
 	"github.com/munbot/master/robot/master"
 )
@@ -24,8 +25,12 @@ func newInit(m Machine, rt *Mem) State {
 func (s *SInit) Init() error {
 	log.Print("Init...")
 	if s.rt.Master == nil {
+		log.Print("Init master robot...")
 		s.rt.Master = master.New()
+		log.Print("Init master api...")
 		s.rt.Api = api.New()
+		log.Print("Init master console...")
+		s.rt.Console = console.NewServer()
 	}
 	return nil
 }
