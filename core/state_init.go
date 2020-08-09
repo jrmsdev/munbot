@@ -48,15 +48,18 @@ func (s *SInit) Configure() error {
 		return log.Error(err)
 	}
 	kfl.Parse(cfg)
+
 	log.Print("Configure auth manager...")
 	cadir := cfl.Profile.GetPath("auth")
 	if err := s.rt.Auth.Configure(cadir); err != nil {
 		return log.Error(err)
 	}
+
 	log.Print("Configure master robot...")
 	if err := s.rt.Master.Configure(kfl, cfl, cfg); err != nil {
 		return log.Error(err)
 	}
+
 	log.Print("Configure master api...")
 	apiCfg := &api.ServerConfig{
 		Enable: kfl.ApiEnable,
@@ -69,10 +72,12 @@ func (s *SInit) Configure() error {
 	if kfl.ApiEnable {
 		s.rt.Api.Mount("/", s.rt.Master)
 	}
+
 	log.Print("Configure master console...")
 	if err := console.Configure(s.rt.Console, kfl, s.rt.Auth); err != nil {
 		return log.Error(err)
 	}
+
 	return s.m.SetState(Run)
 }
 

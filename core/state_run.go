@@ -87,6 +87,7 @@ LOOP:
 	for {
 		select {
 		case fail = <-s.fail:
+			log.Debug("fail...")
 			break LOOP
 		case <-s.exit:
 			log.Debug("master exit...")
@@ -114,7 +115,7 @@ LOOP:
 	// maybe not a good idea? but at least it makes them panic...
 	defer close(s.fail)
 	if fail.err != nil {
-		log.Debugf("core %s failed: %s", fail.name, fail.err)
+		log.Errorf("core %s failed: %s", fail.name, fail.err)
 		abort = true
 	}
 	if abort {

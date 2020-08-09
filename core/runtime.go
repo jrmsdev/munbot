@@ -50,7 +50,7 @@ func (k *Core) Init(ctx context.Context) (context.Context, error) {
 	}
 	defer k.rt.Unlock()
 	if err = k.state.Init(); err != nil {
-		return ctx, k.error(err)
+		return ctx, err
 	}
 	return ctx, nil
 }
@@ -70,7 +70,7 @@ func (k *Core) Configure(kfl *flags.Flags, cfl *config.Flags, cfg *config.Config
 	k.cfl = cfl
 	k.kfl = kfl
 	if err := k.state.Configure(); err != nil {
-		return k.error(err)
+		return err
 	}
 	return nil
 }
@@ -87,10 +87,10 @@ func (k *Core) Start() error {
 	}
 	defer k.rt.Unlock()
 	if err := k.state.Start(); err != nil {
-		return k.error(err)
+		return err
 	}
 	if err := k.state.Run(); err != nil {
-		return k.error(err)
+		return err
 	}
 	log.Debug("bye")
 	return nil
@@ -108,10 +108,10 @@ func (k *Core) Stop() error {
 	}
 	defer k.rt.Unlock()
 	if err := k.state.Stop(); err != nil {
-		return k.error(err)
+		return err
 	}
 	if err := k.state.Halt(); err != nil {
-		return k.error(err)
+		return err
 	}
 	return nil
 }
