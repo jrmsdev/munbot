@@ -51,11 +51,19 @@ func (s *Server) Start() error {
 	var err error
 	s.ln, err = net.Listen("tcp", s.addr)
 	if err != nil {
-		log.Debug(err)
+		log.Debugf("listen error: %v", err)
 		return err
 	}
 	defer s.ln.Close()
 	log.Printf("Console server ssh://%s", s.addr)
+	var nConn net.Conn
+	nConn, err = s.ln.Accept()
+	if err != nil {
+		log.Debugf("accept error: %v", err)
+		return err
+	}
+	defer nConn.Close()
+	log.Printf("Console connected from %q", nConn.RemoteAddr())
 	<-s.done
 	return nil
 }
