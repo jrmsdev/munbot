@@ -21,38 +21,69 @@ var ErrCADir error = errors.New("auth: invalid CA dir")
 type Auth struct {
 	dir  string
 	priv string
-	pub  string
+	keys string
 	id   ssh.Signer
+	auth map[string]bool
 }
 
 // New creates a new Auth instance.
 func New() *Auth {
-	return &Auth{}
+	return &Auth{auth: map[string]bool{}}
+}
+
+func (a *Auth) keyfp(pk ssh.PublicKey) string {
+	return ssh.FingerprintSHA256(pk)
 }
 
 func (a *Auth) setup() error {
 	log.Debug("setup")
 	var err error
-	if err = os.MkdirAll(a.dir, 0700); err != nil {
+	if err = os.MkdirAll(a.dir, 0750); err != nil {
 		return err
 	}
 	a.priv = filepath.Join(a.dir, "master_host")
-	a.pub = filepath.Join(a.dir, "master_host.pub")
+	a.keys = filepath.Join(a.dir, "authorized_keys")
 	if vfs.Exist(a.priv) {
 		a.id, err = a.sshLoadKeys(a.priv)
-		if err == nil && a.id != nil {
-			log.Print("Auth loaded SSH keys")
-		}
 	} else {
 		a.id, err = a.sshNewKeys(a.priv)
-		if err == nil && a.id != nil {
-			log.Print("Auth created SSH keys")
-		}
 	}
 	if err != nil {
 		return err
 	}
-	log.Printf("Auth master fingerprint %s",
-		ssh.FingerprintSHA256(a.id.PublicKey()))
+	if a.id != nil {
+		log.Printf("Auth master fingerprint %s", a.keyfp(a.id.PublicKey()))
+		if err := a.parseAuthKeys(); err != nil {
+			return err
+		}
+	}
 	return nil
+}
+
+func (a *Auth) parseAuthKeys() error {
+	log.Debug("parse authorized keys")
+	if !vfs.Exist(a.keys) {
+		log.Warnf("%s: file not found", a.keys)
+		return nil
+	}
+	blob, err := vfs.ReadFile(a.keys)
+	if err != nil {
+		return err
+	}
+	for len(blob) > 0 {
+		key, _, _, rest, err := ssh.ParseAuthorizedKey(blob)
+		if err != nil {
+			log.Debug(err)
+			return err
+		}
+		blob = rest
+		fp := a.keyfp(key)
+		a.auth[fp] = true
+		log.Printf("Auth added %s", fp)
+	}
+	return nil
+}
+
+func (a *Auth) publicKeyCallback(c ssh.ConnMetadata, k ssh.PublicKey) (*ssh.Permissions, error) {
+	return nil, errors.New("auth disabled!")
 }
