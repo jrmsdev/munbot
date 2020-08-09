@@ -52,8 +52,5 @@ func (a *Auth) setup() error {
 	if err != nil {
 		return err
 	}
-	if a.ssh == nil {
-		log.Warn("ssh authentication will be disabled!")
-	}
 	return nil
 }
