@@ -52,7 +52,7 @@ func (s *SInit) Configure() error {
 	log.Print("Configure auth manager...")
 	cadir := cfl.Profile.GetPath("auth")
 	if err := s.rt.Auth.Configure(cadir); err != nil {
-		return log.Error(err)
+		return err
 	}
 
 	log.Print("Configure master robot...")
