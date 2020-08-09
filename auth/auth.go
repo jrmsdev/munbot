@@ -52,7 +52,7 @@ func (a *Auth) setup() error {
 		return err
 	}
 	if a.id != nil {
-		log.Printf("Auth master fingerprint %s", a.keyfp(a.id.PublicKey()))
+		log.Printf("Auth master %s", a.keyfp(a.id.PublicKey()))
 		if err := a.parseAuthKeys(); err != nil {
 			return err
 		}
