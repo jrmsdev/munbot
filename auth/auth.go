@@ -40,17 +40,20 @@ func (a *Auth) setup() error {
 	a.pub = filepath.Join(a.dir, "master_host.pub")
 	if vfs.Exist(a.priv) {
 		a.ssh, err = a.sshLoadKeys()
-		if err == nil {
+		if err == nil && a.ssh != nil {
 			log.Printf("Auth loaded SSH keys %s", a.priv)
 		}
 	} else {
 		a.ssh, err = a.sshNewKeys()
-		if err == nil {
+		if err == nil && a.ssh != nil {
 			log.Printf("Auth created SSH keys %s", a.priv)
 		}
 	}
 	if err != nil {
 		return err
+	}
+	if a.ssh == nil {
+		log.Warn("ssh authentication will be disabled!")
 	}
 	return nil
 }

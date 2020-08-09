@@ -29,7 +29,8 @@ func (a *Auth) sshKeygen(filename string) error {
 func (a *Auth) sshNewKeys() (ssh.Signer, error) {
 	log.Debug("new keys")
 	if err := a.sshKeygen(a.priv); err != nil {
-		return nil, err
+		log.Warn(err)
+		return nil, nil
 	}
 	return nil, nil
 }
