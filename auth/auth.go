@@ -85,5 +85,9 @@ func (a *Auth) parseAuthKeys() error {
 }
 
 func (a *Auth) publicKeyCallback(c ssh.ConnMetadata, k ssh.PublicKey) (*ssh.Permissions, error) {
-	return nil, errors.New("auth disabled!")
+	fp := a.keyfp(k)
+	if a.auth[fp] {
+		return &ssh.Permissions{Extensions: map[string]string{"pubkey-fp": fp}}, nil
+	}
+	return nil, log.Errorf("invalid key %s", fp)
 }

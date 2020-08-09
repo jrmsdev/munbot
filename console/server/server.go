@@ -75,7 +75,7 @@ func (s *Server) Start() error {
 	defer conn.Close()
 	log.Printf("Console handshake from %s@%s", conn.User(), conn.RemoteAddr())
 	go ssh.DiscardRequests(reqs)
-	log.Printf("Console login with key %s", conn.Permissions.Extensions["pubkey-fp"])
+	log.Printf("Console login %s", conn.Permissions.Extensions["pubkey-fp"])
 	<-s.done
 	return nil
 }
