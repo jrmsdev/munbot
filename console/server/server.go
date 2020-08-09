@@ -5,6 +5,7 @@
 package server
 
 import (
+	"context"
 	"fmt"
 	"net"
 	"sync"
@@ -55,6 +56,13 @@ func (s *Server) Configure(cfg *Config) error {
 	return nil
 }
 
+func (s *Server) Stop() error {
+	defer close(s.done)
+	s.done <- true
+	s.wg.Wait()
+	return s.ln.Close()
+}
+
 func (s *Server) Start() error {
 	var err error
 	// listen
@@ -66,60 +74,73 @@ func (s *Server) Start() error {
 	defer s.ln.Close()
 	log.Printf("Console server ssh://%s", s.addr)
 	// accept connections
-	fail := make(chan error, 1)
+	ttl := time.Now().Add(time.Hour)
+	ctx, cancel := context.WithDeadline(context.Background(), ttl)
 	s.wg.Add(1)
-	go s.accept(fail)
+	go s.accept(ctx)
 	// monitor...
-	defer close(fail)
+	defer cancel()
 LOOP:
 	for {
 		select {
-		case err = <-fail:
-			break LOOP
 		case <-s.done:
 			break LOOP
 		default:
 			time.Sleep(s.wait)
 		}
 	}
-	s.wg.Wait()
 	return err
 }
 
-func (s *Server) accept(fail chan<- error) {
+func (s *Server) accept(ctx context.Context) {
 	var err error
 	defer s.wg.Done()
-	// accept
-	var nConn net.Conn
-	nConn, err = s.ln.Accept()
-	if err != nil {
-		log.Debugf("accept error: %v", err)
-		fail <- err
-		return
+	ttl, _ := ctx.Deadline()
+LOOP:
+	for {
+		select {
+		case <-ctx.Done():
+			log.Debugf("context done, error: %v", ctx.Err())
+			break LOOP
+		case <-s.done:
+			break LOOP
+		default:
+		}
+		var nc net.Conn
+		nc, err = s.ln.Accept()
+		if err != nil {
+			log.Errorf("Console accept: %v", err)
+			continue
+		}
+		if err := nc.SetDeadline(ttl); err != nil {
+			log.Errorf("Console set connection deadline: %v", err)
+			nc.Close()
+			continue
+		}
+		s.wg.Add(1)
+		go s.dispatch(ctx, nc)
 	}
-	defer nConn.Close()
-	log.Printf("Console connected from %q", nConn.RemoteAddr())
+}
+
+func (s *Server) dispatch(ctx context.Context, nc net.Conn) {
+	defer s.wg.Done()
+	defer nc.Close()
+	select {
+	case <-ctx.Done():
+		return
+	default:
+	}
 	// ssh handshake
-	conn, _, reqs, serr := ssh.NewServerConn(nConn, s.cfg)
-	if serr != nil {
-		log.Debugf("handshake error: %v", serr)
-		fail <- serr
+	conn, _, reqs, err := ssh.NewServerConn(nc, s.cfg)
+	if err != nil {
+		log.Debugf("handshake error: %v", err)
 		return
 	}
 	defer conn.Close()
-	log.Printf("Console handshake from %s@%s", conn.User(), conn.RemoteAddr())
 	s.wg.Add(1)
 	go func() {
 		defer s.wg.Done()
 		ssh.DiscardRequests(reqs)
 	}()
 	log.Printf("Console login %s", conn.Permissions.Extensions["pubkey-fp"])
-}
-
-func (s *Server) Stop() error {
-	defer close(s.done)
-	err := s.ln.Close()
-	s.wg.Wait()
-	s.done <- true
-	return err
 }

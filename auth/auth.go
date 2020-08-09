@@ -89,5 +89,5 @@ func (a *Auth) publicKeyCallback(c ssh.ConnMetadata, k ssh.PublicKey) (*ssh.Perm
 	if a.auth[fp] {
 		return &ssh.Permissions{Extensions: map[string]string{"pubkey-fp": fp}}, nil
 	}
-	return nil, log.Errorf("invalid key %s", fp)
+	return nil, log.Errorf("Auth key %s", fp)
 }
