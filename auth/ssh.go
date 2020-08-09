@@ -18,7 +18,8 @@ func (a *Auth) sshLoadKeys() (ssh.Signer, error) {
 }
 
 func (a *Auth) sshKeygen(filename string) error {
-	cmd := exec.Command("ssh-keygen", "-v", "-N", "", "-h", "-f", filename)
+	cmd := exec.Command("ssh-keygen", "-v", "-N", "", "-h", "-t", "ed25519",
+		"-f", filename)
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
 	log.Debug(cmd.String())
