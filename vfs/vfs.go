@@ -6,6 +6,7 @@ package vfs
 
 import (
 	"io"
+	"io/ioutil"
 	"os"
 )
 
@@ -66,4 +67,14 @@ func Exist(name string) bool {
 		return true
 	}
 	return false
+}
+
+// ReadFile calls vfs.Open(name) and then ioutil.ReadAll.
+func ReadFile(name string) ([]byte, error) {
+	fh, err := Open(name)
+	if err != nil {
+		return nil, err
+	}
+	defer fh.Close()
+	return ioutil.ReadAll(fh)
 }
