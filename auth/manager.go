@@ -34,6 +34,11 @@ func (a *Auth) Configure(cadir string) error {
 
 // ServerConfig creates a new instance of ssh.ServerConfig based on our settings.
 func (a *Auth) ServerConfig() *ssh.ServerConfig {
-	log.Warn("ssh authentication is disabled!")
-	return &ssh.ServerConfig{}
+	cfg := &ssh.ServerConfig{}
+	if a.id == nil {
+		log.Warn("ssh authentication is disabled!")
+		return cfg
+	}
+	cfg.AddHostKey(a.id)
+	return cfg
 }

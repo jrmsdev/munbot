@@ -4,17 +4,33 @@
 package auth
 
 import (
+	"io/ioutil"
 	"os"
 	"os/exec"
 
 	"golang.org/x/crypto/ssh"
 
 	"github.com/munbot/master/log"
+	"github.com/munbot/master/vfs"
 )
 
-func (a *Auth) sshLoadKeys() (ssh.Signer, error) {
-	log.Debug("load keys")
-	return nil, nil
+func (a *Auth) sshLoadKeys(fn string) (ssh.Signer, error) {
+	log.Debugf("load keys: %s", fn)
+	var pk ssh.Signer
+	if fh, err := vfs.Open(fn); err != nil {
+		return nil, log.Error(err)
+	} else {
+		defer fh.Close()
+		if blob, err := ioutil.ReadAll(fh); err != nil {
+			return nil, log.Error(err)
+		} else {
+			var err error
+			if pk, err = ssh.ParsePrivateKey(blob); err != nil {
+				return nil, log.Error(err)
+			}
+		}
+	}
+	return pk, nil
 }
 
 func (a *Auth) sshKeygen(filename string) error {
@@ -26,9 +42,9 @@ func (a *Auth) sshKeygen(filename string) error {
 	return cmd.Run()
 }
 
-func (a *Auth) sshNewKeys() (ssh.Signer, error) {
-	log.Debug("new keys")
-	if err := a.sshKeygen(a.priv); err != nil {
+func (a *Auth) sshNewKeys(fn string) (ssh.Signer, error) {
+	log.Debugf("new keys: %s", fn)
+	if err := a.sshKeygen(fn); err != nil {
 		if err == exec.ErrNotFound {
 			log.Warn(err)
 			return nil, nil
@@ -36,5 +52,5 @@ func (a *Auth) sshNewKeys() (ssh.Signer, error) {
 			return nil, log.Error(err)
 		}
 	}
-	return a.sshLoadKeys()
+	return a.sshLoadKeys(fn)
 }
