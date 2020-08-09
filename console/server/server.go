@@ -5,9 +5,13 @@
 package server
 
 import (
+	"fmt"
+	"net"
+
 	"golang.org/x/crypto/ssh"
 
 	"github.com/munbot/master/auth"
+	"github.com/munbot/master/log"
 )
 
 // Config is the server config.
@@ -24,6 +28,8 @@ type Server struct {
 	auth   auth.Manager
 	cfg    *ssh.ServerConfig
 	done   chan bool
+	addr   string
+	ln     net.Listener
 }
 
 func New() *Server {
@@ -36,11 +42,20 @@ func (s *Server) Configure(cfg *Config) error {
 		// TODO: check cfg.Auth is not nil or get a default one
 		s.auth = cfg.Auth
 		s.cfg = s.auth.ServerConfig()
+		s.addr = fmt.Sprintf("%s:%d", cfg.Addr, cfg.Port)
 	}
 	return nil
 }
 
 func (s *Server) Start() error {
+	var err error
+	s.ln, err = net.Listen("tcp", s.addr)
+	if err != nil {
+		log.Debug(err)
+		return err
+	}
+	defer s.ln.Close()
+	log.Printf("Console server ssh://%s", s.addr)
 	<-s.done
 	return nil
 }
