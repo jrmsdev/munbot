@@ -24,7 +24,5 @@ func (a *Auth) Configure(cadir string) error {
 		return err
 	}
 	log.Debugf("CA dir: %s", a.dir)
-	a.priv = filepath.Join(a.dir, "ca")
-	a.pub = filepath.Join(a.dir, "ca.pub")
 	return a.setup()
 }
