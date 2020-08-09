@@ -49,6 +49,7 @@ func (s *Server) Configure(cfg *Config) error {
 
 func (s *Server) Start() error {
 	var err error
+	// listen
 	s.ln, err = net.Listen("tcp", s.addr)
 	if err != nil {
 		log.Debugf("listen error: %v", err)
@@ -56,6 +57,7 @@ func (s *Server) Start() error {
 	}
 	defer s.ln.Close()
 	log.Printf("Console server ssh://%s", s.addr)
+	// accept
 	var nConn net.Conn
 	nConn, err = s.ln.Accept()
 	if err != nil {
@@ -64,6 +66,16 @@ func (s *Server) Start() error {
 	}
 	defer nConn.Close()
 	log.Printf("Console connected from %q", nConn.RemoteAddr())
+	// ssh handshake
+	conn, _, reqs, serr := ssh.NewServerConn(nConn, s.cfg)
+	if serr != nil {
+		log.Debugf("handshake error: %v", serr)
+		return serr
+	}
+	defer conn.Close()
+	log.Printf("Console handshake from %s@%s", conn.User(), conn.RemoteAddr())
+	go ssh.DiscardRequests(reqs)
+	log.Printf("Console login with key %s", conn.Permissions.Extensions["pubkey-fp"])
 	<-s.done
 	return nil
 }
