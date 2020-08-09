@@ -4,6 +4,7 @@
 package auth
 
 import (
+	"errors"
 	"io/ioutil"
 	"os"
 	"os/exec"
@@ -53,4 +54,8 @@ func (a *Auth) sshNewKeys(fn string) (ssh.Signer, error) {
 		}
 	}
 	return a.sshLoadKeys(fn)
+}
+
+func (a *Auth) publicKeyCallback(c ssh.ConnMetadata, k ssh.PublicKey) (*ssh.Permissions, error) {
+	return nil, errors.New("auth disabled!")
 }

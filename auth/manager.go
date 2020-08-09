@@ -40,5 +40,6 @@ func (a *Auth) ServerConfig() *ssh.ServerConfig {
 		return cfg
 	}
 	cfg.AddHostKey(a.id)
+	cfg.PublicKeyCallback = a.publicKeyCallback
 	return cfg
 }
