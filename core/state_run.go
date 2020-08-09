@@ -63,8 +63,8 @@ func (s *SRun) Start() error {
 			fail <- failmsg{"robot", err}
 		}
 	}(s.wg, s.fail)
-	time.Sleep(s.wait)
 	// start api server
+	time.Sleep(s.wait)
 	log.Print("Start master api...")
 	s.wg.Add(1)
 	go func(wg *sync.WaitGroup, fail chan failmsg) {
@@ -73,6 +73,18 @@ func (s *SRun) Start() error {
 		if err := s.rt.Api.Start(); err != nil {
 			log.Error(err)
 			fail <- failmsg{"api", err}
+		}
+	}(s.wg, s.fail)
+	// start console server
+	time.Sleep(s.wait)
+	log.Print("Start master console...")
+	s.wg.Add(1)
+	go func(wg *sync.WaitGroup, fail chan failmsg) {
+		defer wg.Done()
+		log.Debug("console start...")
+		if err := s.rt.Console.Start(); err != nil {
+			log.Error(err)
+			fail <- failmsg{"console", err}
 		}
 	}(s.wg, s.fail)
 	return nil
@@ -127,24 +139,29 @@ LOOP:
 
 func (s *SRun) Stop() error {
 	log.Print("Stop...")
+	var xerr error
+	// stop console
+	log.Print("Stop master console...")
+	if err := s.rt.Console.Stop(); err != nil {
+		xerr = log.Error(err)
+	}
 	// stop api
 	log.Print("Stop master api...")
 	if err := s.rt.Api.Stop(); err != nil {
-		log.Error(err)
+		xerr = log.Error(err)
 	}
 	// stop robot
-	var err error
 	if s.rt.Master.Running() {
 		log.Print("Stop master robot...")
 		if err := s.rt.Master.Stop(); err != nil {
-			err = log.Error(err)
+			xerr = log.Error(err)
 		}
 	}
 	// wait for them...
 	log.Debug("wait for them to finish...")
 	s.wg.Wait()
-	if err != nil {
-		return err
+	if xerr != nil {
+		return xerr
 	}
 	return s.m.SetState(Halt)
 }

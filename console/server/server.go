@@ -23,10 +23,11 @@ type Server struct {
 	enable bool
 	auth   auth.Manager
 	cfg    *ssh.ServerConfig
+	done   chan bool
 }
 
 func New() *Server {
-	return &Server{}
+	return &Server{done: make(chan bool, 1)}
 }
 
 func (s *Server) Configure(cfg *Config) error {
@@ -36,5 +37,15 @@ func (s *Server) Configure(cfg *Config) error {
 		s.auth = cfg.Auth
 		s.cfg = s.auth.ServerConfig()
 	}
+	return nil
+}
+
+func (s *Server) Start() error {
+	<-s.done
+	return nil
+}
+
+func (s *Server) Stop() error {
+	s.done <- true
 	return nil
 }

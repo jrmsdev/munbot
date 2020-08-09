@@ -15,6 +15,8 @@ var _ Server = &server.Server{}
 // Server defines the ssh server interface.
 type Server interface {
 	Configure(*server.Config) error
+	Start() error
+	Stop() error
 }
 
 // NewServer creates a new Server instance.
