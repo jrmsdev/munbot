@@ -52,5 +52,7 @@ func (a *Auth) setup() error {
 	if err != nil {
 		return err
 	}
+	log.Printf("Auth master fingerprint %s",
+		ssh.FingerprintSHA256(a.id.PublicKey()))
 	return nil
 }
