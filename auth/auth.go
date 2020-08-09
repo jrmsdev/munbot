@@ -41,7 +41,7 @@ func (a *Auth) setup() error {
 	if err = os.MkdirAll(a.dir, 0750); err != nil {
 		return err
 	}
-	a.priv = filepath.Join(a.dir, "master_host")
+	a.priv = filepath.Join(a.dir, "id_ed25519")
 	a.keys = filepath.Join(a.dir, "authorized_keys")
 	if vfs.Exist(a.priv) {
 		a.id, err = a.sshLoadKeys(a.priv)
