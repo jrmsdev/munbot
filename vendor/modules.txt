@@ -2,6 +2,8 @@
 github.com/bmizerany/pat
 # github.com/davecgh/go-spew v1.1.1
 github.com/davecgh/go-spew/spew
+# github.com/gobuffalo/envy v1.9.0
+github.com/gobuffalo/envy
 # github.com/gobuffalo/uuid v2.0.5+incompatible
 github.com/gobuffalo/uuid
 # github.com/gofrs/uuid v3.3.0+incompatible
@@ -12,8 +14,14 @@ github.com/gorilla/mux
 github.com/hashicorp/errwrap
 # github.com/hashicorp/go-multierror v1.0.0
 github.com/hashicorp/go-multierror
+# github.com/joho/godotenv v1.3.0
+github.com/joho/godotenv
 # github.com/pmezard/go-difflib v1.0.0
 github.com/pmezard/go-difflib/difflib
+# github.com/rogpeppe/go-internal v1.3.2
+github.com/rogpeppe/go-internal/modfile
+github.com/rogpeppe/go-internal/module
+github.com/rogpeppe/go-internal/semver
 # github.com/stretchr/objx v0.1.0
 github.com/stretchr/objx
 # github.com/stretchr/testify v1.6.1

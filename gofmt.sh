@@ -9,6 +9,7 @@ exec gofmt -w -l -s \
 	config \
 	console \
 	core \
+	env \
 	log \
 	mb \
 	platform \
