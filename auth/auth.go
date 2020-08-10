@@ -11,6 +11,7 @@ import (
 
 	"golang.org/x/crypto/ssh"
 
+	"github.com/munbot/master/env"
 	"github.com/munbot/master/log"
 	"github.com/munbot/master/vfs"
 )
@@ -19,6 +20,7 @@ var ErrCADir error = errors.New("auth: invalid CA dir")
 
 // Auth implemenst the console auth manager.
 type Auth struct {
+	name string
 	dir  string
 	priv string
 	keys string
@@ -28,7 +30,7 @@ type Auth struct {
 
 // New creates a new Auth instance.
 func New() *Auth {
-	return &Auth{auth: map[string]bool{}}
+	return &Auth{name: "master", auth: map[string]bool{}}
 }
 
 func (a *Auth) keyfp(pk ssh.PublicKey) string {
@@ -37,6 +39,7 @@ func (a *Auth) keyfp(pk ssh.PublicKey) string {
 
 func (a *Auth) setup() error {
 	log.Debug("setup")
+	a.name = env.Get("MUNBOT")
 	var err error
 	if err = os.MkdirAll(a.dir, 0750); err != nil {
 		return log.Error(err)
@@ -52,7 +55,7 @@ func (a *Auth) setup() error {
 		return err
 	}
 	if a.id != nil {
-		log.Printf("Auth master %s", a.keyfp(a.id.PublicKey()))
+		log.Printf("Auth %s %s", a.name, a.keyfp(a.id.PublicKey()))
 		if err := a.parseAuthKeys(); err != nil {
 			return err
 		}
@@ -78,7 +81,7 @@ func (a *Auth) parseAuthKeys() error {
 		blob = rest
 		fp := a.keyfp(key)
 		a.auth[fp] = true
-		log.Printf("Auth added %s", fp)
+		log.Printf("Auth key %s", fp)
 	}
 	return nil
 }
