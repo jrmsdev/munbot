@@ -8,5 +8,6 @@ else
 fi
 ./build.sh ${SRC}
 export MBENV='devel'
+export MBENV_CONFIG=${PWD}/env
 export MB_CONFIG=${PWD}/_devel/etc
 exec ./_build/cmd/${SRC}.bin $@

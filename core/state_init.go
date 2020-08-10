@@ -35,7 +35,7 @@ func (s *SInit) Init() error {
 		log.Print("Init master api...")
 		s.rt.Api = api.New()
 		log.Print("Init master console...")
-		s.rt.Console = console.NewServer()
+		s.rt.Console = console.New()
 	}
 	return nil
 }
@@ -84,7 +84,13 @@ func (s *SInit) Configure() error {
 	}
 
 	log.Print("Configure master console...")
-	if err := console.Configure(s.rt.Console, kfl, s.rt.Auth); err != nil {
+	consCfg := &console.Config{
+		Enable: env.GetBool("MBCONSOLE"),
+		Addr: env.Get("MBCONSOLE_ADDR"),
+		Port: env.GetUint("MBCONSOLE_PORT"),
+		Auth: s.rt.Auth,
+	}
+	if err := s.rt.Console.Configure(consCfg); err != nil {
 		return log.Error(err)
 	}
 

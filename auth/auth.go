@@ -68,13 +68,12 @@ func (a *Auth) parseAuthKeys() error {
 	}
 	blob, err := vfs.ReadFile(a.keys)
 	if err != nil {
-		return err
+		return log.Error(err)
 	}
 	for len(blob) > 0 {
 		key, _, _, rest, err := ssh.ParseAuthorizedKey(blob)
 		if err != nil {
-			log.Debug(err)
-			return err
+			return log.Error(err)
 		}
 		blob = rest
 		fp := a.keyfp(key)
