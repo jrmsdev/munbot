@@ -7,6 +7,7 @@ import (
 	"flag"
 
 	"github.com/munbot/master/config"
+	"github.com/munbot/master/env"
 )
 
 // Flags holds main flags settings.
@@ -47,40 +48,37 @@ func (f *Flags) Set(fs *flag.FlagSet) {
 // Parse parses the flags that were not set via the flags handler (cmd args
 // usually) and sets them with their respective values from the configuration.
 func (f *Flags) Parse(c *config.Config) {
-	f.parseAuth(c.Section("master.auth"))
-	f.parseApi(c.Section("master.api"))
-	f.parseConsole(c.Section("master.console"))
+	f.parseAuth()
+	f.parseApi()
+	f.parseConsole()
 }
 
-func (f *Flags) parseAuth(s *config.Section) {
-	f.AuthEnable = s.GetBool("enable")
+func (f *Flags) parseAuth() {
 	if f.authDisable {
-		f.AuthEnable = false
+		env.Set("MBAUTH", "false")
 	}
 }
 
-func (f *Flags) parseApi(s *config.Section) {
-	f.ApiEnable = s.GetBool("enable")
+func (f *Flags) parseApi() {
 	if f.apiDisable {
-		f.ApiEnable = false
+		env.Set("MBAPI", "false")
 	}
-	if f.ApiAddr == "" {
-		f.ApiAddr = s.Get("netaddr")
+	if f.ApiAddr != "" {
+		env.Set("MBAPI_ADDR", f.ApiAddr)
 	}
-	if f.ApiPort == 0 {
-		f.ApiPort = s.GetUint("netport")
+	if f.ApiPort != 0 {
+		env.SetUint("MBAPI_PORT", f.ApiPort)
 	}
 }
 
-func (f *Flags) parseConsole(s *config.Section) {
-	f.ConsoleEnable = s.GetBool("enable")
+func (f *Flags) parseConsole() {
 	if f.consoleDisable {
-		f.ConsoleEnable = false
+		env.Set("MBCONSOLE", "false")
 	}
-	if f.ConsoleAddr == "" {
-		f.ConsoleAddr = s.Get("netaddr")
+	if f.ConsoleAddr != "" {
+		env.Set("MBCONSOLE_ADDR", f.ConsoleAddr)
 	}
-	if f.ConsolePort == 0 {
-		f.ConsolePort = s.GetUint("netport")
+	if f.ConsolePort != 0 {
+		env.SetUint("MBCONSOLE_PORT", f.ConsolePort)
 	}
 }

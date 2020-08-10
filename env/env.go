@@ -112,3 +112,18 @@ func GetUint(key string) uint {
 	}
 	return uint(r)
 }
+
+// Set sets env key value. But it does not modify os.Environ.
+func Set(key, val string) {
+	envy.Set(key, val)
+}
+
+// SetInt sets an int value.
+func SetInt(key string, val int) {
+	envy.Set(key, strconv.FormatInt(int64(val), 10))
+}
+
+// SetUint sets an uint value.
+func SetUint(key string, val uint) {
+	envy.Set(key, strconv.FormatUint(uint64(val), 10))
+}
