@@ -15,6 +15,8 @@ import (
 var MBENV string = "life"
 
 // MBENV_CONFIG if set, should be a dir path where to look for ${MBENV}.env file.
+// If it's set as "" (empty string) no extra files will be loaded (besides .env).
+// By default it's set at init() time to ${HOME}/env if we can get user's home dir.
 var MBENV_CONFIG string = ""
 
 // Defaults contains the default settings.
@@ -55,6 +57,7 @@ func userDefaults() {
 	} else {
 		homeDir = filepath.Join(homeDir, ".munbot")
 	}
+	homeDir = filepath.Clean(envy.Get("MB_HOME", homeDir))
 	Defaults["MB_HOME"] = homeDir
 
 	if configDir == "" || configDirErr != nil {
@@ -62,13 +65,11 @@ func userDefaults() {
 	} else {
 		configDir = filepath.Join(configDir, "munbot")
 	}
+	configDir = filepath.Clean(envy.Get("MB_CONFIG", configDir))
 	Defaults["MB_CONFIG"] = configDir
 }
 
-func init() {
-	homeDir, homeDirErr = os.UserHomeDir()
-	configDir, configDirErr = os.UserConfigDir()
-	userDefaults()
+func loadEnv() {
 	cfgdir := envy.Get("MBENV_CONFIG", MBENV_CONFIG)
 	if cfgdir != "" {
 		cfgdir = filepath.Clean(cfgdir)
@@ -76,4 +77,11 @@ func init() {
 		fn := filepath.Join(cfgdir, fmt.Sprintf("%s.env", env))
 		envy.Load(fn)
 	}
+}
+
+func init() {
+	homeDir, homeDirErr = os.UserHomeDir()
+	configDir, configDirErr = os.UserConfigDir()
+	userDefaults()
+	loadEnv()
 }
