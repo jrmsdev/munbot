@@ -16,15 +16,18 @@ var Defaults map[string]string = map[string]string{
 }
 
 func init() {
+	cfgdir := envy.Get("MBENV_CFGDIR", filepath.FromSlash("./env"))
 	env := Get("MBENV")
-	if "test" == envy.Get("GO_ENV", env) {
-		env = "test"
-	}
-	envy.Load(filepath.FromSlash(fmt.Sprintf("./env/%s.env", env)))
+	fn := filepath.Join(cfgdir, fmt.Sprintf("%s.env", env))
+	envy.Load(fn)
 }
 
 func defval(key string) string {
-	return Defaults[key]
+	v, ok := Defaults[key]
+	if ok {
+		return v
+	}
+	return "__UNSET__"
 }
 
 func Get(key string) string {
