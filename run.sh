@@ -7,4 +7,6 @@ else
 	shift
 fi
 ./build.sh ${SRC}
+export MBENV='devel'
+export MB_CONFIG=${PWD}/_devel/etc
 exec ./_build/cmd/${SRC}.bin $@

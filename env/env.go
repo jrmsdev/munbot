@@ -12,12 +12,23 @@ import (
 )
 
 var Defaults map[string]string = map[string]string{
-	"MBENV": "life",
+	"MUNBOT":         "munbot",
+	"MB_LOG":         "quiet",
+	"MB_DEBUG":       "false",
+	"MB_CONFIG":      filepath.FromSlash("/usr/local/etc/munbot"),
+	"MB_PROFILE":     "default",
+	"MBAPI":          "true",
+	"MBAPI_DEBUG":    "false",
+	"MBAPI_ADDR":     "127.0.0.1",
+	"MBAPI_PORT":     "6490",
+	"MBCONSOLE":      "true",
+	"MBCONSOLE_ADDR": "0.0.0.0",
+	"MBCONSOLE_PORT": "6492",
 }
 
 func init() {
-	cfgdir := envy.Get("MBENV_CFGDIR", filepath.FromSlash("./env"))
-	env := Get("MBENV")
+	cfgdir := envy.Get("MBENV_CONFIG", filepath.FromSlash("./env"))
+	env := envy.Get("MBENV", "life")
 	fn := filepath.Join(cfgdir, fmt.Sprintf("%s.env", env))
 	envy.Load(fn)
 }
