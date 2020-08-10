@@ -24,7 +24,7 @@ var Output func(int, string) error = gol.Output
 var setFlags func(int) = gol.SetFlags
 var setPrefix func(string) = gol.SetPrefix
 
-func DebugEnable() {
+func SetDebug() {
 	debug = true
 	verbose = true
 	setFlags(debugFlags)
@@ -114,19 +114,4 @@ func Warnf(format string, v ...interface{}) {
 	if verbose {
 		Output(cdepth, fmt.Sprintf("[WARNING] %s", fmt.Sprintf(format, v...)))
 	}
-}
-
-func setMode(n string) {
-	switch n {
-	case "debug":
-		DebugEnable()
-	case "verbose":
-		SetVerbose()
-	case "quiet":
-		SetQuiet()
-	}
-}
-
-func init() {
-	setMode(os.Getenv("MUNBOT_LOG"))
 }

@@ -56,7 +56,7 @@ func (f *Flags) Parse() error {
 	case "quiet":
 		log.SetQuiet()
 	case "debug":
-		log.DebugEnable()
+		log.SetDebug()
 	default:
 		log.SetVerbose()
 	}

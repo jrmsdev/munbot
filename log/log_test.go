@@ -45,11 +45,11 @@ func (s *Suite) SetupTest() {
 	verbose = true
 }
 
-func (s *Suite) TestDebugEnable() {
+func (s *Suite) TestSetDebug() {
 	require := s.Require()
 	require.Equal(false, debug, "debug disabled")
 	require.Equal(gol.LstdFlags, s.logger.Flags(), "logger init flags")
-	DebugEnable()
+	SetDebug()
 	s.Equal(true, debug, "debug enabled")
 	s.Equal(debugFlags, s.logger.Flags(), "logger debug flags")
 	// check SetQuiet does nothing in debug mode
@@ -105,7 +105,7 @@ func (s *Suite) TestDebug() {
 	s.Equal("", s.buf.String(), "debug worked even if disabled")
 
 	s.buf.Reset()
-	DebugEnable()
+	SetDebug()
 	Debug("test")
 	s.Regexp("^\\d\\d\\d\\d/\\d\\d/\\d\\d \\d\\d:\\d\\d:\\d\\d\\.\\d\\d\\d\\d\\d\\d .*log_test\\.go.* test\n$", s.buf.String(), "debug msg")
 
