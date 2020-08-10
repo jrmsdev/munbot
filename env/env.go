@@ -39,7 +39,7 @@ var MBENV_CONFIG string = ""
 var Defaults map[string]string = map[string]string{
 	"MUNBOT": "master",
 
-	"MB_LOG":     "quiet",
+	"MB_LOG":     "verbose",
 	"MB_DEBUG":   "false",
 	"MB_PROFILE": "default",
 	"MB_CONFIG":  filepath.FromSlash("/usr/local/etc/munbot"),
