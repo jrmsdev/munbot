@@ -39,7 +39,7 @@ func (a *Auth) setup() error {
 	log.Debug("setup")
 	var err error
 	if err = os.MkdirAll(a.dir, 0750); err != nil {
-		return err
+		return log.Error(err)
 	}
 	a.priv = filepath.Join(a.dir, "id_ed25519")
 	a.keys = filepath.Join(a.dir, "authorized_keys")
