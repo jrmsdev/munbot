@@ -30,10 +30,8 @@ func (s *Suite) SetupTest() {
 	s.fs = vfs.NewMockFilesystem("test/config.json")
 	vfs.SetFilesystem(s.fs)
 	s.profile = profile.New("testing")
-	s.profile.Config = "config.json"
-	s.profile.ConfigDir = "test"
-	s.profile.ConfigSysDir = "sys"
-	s.profile.ConfigDistDir = "dist"
+	s.profile.Config = "test"
+	s.profile.ConfigFile = "config.json"
 }
 
 func (s *Suite) TearDownTest() {
@@ -77,7 +75,7 @@ func (s *Suite) TestOpenError() {
 	s.fs.WithOpenError = true
 	c := New()
 	err := c.Load(s.profile)
-	s.require.EqualError(err, "sys/config.json: mock open error", "open error")
+	s.require.EqualError(err, "test/config.json: mock open error", "open error")
 }
 
 func (s *Suite) TestLoadOverride() {

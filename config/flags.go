@@ -5,6 +5,7 @@ package config
 
 import (
 	"flag"
+	"path/filepath"
 
 	"github.com/munbot/master/config/profile"
 	"github.com/munbot/master/env"
@@ -24,24 +25,19 @@ func NewFlags(fs *flag.FlagSet) *Flags {
 	f := &Flags{
 		Profile: profile.New(env.Get("MB_PROFILE")),
 	}
+	// log
 	fs.BoolVar(&f.Debug, "debug", false, "enable debug settings")
 	fs.BoolVar(&f.Quiet, "q", false, "set quiet mode")
 	fs.BoolVar(&f.Verbose, "v", false, "set verbose mode")
-	fs.StringVar(&f.Profile.Name, "profile",
-		f.Profile.Name, "profile `name`")
-	fs.StringVar(&f.Profile.Config, "config",
-		f.Profile.Config, "config file `name`")
-	fs.StringVar(&f.Profile.ConfigDir, "cfg.dir",
-		f.Profile.ConfigDir, "config dir `path`")
-	fs.StringVar(&f.Profile.ConfigSysDir, "cfg.sysdir",
-		f.Profile.ConfigSysDir, "system config dir `path`")
-	fs.StringVar(&f.Profile.ConfigDistDir, "cfg.distdir",
-		f.Profile.ConfigDistDir, "dist config dir `path`")
+	// profile
+	fs.StringVar(&f.Profile.Name, "profile", "", "profile `name`")
+	fs.StringVar(&f.Profile.Config, "config", "", "config dir `path`")
 	return f
 }
 
 // Parse parses the flags.
 func (f *Flags) Parse() error {
+	// log
 	if f.Verbose {
 		env.Set("MB_LOG", "verbose")
 	}
@@ -59,6 +55,13 @@ func (f *Flags) Parse() error {
 		log.SetDebug()
 	default:
 		log.SetVerbose()
+	}
+	// profile
+	if f.Profile.Name != "" {
+		env.Set("MB_PROFILE", f.Profile.Name)
+	}
+	if f.Profile.Config != "" {
+		env.Set("MB_CONFIG", filepath.Clean(f.Profile.Config))
 	}
 	return nil
 }
