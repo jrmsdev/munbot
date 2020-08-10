@@ -67,6 +67,7 @@ func userDefaults() {
 	}
 	configDir = filepath.Clean(envy.Get("MB_CONFIG", configDir))
 	Defaults["MB_CONFIG"] = configDir
+	MBENV_CONFIG = filepath.Join(homeDir, "env")
 }
 
 func loadEnv() {
