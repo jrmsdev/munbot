@@ -177,19 +177,3 @@ func (s *Suite) TestFatal() {
 	s.Regexp("\\d\\d \\[FATAL\\] test\n$", s.buf.String(), "fatalf msg")
 	s.Equal(2, ret, "exit code status")
 }
-
-func (s *Suite) TestSetMode() {
-	require := s.Require()
-	setMode("")
-	require.False(debug)
-	require.True(verbose)
-	setMode("verbose")
-	s.False(debug)
-	s.True(verbose)
-	setMode("quiet")
-	s.False(debug)
-	s.False(verbose)
-	setMode("debug")
-	s.True(debug)
-	s.True(verbose)
-}
