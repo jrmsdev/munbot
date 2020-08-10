@@ -2,7 +2,7 @@
 set -eu
 SRC=${1:-''}
 if test '' = "${SRC}"; then
-	SRC='munbot'
+	SRC='mb'
 else
 	shift
 fi

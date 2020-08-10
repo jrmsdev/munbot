@@ -7,6 +7,8 @@ import (
 	"flag"
 	"os"
 
+	_ "github.com/munbot/master/env"
+
 	"github.com/munbot/master/config"
 )
 

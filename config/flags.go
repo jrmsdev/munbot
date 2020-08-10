@@ -7,6 +7,7 @@ import (
 	"flag"
 
 	"github.com/munbot/master/config/profile"
+	"github.com/munbot/master/env"
 	"github.com/munbot/master/log"
 )
 
@@ -20,7 +21,9 @@ type Flags struct {
 
 // NewFlags creates a new Flags object and sets the flags to the provided handler.
 func NewFlags(fs *flag.FlagSet) *Flags {
-	f := &Flags{Profile: profile.New("default")}
+	f := &Flags{
+		Profile: profile.New(env.Get("MB_PROFILE")),
+	}
 	fs.BoolVar(&f.Debug, "debug", false, "enable debug settings")
 	fs.BoolVar(&f.Quiet, "q", false, "set quiet mode")
 	fs.BoolVar(&f.Verbose, "v", false, "set verbose mode")
@@ -39,13 +42,14 @@ func NewFlags(fs *flag.FlagSet) *Flags {
 
 // Parse parses the flags.
 func (f *Flags) Parse() error {
-	if f.Debug {
+	loglvl := env.Get("MB_LOG")
+	if f.Debug || env.GetBool("MB_DEBUG") || "debug" == loglvl {
 		log.DebugEnable()
 	}
-	if f.Quiet {
+	if f.Quiet || "quiet" == loglvl {
 		log.SetQuiet()
 	}
-	if f.Verbose {
+	if f.Verbose || "verbose" == loglvl {
 		log.SetVerbose()
 	}
 	return nil
