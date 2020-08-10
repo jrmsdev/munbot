@@ -17,8 +17,6 @@
 package env
 
 import (
-	"fmt"
-	"path/filepath"
 	"strconv"
 
 	"github.com/gobuffalo/envy"
@@ -28,43 +26,6 @@ import (
 
 // UNSET is the string returned for values not found in env nor in Defaults either.
 const UNSET string = "__UNSET__"
-
-// MBENV is the default env name.
-var MBENV string = "life"
-
-// MBENV_CONFIG if set, should be a dir path where to look for ${MBENV}.env file.
-var MBENV_CONFIG string = ""
-
-// Defaults contains the default settings.
-var Defaults map[string]string = map[string]string{
-	"MUNBOT": "master",
-
-	"MB_LOG":     "verbose",
-	"MB_DEBUG":   "false",
-	"MB_PROFILE": "default",
-	"MB_CONFIG":  filepath.FromSlash("/usr/local/etc/munbot"),
-
-	"MBAPI":       "true",
-	"MBAPI_DEBUG": "false",
-	"MBAPI_ADDR":  "127.0.0.1",
-	"MBAPI_PORT":  "6490",
-	"MBAPI_PATH":  "/",
-
-	"MBAUTH": "true",
-
-	"MBCONSOLE":      "true",
-	"MBCONSOLE_ADDR": "0.0.0.0",
-	"MBCONSOLE_PORT": "6492",
-}
-
-func init() {
-	cfgdir := envy.Get("MBENV_CONFIG", MBENV_CONFIG)
-	env := envy.Get("MBENV", MBENV)
-	if cfgdir != "" {
-		fn := filepath.Join(cfgdir, fmt.Sprintf("%s.env", env))
-		envy.Load(fn)
-	}
-}
 
 func defval(key string) string {
 	v, ok := Defaults[key]
