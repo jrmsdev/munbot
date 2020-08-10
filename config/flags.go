@@ -43,14 +43,14 @@ func NewFlags(fs *flag.FlagSet) *Flags {
 // Parse parses the flags.
 func (f *Flags) Parse() error {
 	loglvl := env.Get("MB_LOG")
-	if f.Debug || env.GetBool("MB_DEBUG") || "debug" == loglvl {
-		log.DebugEnable()
+	if f.Verbose || "verbose" == loglvl {
+		log.SetVerbose()
 	}
 	if f.Quiet || "quiet" == loglvl {
 		log.SetQuiet()
 	}
-	if f.Verbose || "verbose" == loglvl {
-		log.SetVerbose()
+	if f.Debug || env.GetBool("MB_DEBUG") || "debug" == loglvl {
+		log.DebugEnable()
 	}
 	return nil
 }
