@@ -7,12 +7,15 @@ package env
 import (
 	"fmt"
 	"path/filepath"
+	"strconv"
 
 	"github.com/gobuffalo/envy"
+
+	"github.com/munbot/master/log"
 )
 
 var Defaults map[string]string = map[string]string{
-	"MUNBOT":         "munbot",
+	"MUNBOT":         "master",
 	"MB_LOG":         "quiet",
 	"MB_DEBUG":       "false",
 	"MB_CONFIG":      filepath.FromSlash("/usr/local/etc/munbot"),
@@ -41,6 +44,38 @@ func defval(key string) string {
 	return "__UNSET__"
 }
 
+// Get key value, using Defaults for its default value. If not present, returns
+// the "__UNSET__" string.
 func Get(key string) string {
 	return envy.Get(key, defval(key))
+}
+
+// GetBool returns the bool value for key.
+func GetBool(key string) bool {
+	r, err := strconv.ParseBool(Get(key))
+	if err != nil {
+		log.Errorf("env parse bool %s: %s", key, err)
+		return false
+	}
+	return r
+}
+
+// GetInt returns the int value for key.
+func GetInt(key string) int {
+	r, err := strconv.Atoi(Get(key))
+	if err != nil {
+		log.Errorf("env parse int %s: %s", key, err)
+		return 0
+	}
+	return r
+}
+
+// GetUint returns the uint value for key.
+func GetUint(key string) uint {
+	r, err := strconv.ParseUint(Get(key), 10, 0)
+	if err != nil {
+		log.Errorf("env parse uint %s: %s", key, err)
+		return 0
+	}
+	return uint(r)
 }
