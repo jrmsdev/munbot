@@ -13,7 +13,13 @@ func newTestFS() *flag.FlagSet {
 
 func (s *Suite) TestFlagsDefaults() {
 	f := NewFlags(newTestFS())
-	f.Parse()
 	s.False(f.Debug, "default debug")
 	s.Equal("", f.Profile.Name, "default profile")
+}
+
+func (s *Suite) TestFlagsParse() {
+	f := NewFlags(newTestFS())
+	f.Parse()
+	s.False(f.Debug, "default debug")
+	s.Equal("default", f.Profile.Name, "default profile")
 }

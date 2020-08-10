@@ -57,10 +57,14 @@ func (f *Flags) Parse() error {
 		log.SetVerbose()
 	}
 	// profile
-	if f.Profile.Name != "" {
+	if f.Profile.Name == "" {
+		f.Profile.Name = env.Get("MB_PROFILE")
+	} else {
 		env.Set("MB_PROFILE", f.Profile.Name)
 	}
-	if f.Profile.Config != "" {
+	if f.Profile.Config == "" {
+		f.Profile.Config = env.Get("MB_CONFIG")
+	} else {
 		env.Set("MB_CONFIG", filepath.Clean(f.Profile.Config))
 	}
 	return nil
