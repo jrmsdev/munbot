@@ -5,9 +5,11 @@ package core
 
 import (
 	"github.com/munbot/master/api"
+	"github.com/munbot/master/api/wapp"
 	"github.com/munbot/master/auth"
 	"github.com/munbot/master/config"
 	"github.com/munbot/master/console"
+	"github.com/munbot/master/env"
 	"github.com/munbot/master/log"
 	"github.com/munbot/master/robot/master"
 )
@@ -56,15 +58,23 @@ func (s *SInit) Configure() error {
 	}
 
 	log.Print("Configure master robot...")
-	if err := s.rt.Master.Configure(kfl, cfl, cfg); err != nil {
+	mcfg := &master.Config{
+		Name: env.Get("MUNBOT"),
+	}
+	wappcfg := &wapp.Config{
+		Enable: env.GetBool("MBAPI"),
+		Debug: env.GetBool("MBAPI_DEBUG"),
+		Path: env.Get("MBAPI_PATH"),
+	}
+	if err := s.rt.Master.Configure(mcfg, wappcfg); err != nil {
 		return log.Error(err)
 	}
 
 	log.Print("Configure master api...")
 	apiCfg := &api.ServerConfig{
-		Enable: kfl.ApiEnable,
-		Addr:   kfl.ApiAddr,
-		Port:   kfl.ApiPort,
+		Enable: env.GetBool("MBAPI"),
+		Addr:   env.Get("MBAPI_ADDR"),
+		Port:   env.GetUint("MBAPI_PORT"),
 	}
 	if err := s.rt.Api.Configure(apiCfg); err != nil {
 		return log.Error(err)

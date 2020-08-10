@@ -6,12 +6,11 @@ package master
 import (
 	"net/http"
 
-	"github.com/munbot/master/config"
-	"github.com/munbot/master/core/flags"
+	"github.com/munbot/master/api/wapp"
 )
 
 type Munbot interface {
-	Configure(kfl *flags.Flags, cfl *config.Flags, cfg *config.Config) error
+	Configure(*Config, *wapp.Config) error
 	Start() error
 	Stop() error
 	Running() bool

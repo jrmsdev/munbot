@@ -6,28 +6,33 @@ package master
 
 import (
 	"net/http"
+	"sync"
 	"time"
 
 	"gobot.io/x/gobot"
 	"gobot.io/x/gobot/api"
 
 	"github.com/munbot/master/api/wapp"
-	"github.com/munbot/master/config"
-	"github.com/munbot/master/core/flags"
 	"github.com/munbot/master/log"
 	"github.com/munbot/master/platform"
 )
+
+type Config struct {
+	Name string
+}
 
 var _ Munbot = &Robot{}
 
 type Robot struct {
 	*gobot.Master
+	name  string
 	api   wapp.Api
 	state string
 	born  time.Time
 	err   error
 	exitc chan<- bool
 	stop  chan bool
+	rw    *sync.RWMutex
 }
 
 func New() Munbot {
@@ -39,10 +44,12 @@ func NewRobot() *Robot {
 	m.AutoRun = false
 	r := &Robot{
 		Master: m,
+		name:   "master",
 		api:    wapp.New(api.NewAPI(m)),
 		state:  "Init",
 		born:   time.Now(),
 		stop:   make(chan bool, 1),
+		rw:     new(sync.RWMutex),
 	}
 	r.addCommands(r.Master)
 	r.Master.Start()
@@ -89,13 +96,13 @@ func (m *Robot) ExitNotify(c chan<- bool) {
 	m.exitc = c
 }
 
-func (m *Robot) Configure(kfl *flags.Flags, cfl *config.Flags, cfg *config.Config) error {
-	apicfg := cfg.Section("master.api")
-	m.api.Configure(&wapp.Config{
-		Enable: kfl.ApiEnable,
-		Debug:  kfl.ApiDebug,
-		Path:   apicfg.Get("path"),
-	})
+func (m *Robot) Configure(c *Config, wc *wapp.Config) error {
+	m.rw.Lock()
+	defer m.rw.Unlock()
+	if c.Name != "" {
+		m.name = c.Name
+	}
+	m.api.Configure(wc)
 	return nil
 }
 
