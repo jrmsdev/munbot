@@ -6,7 +6,6 @@ package flags
 import (
 	"flag"
 
-	"github.com/munbot/master/config"
 	"github.com/munbot/master/env"
 )
 
@@ -47,7 +46,7 @@ func (f *Flags) Set(fs *flag.FlagSet) {
 
 // Parse parses the flags that were not set via the flags handler (cmd args
 // usually) and sets them with their respective values from the configuration.
-func (f *Flags) Parse(c *config.Config) {
+func (f *Flags) Parse() {
 	f.parseAuth()
 	f.parseApi()
 	f.parseConsole()

@@ -10,7 +10,6 @@ import (
 	"fmt"
 
 	"github.com/munbot/master/config"
-	"github.com/munbot/master/core/flags"
 	"github.com/munbot/master/log"
 	"github.com/munbot/master/utils/uuid"
 	"github.com/munbot/master/version"
@@ -25,7 +24,6 @@ type Core struct {
 	uuid  string
 	cfg   *config.Config
 	cfl   *config.Flags
-	kfl   *flags.Flags
 	state State
 	stid  StateID
 	sInit State

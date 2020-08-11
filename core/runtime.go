@@ -7,7 +7,6 @@ import (
 	"context"
 
 	"github.com/munbot/master/config"
-	"github.com/munbot/master/core/flags"
 	"github.com/munbot/master/log"
 )
 
@@ -15,7 +14,7 @@ type Runtime interface {
 	Context() context.Context
 	WithContext(context.Context) (context.Context, error)
 	Init(context.Context) (context.Context, error)
-	Configure(*flags.Flags, *config.Flags, *config.Config) error
+	Configure(*config.Flags, *config.Config) error
 	Start() error
 	Stop() error
 }
@@ -55,7 +54,7 @@ func (k *Core) Init(ctx context.Context) (context.Context, error) {
 	return ctx, nil
 }
 
-func (k *Core) Configure(kfl *flags.Flags, cfl *config.Flags, cfg *config.Config) error {
+func (k *Core) Configure(cfl *config.Flags, cfg *config.Config) error {
 	log.Debugf("[%s] Configure", k.State())
 	select {
 	case <-k.ctx.Done():
@@ -68,7 +67,6 @@ func (k *Core) Configure(kfl *flags.Flags, cfl *config.Flags, cfg *config.Config
 	defer k.rt.Unlock()
 	k.cfg = cfg
 	k.cfl = cfl
-	k.kfl = kfl
 	if err := k.state.Configure(); err != nil {
 		return err
 	}

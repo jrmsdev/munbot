@@ -7,7 +7,6 @@ import (
 	"flag"
 	"testing"
 
-	"github.com/munbot/master/config"
 	"github.com/munbot/master/testing/assert"
 )
 
@@ -27,9 +26,7 @@ func TestFlagsDefaults(t *testing.T) {
 	assert := assert.New(t)
 	f := New()
 	f.Set(newTestFS())
-	c := config.New()
-	c.SetDefaults(config.Defaults)
-	f.Parse(c)
+	f.Parse()
 	assert.Equal("", f.ApiAddr, "default api.addr")
 	assert.Equal(uint(0), f.ApiPort, "default api.port")
 	assert.Equal("", f.ConsoleAddr, "default console.addr")

@@ -44,12 +44,10 @@ func (s *SInit) Configure() error {
 	log.Print("Configure...")
 	cfg := s.m.Config()
 	cfl := s.m.ConfigFlags()
-	kfl := s.m.CoreFlags()
 	cfg.SetDefaults(config.Defaults)
 	if err := cfg.Load(cfl.Profile); err != nil {
 		return log.Error(err)
 	}
-	kfl.Parse(cfg)
 
 	log.Print("Configure auth manager...")
 	cadir := cfl.Profile.GetPath("auth")
@@ -71,16 +69,17 @@ func (s *SInit) Configure() error {
 	}
 
 	log.Print("Configure master api...")
+	apiEnable := env.GetBool("MBAPI")
 	apiCfg := &api.ServerConfig{
-		Enable: env.GetBool("MBAPI"),
+		Enable: apiEnable,
 		Addr:   env.Get("MBAPI_ADDR"),
 		Port:   env.GetUint("MBAPI_PORT"),
 	}
 	if err := s.rt.Api.Configure(apiCfg); err != nil {
 		return log.Error(err)
 	}
-	if kfl.ApiEnable {
-		s.rt.Api.Mount("/", s.rt.Master)
+	if apiEnable {
+		s.rt.Api.Mount(env.Get("MBAPI_PATH"), s.rt.Master)
 	}
 
 	log.Print("Configure master console...")

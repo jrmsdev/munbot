@@ -5,7 +5,6 @@ package core
 
 import (
 	"github.com/munbot/master/config"
-	"github.com/munbot/master/core/flags"
 	"github.com/munbot/master/log"
 )
 
@@ -14,7 +13,6 @@ type Machine interface {
 	SetState(StateID) error
 	Config() *config.Config
 	ConfigFlags() *config.Flags
-	CoreFlags() *flags.Flags
 }
 
 func (k *Core) Abort() error {
@@ -56,8 +54,4 @@ func (k Core) Config() *config.Config {
 
 func (k Core) ConfigFlags() *config.Flags {
 	return k.cfl
-}
-
-func (k Core) CoreFlags() *flags.Flags {
-	return k.kfl
 }
