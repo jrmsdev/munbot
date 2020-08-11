@@ -25,7 +25,7 @@ import (
 )
 
 // Get key value, using Init copy for its default value. If not present, returns
-// the "__UNSET__" string.
+// UNSET.
 func Get(key string) string {
 	return envy.Get(key, defvalGet(key))
 }

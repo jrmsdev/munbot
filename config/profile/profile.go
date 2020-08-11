@@ -20,9 +20,9 @@ type Profile struct {
 func New(name string) *Profile {
 	home := filepath.FromSlash("/var/local/munbot")
 	return &Profile{
-		Name:   name,
-		Home:   home,
-		Config: filepath.Join(home, "config"),
+		Name:       name,
+		Home:       home,
+		Config:     filepath.Join(home, "config"),
 		ConfigFile: "config.json",
 	}
 }

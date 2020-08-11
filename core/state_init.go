@@ -61,8 +61,8 @@ func (s *SInit) Configure() error {
 	}
 	wappcfg := &wapp.Config{
 		Enable: env.GetBool("MBAPI"),
-		Debug: env.GetBool("MBAPI_DEBUG"),
-		Path: env.Get("MBAPI_PATH"),
+		Debug:  env.GetBool("MBAPI_DEBUG"),
+		Path:   env.Get("MBAPI_PATH"),
 	}
 	if err := s.rt.Master.Configure(mcfg, wappcfg); err != nil {
 		return log.Error(err)
@@ -85,9 +85,9 @@ func (s *SInit) Configure() error {
 	log.Print("Configure master console...")
 	consCfg := &console.Config{
 		Enable: env.GetBool("MBCONSOLE"),
-		Addr: env.Get("MBCONSOLE_ADDR"),
-		Port: env.GetUint("MBCONSOLE_PORT"),
-		Auth: s.rt.Auth,
+		Addr:   env.Get("MBCONSOLE_ADDR"),
+		Port:   env.GetUint("MBCONSOLE_PORT"),
+		Auth:   s.rt.Auth,
 	}
 	if err := s.rt.Console.Configure(consCfg); err != nil {
 		return log.Error(err)

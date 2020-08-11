@@ -48,6 +48,7 @@ RUN go mod download \
 	&& (rm -rf ./vendor $(go env GOCACHE); rm -vf go.mod go.sum go.env)
 
 EXPOSE 6060
+EXPOSE 6490
 EXPOSE 6492
 
 ENTRYPOINT /usr/local/bin/entrypoint.sh
