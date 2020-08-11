@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"sync"
 
 	"github.com/gobuffalo/envy"
 )
@@ -45,8 +46,31 @@ var Init map[string]string = map[string]string{
 	"MBCONSOLE_PORT": "6492",
 }
 var defvals map[string]string
+var defrw *sync.RWMutex
+
+// UNSET is the string returned for values not found in env nor in Defaults either.
+const UNSET string = "__UNSET__"
+
+func defvalGet(key string) string {
+	defrw.RLock()
+	defer defrw.RUnlock()
+	v, ok := defvals[key]
+	if ok {
+		return v
+	}
+	return UNSET
+}
+
+func defvalSet(key, val string) {
+	defrw.Lock()
+	defer defrw.Unlock()
+	defvals[key] = val
+}
 
 func init() {
+	defrw = new(sync.RWMutex)
+	defrw.Lock()
+	defer defrw.Unlock()
 	defvals = make(map[string]string)
 	for k, v := range Init {
 		defvals[k] = v
@@ -61,6 +85,8 @@ var (
 )
 
 func userDefaults() {
+	defrw.Lock()
+	defer defrw.Unlock()
 	if homeDir == "" || homeDirErr != nil {
 		homeDir = filepath.FromSlash("./.munbot")
 	} else {

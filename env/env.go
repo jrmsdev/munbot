@@ -24,21 +24,10 @@ import (
 	"github.com/munbot/master/log"
 )
 
-// UNSET is the string returned for values not found in env nor in Defaults either.
-const UNSET string = "__UNSET__"
-
-func defval(key string) string {
-	v, ok := defvals[key]
-	if ok {
-		return v
-	}
-	return UNSET
-}
-
 // Get key value, using Init copy for its default value. If not present, returns
 // the "__UNSET__" string.
 func Get(key string) string {
-	return envy.Get(key, defval(key))
+	return envy.Get(key, defvalGet(key))
 }
 
 // GetBool returns the bool value for key.
@@ -72,6 +61,12 @@ func GetUint(key string) uint {
 		return 0
 	}
 	return uint(r)
+}
+
+// SetDefault sets a default value. Env is not modified, the option is added to
+// the default settings. If it already exists, its value is updated.
+func SetDefault(key, val string) {
+	defvalSet(key, val)
 }
 
 // Set sets env key value. But it does not modify os.Environ.
