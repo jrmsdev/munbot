@@ -1,7 +1,7 @@
 // Copyright (c) Jeremías Casteglione <jrmsdev@gmail.com>
 // See LICENSE file.
 
-package flags
+package core
 
 import (
 	"flag"
@@ -24,7 +24,7 @@ type Flags struct {
 	ConsolePort    uint
 }
 
-func New() *Flags {
+func NewFlags() *Flags {
 	return &Flags{
 		AuthEnable:    true,
 		ApiEnable:     true,

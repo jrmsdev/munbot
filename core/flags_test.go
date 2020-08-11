@@ -1,7 +1,7 @@
 // Copyright (c) Jeremías Casteglione <jrmsdev@gmail.com>
 // See LICENSE file.
 
-package flags
+package core
 
 import (
 	"flag"
@@ -16,7 +16,7 @@ func newTestFS() *flag.FlagSet {
 
 func TestFlagsSet(t *testing.T) {
 	assert := assert.New(t)
-	f := New()
+	f := NewFlags()
 	f.Set(newTestFS())
 	assert.Equal("", f.ApiAddr, "default api.addr")
 	assert.Equal(uint(0), f.ApiPort, "default api.port")
@@ -24,7 +24,7 @@ func TestFlagsSet(t *testing.T) {
 
 func TestFlagsDefaults(t *testing.T) {
 	assert := assert.New(t)
-	f := New()
+	f := NewFlags()
 	f.Set(newTestFS())
 	f.Parse()
 	assert.Equal("", f.ApiAddr, "default api.addr")

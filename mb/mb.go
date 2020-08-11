@@ -12,34 +12,33 @@ import (
 	"github.com/munbot/master/cmd"
 	"github.com/munbot/master/config"
 	"github.com/munbot/master/core"
-	"github.com/munbot/master/core/flags"
 	"github.com/munbot/master/log"
 )
 
 type Cmd struct {
-	flags *flags.Flags
+	flags *core.Flags
 }
 
 func New() *Cmd {
-	return &Cmd{flags: flags.New()}
+	return &Cmd{flags: core.NewFlags()}
 }
 
 func (c *Cmd) FlagSet(fs *flag.FlagSet) {
 	c.flags.Set(fs)
 }
 
-func (c *Cmd) Command(f *config.Flags) cmd.Command {
-	return newMain(c.flags, f)
+func (c *Cmd) Command(cf *config.Flags) cmd.Command {
+	return newMain(c.flags, cf)
 }
 
 type Main struct {
-	kf  *flags.Flags
+	kf  *core.Flags
 	cf  *config.Flags
 	rt  core.Runtime
 	cfg *config.Config
 }
 
-func newMain(kf *flags.Flags, cf *config.Flags) *Main {
+func newMain(kf *core.Flags, cf *config.Flags) *Main {
 	return &Main{
 		kf:  kf,
 		cf:  cf,
