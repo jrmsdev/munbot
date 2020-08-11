@@ -13,36 +13,12 @@ import (
 	"github.com/munbot/master/config/internal/parser"
 	"github.com/munbot/master/config/profile"
 	"github.com/munbot/master/config/value"
-	"github.com/munbot/master/env"
 	"github.com/munbot/master/log"
 	"github.com/munbot/master/vfs"
 )
 
 // Defaults contains some default values.
-var Defaults value.DB = value.DB{
-	"default": value.Map{
-		"enable":  "false",
-		"netaddr": "127.0.0.1",
-		"netport": "6492",
-	},
-	"master": value.Map{
-		"name": env.Get("MUNBOT"),
-	},
-	"master.auth": value.Map{
-		"enable": env.Get("MBAUTH"),
-	},
-	"master.api": value.Map{
-		"enable":  env.Get("MBAPI"),
-		"netaddr": env.Get("MBAPI_ADDR"),
-		"netport": env.Get("MBAPI_PORT"),
-		"path":    env.Get("MBAPI_PATH"),
-	},
-	"master.console": value.Map{
-		"enable":  env.Get("MBCONSOLE"),
-		"netaddr": env.Get("MBCONSOLE_ADDR"),
-		"netport": env.Get("MBCONSOLE_PORT"),
-	},
-}
+var Defaults value.DB = value.DB{}
 
 var __handler *parser.Config
 
