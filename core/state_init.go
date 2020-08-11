@@ -45,7 +45,7 @@ func (s *SInit) Configure() error {
 	cfg := s.m.Config()
 	cfl := s.m.ConfigFlags()
 	cfg.SetDefaults(config.Defaults)
-	if err := cfg.Load(cfl.Profile); err != nil {
+	if err := cfg.Load(); err != nil {
 		return log.Error(err)
 	}
 

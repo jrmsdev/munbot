@@ -19,9 +19,9 @@ type Profile struct {
 }
 
 // New creates a new object with defaults values set.
-func New(name string) *Profile {
+func New() *Profile {
 	return &Profile{
-		Name:       name,
+		Name:       env.Get("MB_PROFILE"),
 		Home:       env.Get("MB_HOME"),
 		Config:     env.Get("MB_CONFIG"),
 		ConfigFile: "config.json",

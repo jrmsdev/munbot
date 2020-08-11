@@ -54,7 +54,8 @@ func (c *Config) SetDefaults(v value.DB) {
 }
 
 // Load reads the configuration files from the provided profile.
-func (c *Config) Load(p *profile.Profile) error {
+func (c *Config) Load() error {
+	p := profile.New()
 	for _, fn := range p.ListConfigFiles() {
 		if err := c.readFile(fn); err != nil {
 			return fmt.Errorf("%s: %s", fn, err)
@@ -87,7 +88,8 @@ func (c *Config) Read(r io.Reader) error {
 }
 
 // Save writes configuration to the provided profile.
-func (c *Config) Save(p *profile.Profile) error {
+func (c *Config) Save() error {
+	p := profile.New()
 	fn := p.GetConfigFile()
 	fh, err := vfs.Create(fn)
 	if err != nil {

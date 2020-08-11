@@ -21,5 +21,5 @@ func (s *Suite) TestFlagsParse() {
 	f := NewFlags(newTestFS())
 	f.Parse()
 	s.False(f.Debug, "default debug")
-	s.Equal("default", f.Profile.Name, "default profile")
+	s.Equal("testing", f.Profile.Name, "default profile")
 }

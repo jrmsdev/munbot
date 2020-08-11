@@ -11,7 +11,6 @@ import (
 
 	"github.com/munbot/master/cmd"
 	"github.com/munbot/master/config"
-	"github.com/munbot/master/config/profile"
 	"github.com/munbot/master/log"
 )
 
@@ -40,12 +39,11 @@ func (c *Cmd) FlagSet(fs *flag.FlagSet) {
 }
 
 func (c *Cmd) Command(flags *config.Flags) cmd.Command {
-	return &Main{flags: c.flags, profile: flags.Profile}
+	return &Main{flags: c.flags}
 }
 
 type Main struct {
-	flags   *Flags
-	profile *profile.Profile
+	flags *Flags
 }
 
 func (m *Main) Run(args []string) int {
@@ -72,7 +70,7 @@ func (m *Main) list(filter string) int {
 	if m.flags.ListAll || filter != "" {
 		cfg.SetDefaults(config.Defaults)
 	}
-	if err := cfg.Load(m.profile); err != nil {
+	if err := cfg.Load(); err != nil {
 		log.Error(err)
 		return 1
 	}
@@ -100,7 +98,7 @@ func (m *Main) sort(n map[string]string) []string {
 func (m *Main) edit(option, newval string) int {
 	var err error
 	cfg := config.New()
-	if err := cfg.Load(m.profile); err != nil {
+	if err := cfg.Load(); err != nil {
 		log.Error(err)
 		return 1
 	}
@@ -116,7 +114,7 @@ func (m *Main) edit(option, newval string) int {
 		log.Error(err)
 		return 7
 	}
-	if err := cfg.Save(m.profile); err != nil {
+	if err := cfg.Save(); err != nil {
 		log.Error(err)
 		return 8
 	}

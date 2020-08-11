@@ -22,9 +22,7 @@ type Flags struct {
 
 // NewFlags creates a new Flags object and sets the flags to the provided handler.
 func NewFlags(fs *flag.FlagSet) *Flags {
-	f := &Flags{
-		Profile: profile.New(env.Get("MB_PROFILE")),
-	}
+	f := &Flags{Profile: profile.New()}
 	// log
 	fs.BoolVar(&f.Debug, "debug", false, "enable debug settings")
 	fs.BoolVar(&f.Quiet, "q", false, "set quiet mode")
@@ -48,14 +46,7 @@ func (f *Flags) Parse() error {
 		env.Set("MB_LOG", "debug")
 		env.Set("MB_DEBUG", "true")
 	}
-	switch env.Get("MB_LOG") {
-	case "quiet":
-		log.SetQuiet()
-	case "debug":
-		log.SetDebug()
-	default:
-		log.SetVerbose()
-	}
+	log.SetMode(env.Get("MB_LOG"))
 	// profile
 	if f.Profile.Name == "" {
 		f.Profile.Name = env.Get("MB_PROFILE")

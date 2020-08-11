@@ -4,10 +4,10 @@
 package config
 
 func (s *Suite) TestMap() {
-	fh := s.fs.Add("test/config.json")
+	fh := s.fs.Add("etc/testing/config.json")
 	fh.WriteString(`{"test":{"opt":"testing"}}`)
 	c := New()
-	err := c.Load(s.profile)
+	err := c.Load()
 	s.require.NoError(err, "load error")
 
 	p := NewParser(c)
@@ -16,10 +16,10 @@ func (s *Suite) TestMap() {
 }
 
 func (s *Suite) TestUpdate() {
-	fh := s.fs.Add("test/config.json")
+	fh := s.fs.Add("etc/testing/config.json")
 	fh.WriteString(`{"test":{"opt":"testing"}}`)
 	c := New()
-	err := c.Load(s.profile)
+	err := c.Load()
 	s.require.NoError(err, "load error")
 
 	p := NewParser(c)

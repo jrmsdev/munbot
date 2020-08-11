@@ -9,9 +9,9 @@ func (s *Suite) TestSection() {
 	s.require.False(c.HasOption("test", "opt"), "section test option")
 	x := c.Section("test")
 	s.require.Equal("default", x.Name(), "section default name")
-	fh := s.fs.Add("test/config.json")
+	fh := s.fs.Add("etc/testing/config.json")
 	fh.WriteString(`{"test":{"opt":"testing"}}`)
-	err := c.Load(s.profile)
+	err := c.Load()
 	s.require.NoError(err, "load error")
 	s.True(c.HasSection("test"), "section test")
 	s.True(c.HasOption("test", "opt"), "section test option")
@@ -20,10 +20,10 @@ func (s *Suite) TestSection() {
 }
 
 func (s *Suite) TestSectionOption() {
-	fh := s.fs.Add("test/config.json")
+	fh := s.fs.Add("etc/testing/config.json")
 	fh.WriteString(`{"test":{"opt":"testing"}}`)
 	c := New()
-	err := c.Load(s.profile)
+	err := c.Load()
 	s.require.NoError(err, "load error")
 	x := c.Section("test")
 	s.require.Equal("test", x.Name(), "section test name")
@@ -32,10 +32,10 @@ func (s *Suite) TestSectionOption() {
 }
 
 func (s *Suite) TestSectionGetBool() {
-	fh := s.fs.Add("test/config.json")
+	fh := s.fs.Add("etc/testing/config.json")
 	fh.WriteString(`{"test":{"opt":"testing", "opt.bool":"true"}}`)
 	c := New()
-	err := c.Load(s.profile)
+	err := c.Load()
 	s.require.NoError(err, "load error")
 	x := c.Section("test")
 
@@ -44,10 +44,10 @@ func (s *Suite) TestSectionGetBool() {
 }
 
 func (s *Suite) TestSectionGetInt() {
-	fh := s.fs.Add("test/config.json")
+	fh := s.fs.Add("etc/testing/config.json")
 	fh.WriteString(`{"test":{"opt":"testing", "opt.int":"128"}}`)
 	c := New()
-	err := c.Load(s.profile)
+	err := c.Load()
 	s.require.NoError(err, "load error")
 	x := c.Section("test")
 
@@ -56,10 +56,10 @@ func (s *Suite) TestSectionGetInt() {
 }
 
 func (s *Suite) TestSectionGetUint() {
-	fh := s.fs.Add("test/config.json")
+	fh := s.fs.Add("etc/testing/config.json")
 	fh.WriteString(`{"test":{"opt":"testing", "opt.uint":"128"}}`)
 	c := New()
-	err := c.Load(s.profile)
+	err := c.Load()
 	s.require.NoError(err, "load error")
 	x := c.Section("test")
 
