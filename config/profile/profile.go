@@ -6,6 +6,8 @@ package profile
 
 import (
 	"path/filepath"
+
+	"github.com/munbot/master/env"
 )
 
 // Profile holds the profile settings.
@@ -18,11 +20,10 @@ type Profile struct {
 
 // New creates a new object with defaults values set.
 func New(name string) *Profile {
-	home := filepath.FromSlash("/var/local/munbot")
 	return &Profile{
 		Name:       name,
-		Home:       home,
-		Config:     filepath.Join(home, "config"),
+		Home:       env.Get("MB_HOME"),
+		Config:     env.Get("MB_CONFIG"),
 		ConfigFile: "config.json",
 	}
 }
