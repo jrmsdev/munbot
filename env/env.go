@@ -28,14 +28,14 @@ import (
 const UNSET string = "__UNSET__"
 
 func defval(key string) string {
-	v, ok := Defaults[key]
+	v, ok := defvals[key]
 	if ok {
 		return v
 	}
 	return UNSET
 }
 
-// Get key value, using Defaults for its default value. If not present, returns
+// Get key value, using Init copy for its default value. If not present, returns
 // the "__UNSET__" string.
 func Get(key string) string {
 	return envy.Get(key, defval(key))

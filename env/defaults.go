@@ -19,8 +19,9 @@ var MBENV string = "life"
 // By default it's set at init() time to ${HOME}/env if we can get user's home dir.
 var MBENV_CONFIG string = ""
 
-// Defaults contains the default settings.
-var Defaults map[string]string = map[string]string{
+// Init contains the initial settings. They are copied at init(), so direct
+// modifications to this map doesn't have any effect.
+var Init map[string]string = map[string]string{
 	"MUNBOT": "master",
 
 	"MB_LOG":     "verbose",
@@ -43,6 +44,14 @@ var Defaults map[string]string = map[string]string{
 	"MBCONSOLE_ADDR": "0.0.0.0",
 	"MBCONSOLE_PORT": "6492",
 }
+var defvals map[string]string
+
+func init() {
+	defvals = make(map[string]string)
+	for k, v := range Init {
+		defvals[k] = v
+	}
+}
 
 var (
 	homeDir      string
@@ -58,7 +67,7 @@ func userDefaults() {
 		homeDir = filepath.Join(homeDir, ".munbot")
 	}
 	homeDir = filepath.Clean(envy.Get("MB_HOME", homeDir))
-	Defaults["MB_HOME"] = homeDir
+	defvals["MB_HOME"] = homeDir
 
 	if configDir == "" || configDirErr != nil {
 		configDir = filepath.Join(homeDir, "config")
@@ -66,7 +75,7 @@ func userDefaults() {
 		configDir = filepath.Join(configDir, "munbot")
 	}
 	configDir = filepath.Clean(envy.Get("MB_CONFIG", configDir))
-	Defaults["MB_CONFIG"] = configDir
+	defvals["MB_CONFIG"] = configDir
 	MBENV_CONFIG = filepath.Join(homeDir, "env")
 }
 
