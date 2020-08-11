@@ -11,37 +11,30 @@ import (
 
 // Flags holds main flags settings.
 type Flags struct {
-	AuthEnable     bool
 	authDisable    bool
-	ApiEnable      bool
 	apiDisable     bool
-	ApiDebug       bool
-	ApiAddr        string
-	ApiPort        uint
-	ConsoleEnable  bool
+	apiDebug       bool
+	apiAddr        string
+	apiPort        uint
 	consoleDisable bool
-	ConsoleAddr    string
-	ConsolePort    uint
+	consoleAddr    string
+	consolePort    uint
 }
 
 func NewFlags() *Flags {
-	return &Flags{
-		AuthEnable:    true,
-		ApiEnable:     true,
-		ConsoleEnable: true,
-	}
+	return &Flags{}
 }
 
 // Set sets the flags to the provided handler.
 func (f *Flags) Set(fs *flag.FlagSet) {
 	fs.BoolVar(&f.authDisable, "auth.disable", false, "disable auth")
 	fs.BoolVar(&f.apiDisable, "api.disable", false, "disable api")
-	fs.BoolVar(&f.ApiDebug, "api.debug", false, "debug api")
-	fs.StringVar(&f.ApiAddr, "api.addr", "", "api tcp `address` to bind to")
-	fs.UintVar(&f.ApiPort, "api.port", 0, "api tcp `port` to bind to")
+	fs.BoolVar(&f.apiDebug, "api.debug", false, "debug api")
+	fs.StringVar(&f.apiAddr, "api.addr", "", "api tcp `address` to bind to")
+	fs.UintVar(&f.apiPort, "api.port", 0, "api tcp `port` to bind to")
 	fs.BoolVar(&f.consoleDisable, "console.disable", false, "disable console")
-	fs.StringVar(&f.ConsoleAddr, "console.addr", "", "console tcp `address` to bind to")
-	fs.UintVar(&f.ConsolePort, "console.port", 0, "console tcp `port` to bind to")
+	fs.StringVar(&f.consoleAddr, "console.addr", "", "console tcp `address` to bind to")
+	fs.UintVar(&f.consolePort, "console.port", 0, "console tcp `port` to bind to")
 }
 
 // Parse parses the flags that were not set via the flags handler (cmd args
@@ -62,11 +55,11 @@ func (f *Flags) parseApi() {
 	if f.apiDisable {
 		env.Set("MBAPI", "false")
 	}
-	if f.ApiAddr != "" {
-		env.Set("MBAPI_ADDR", f.ApiAddr)
+	if f.apiAddr != "" {
+		env.Set("MBAPI_ADDR", f.apiAddr)
 	}
-	if f.ApiPort != 0 {
-		env.SetUint("MBAPI_PORT", f.ApiPort)
+	if f.apiPort != 0 {
+		env.SetUint("MBAPI_PORT", f.apiPort)
 	}
 }
 
@@ -74,10 +67,10 @@ func (f *Flags) parseConsole() {
 	if f.consoleDisable {
 		env.Set("MBCONSOLE", "false")
 	}
-	if f.ConsoleAddr != "" {
-		env.Set("MBCONSOLE_ADDR", f.ConsoleAddr)
+	if f.consoleAddr != "" {
+		env.Set("MBCONSOLE_ADDR", f.consoleAddr)
 	}
-	if f.ConsolePort != 0 {
-		env.SetUint("MBCONSOLE_PORT", f.ConsolePort)
+	if f.consolePort != 0 {
+		env.SetUint("MBCONSOLE_PORT", f.consolePort)
 	}
 }

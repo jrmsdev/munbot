@@ -18,8 +18,8 @@ func TestFlagsSet(t *testing.T) {
 	assert := assert.New(t)
 	f := NewFlags()
 	f.Set(newTestFS())
-	assert.Equal("", f.ApiAddr, "default api.addr")
-	assert.Equal(uint(0), f.ApiPort, "default api.port")
+	assert.Equal("", f.apiAddr, "default api.addr")
+	assert.Equal(uint(0), f.apiPort, "default api.port")
 }
 
 func TestFlagsDefaults(t *testing.T) {
@@ -27,8 +27,8 @@ func TestFlagsDefaults(t *testing.T) {
 	f := NewFlags()
 	f.Set(newTestFS())
 	f.Parse()
-	assert.Equal("", f.ApiAddr, "default api.addr")
-	assert.Equal(uint(0), f.ApiPort, "default api.port")
-	assert.Equal("", f.ConsoleAddr, "default console.addr")
-	assert.Equal(uint(0), f.ConsolePort, "default console.port")
+	assert.Equal("", f.apiAddr, "default api.addr")
+	assert.Equal(uint(0), f.apiPort, "default api.port")
+	assert.Equal("", f.consoleAddr, "default console.addr")
+	assert.Equal(uint(0), f.consolePort, "default console.port")
 }
