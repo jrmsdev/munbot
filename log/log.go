@@ -40,6 +40,17 @@ func SetVerbose() {
 	verbose = true
 }
 
+func SetMode(lvl string) {
+	switch lvl {
+	case "quiet":
+		SetQuiet()
+	case "debug":
+		SetDebug()
+	default:
+		SetVerbose()
+	}
+}
+
 func SetPrefix(name string) {
 	setPrefix(fmt.Sprintf("[%s:%d] ", name, os.Getpid()))
 }

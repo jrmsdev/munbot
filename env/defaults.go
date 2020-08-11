@@ -10,6 +10,8 @@ import (
 	"sync"
 
 	"github.com/gobuffalo/envy"
+
+	"github.com/munbot/master/log"
 )
 
 // MBENV is the default env name.
@@ -67,7 +69,7 @@ func defvalSet(key, val string) {
 	defvals[key] = val
 }
 
-func init() {
+func initDefaults() {
 	defrw = new(sync.RWMutex)
 	defrw.Lock()
 	defer defrw.Unlock()
@@ -113,11 +115,13 @@ func loadEnv() {
 		fn := filepath.Join(cfgdir, fmt.Sprintf("%s.env", env))
 		envy.Load(fn)
 	}
+	log.SetMode(Get("MB_LOG"))
 }
 
 func init() {
 	homeDir, homeDirErr = os.UserHomeDir()
 	configDir, configDirErr = os.UserConfigDir()
+	initDefaults()
 	userDefaults()
 	loadEnv()
 }
