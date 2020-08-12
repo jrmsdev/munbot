@@ -1,0 +1,6 @@
+Host master.munbot.local
+  Hostname localhost
+  Port     6492
+  LogLevel VERBOSE
+  UserKnownHostsFile ./_devel/known_hosts
+  StrictHostKeyChecking no
