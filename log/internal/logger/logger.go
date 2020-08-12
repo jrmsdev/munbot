@@ -28,8 +28,8 @@ var levelTag = map[Level]string{
 	ERROR: "[ERROR] ",
 	WARN:  "[WARNING] ",
 	MSG:   "",
-	INFO:  "[INFO] ",
-	DEBUG: "[DEBUG] ",
+	INFO:  "",
+	DEBUG: "",
 }
 
 type Logger struct {

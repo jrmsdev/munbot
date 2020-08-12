@@ -111,11 +111,11 @@ func (s *Suite) TestDebug() {
 	s.buf.Reset()
 	SetDebug()
 	Debug("test")
-	s.Regexp("^\\d\\d\\d\\d/\\d\\d/\\d\\d \\d\\d:\\d\\d:\\d\\d\\.\\d\\d\\d\\d\\d\\d .*log_test\\.go.* [DEBUG] test\n$", s.buf.String(), "debug msg")
+	s.Regexp("^\\d\\d\\d\\d/\\d\\d/\\d\\d \\d\\d:\\d\\d:\\d\\d\\.\\d\\d\\d\\d\\d\\d .*log_test\\.go.* test\n$", s.buf.String(), "debug msg")
 
 	s.buf.Reset()
 	Debugf("te%s", "st")
-	s.Regexp("\\d .*log_test\\.go.* [DEBUG] test\n$", s.buf.String(), "debugf msg")
+	s.Regexp("\\d .*log_test\\.go.* test\n$", s.buf.String(), "debugf msg")
 }
 
 func (s *Suite) TestError() {
