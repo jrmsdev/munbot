@@ -17,12 +17,17 @@ var (
 	debug      bool = false
 	debugFlags int  = gol.Ldate | gol.Ltime | gol.Lmicroseconds | gol.Llongfile
 	verbose    bool = true
+	stdFlags   int  = gol.Ldate | gol.Ltime | gol.Lmicroseconds
 )
 
 var Output func(int, string) error = gol.Output
 
 var setFlags func(int) = gol.SetFlags
 var setPrefix func(string) = gol.SetPrefix
+
+func init() {
+	setFlags(stdFlags)
+}
 
 func SetDebug() {
 	debug = true

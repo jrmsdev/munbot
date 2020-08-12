@@ -22,6 +22,7 @@ func TestDefaults(t *testing.T) {
 	require.Equal(gol.Ldate|gol.Ltime|gol.Lmicroseconds|gol.Llongfile,
 		debugFlags, "debug flags")
 	require.Equal(true, verbose, "verbose")
+	require.Equal(gol.Ldate|gol.Ltime|gol.Lmicroseconds, stdFlags, "default flags")
 }
 
 func TestSuite(t *testing.T) {
@@ -37,7 +38,7 @@ type Suite struct {
 func (s *Suite) SetupTest() {
 	s.buf.Reset()
 	s.logger = nil
-	s.logger = gol.New(s.buf, "", gol.LstdFlags)
+	s.logger = gol.New(s.buf, "", stdFlags)
 	Output = s.logger.Output
 	setFlags = s.logger.SetFlags
 	setPrefix = s.logger.SetPrefix
@@ -48,7 +49,7 @@ func (s *Suite) SetupTest() {
 func (s *Suite) TestSetDebug() {
 	require := s.Require()
 	require.Equal(false, debug, "debug disabled")
-	require.Equal(gol.LstdFlags, s.logger.Flags(), "logger init flags")
+	require.Equal(stdFlags, s.logger.Flags(), "logger init flags")
 	SetDebug()
 	s.Equal(true, debug, "debug enabled")
 	s.Equal(debugFlags, s.logger.Flags(), "logger debug flags")
@@ -85,7 +86,7 @@ func (s *Suite) TestSetPrefix() {
 
 func (s *Suite) TestPrint() {
 	Print("test")
-	s.Regexp("^\\d\\d\\d\\d/\\d\\d/\\d\\d \\d\\d:\\d\\d:\\d\\d test\n$", s.buf.String(), "print msg")
+	s.Regexp("^\\d\\d\\d\\d/\\d\\d/\\d\\d \\d\\d:\\d\\d:\\d\\d.\\d\\d\\d\\d\\d\\d test\n$", s.buf.String(), "print msg")
 
 	s.buf.Reset()
 	Printf("te%s", "st")
