@@ -8,6 +8,7 @@ import (
 	"errors"
 	"os"
 	"path/filepath"
+	"sync"
 
 	"golang.org/x/crypto/ssh"
 
@@ -26,11 +27,16 @@ type Auth struct {
 	keys string
 	id   ssh.Signer
 	auth map[string]bool
+	rw   *sync.RWMutex
 }
 
 // New creates a new Auth instance.
 func New() *Auth {
-	return &Auth{name: "master", auth: map[string]bool{}}
+	return &Auth{
+		name: "master",
+		auth: map[string]bool{},
+		rw:   new(sync.RWMutex),
+	}
 }
 
 func (a *Auth) keyfp(pk ssh.PublicKey) string {
@@ -65,6 +71,8 @@ func (a *Auth) setup() error {
 
 func (a *Auth) parseAuthKeys() error {
 	log.Debug("parse authorized keys")
+	a.rw.Lock()
+	defer a.rw.Unlock()
 	if !vfs.Exist(a.keys) {
 		log.Warnf("%s: file not found", a.keys)
 		return nil
@@ -87,6 +95,8 @@ func (a *Auth) parseAuthKeys() error {
 }
 
 func (a *Auth) publicKeyCallback(c ssh.ConnMetadata, k ssh.PublicKey) (*ssh.Permissions, error) {
+	a.rw.RLock()
+	defer a.rw.RUnlock()
 	fp := a.keyfp(k)
 	if a.auth[fp] {
 		return &ssh.Permissions{Extensions: map[string]string{"pubkey-fp": fp}}, nil
