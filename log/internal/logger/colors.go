@@ -15,6 +15,7 @@ var (
 	magenta = []byte{escape, '[', '3', '5', 'm'}
 	cyan = []byte{escape, '[', '3', '6', 'm'}
 	white = []byte{escape, '[', '3', '7', 'm'}
+	grey = []byte{escape, '[', '1', ';', '3', '0', 'm'}
 	reset = string([]byte{escape, '[', '0', 'm'})
 )
 
@@ -34,10 +35,10 @@ var levelColor = map[Level]string{
 	PANIC: string(red),
 	FATAL: string(red),
 	ERROR: string(red),
-	WARN:  string(magenta),
-	MSG:   string(green),
-	INFO:  string(yellow),
-	DEBUG: string(cyan),
+	WARN:  string(yellow),
+	MSG:   string(magenta),
+	INFO:  string(cyan),
+	DEBUG: string(green),
 }
 
 func (l *Logger) Colors() bool {
