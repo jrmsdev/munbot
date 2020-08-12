@@ -6,9 +6,9 @@ package core
 import (
 	"errors"
 
-	"github.com/munbot/master/console"
 	"github.com/munbot/master/internal/api"
 	"github.com/munbot/master/internal/auth"
+	"github.com/munbot/master/internal/console"
 	"github.com/munbot/master/robot/master"
 	"github.com/munbot/master/utils/lock"
 )
