@@ -13,7 +13,7 @@ import (
 
 	"golang.org/x/crypto/ssh"
 
-	"github.com/munbot/master/auth"
+	"github.com/munbot/master/internal/auth"
 	"github.com/munbot/master/log"
 )
 

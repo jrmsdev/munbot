@@ -7,8 +7,8 @@ import (
 	"errors"
 
 	"github.com/munbot/master/api"
-	"github.com/munbot/master/auth"
 	"github.com/munbot/master/console"
+	"github.com/munbot/master/internal/auth"
 	"github.com/munbot/master/robot/master"
 	"github.com/munbot/master/utils/lock"
 )

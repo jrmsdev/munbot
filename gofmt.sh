@@ -4,7 +4,6 @@ if test "X${1}" = 'X--all'; then
 fi
 exec gofmt -w -l -s \
 	api \
-	auth \
 	cmd \
 	config \
 	console \
