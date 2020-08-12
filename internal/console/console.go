@@ -150,5 +150,7 @@ func (s *Console) dispatch(ctx context.Context, nc net.Conn) {
 		defer s.wg.Done()
 		ssh.DiscardRequests(reqs)
 	}()
-	log.Printf("Auth login %s", conn.Permissions.Extensions["pubkey-fp"])
+	fp := conn.Permissions.Extensions["pubkey-fp"]
+	log.Printf("Auth login %s", fp)
+	log.Printf("Auth logout %s", fp)
 }

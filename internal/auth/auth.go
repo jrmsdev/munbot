@@ -21,12 +21,12 @@ var ErrCADir error = errors.New("auth: invalid CA dir")
 
 // Auth implemenst the console auth manager.
 type Auth struct {
-	name string
-	dir  string
-	priv string
-	keys string
-	id   ssh.Signer
-	auth map[string]bool
+	name     string
+	dir      string
+	priv     string
+	keys     string
+	id       ssh.Signer
+	auth     map[string]bool
 	rw       *sync.RWMutex
 	lastHash string
 }
