@@ -4,11 +4,11 @@
 package core
 
 import (
-	"github.com/munbot/master/api"
-	"github.com/munbot/master/api/wapp"
 	"github.com/munbot/master/config"
 	"github.com/munbot/master/console"
 	"github.com/munbot/master/env"
+	"github.com/munbot/master/internal/api"
+	"github.com/munbot/master/internal/api/wapp"
 	"github.com/munbot/master/internal/auth"
 	"github.com/munbot/master/log"
 	"github.com/munbot/master/robot/master"

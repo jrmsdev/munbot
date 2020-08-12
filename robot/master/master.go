@@ -12,7 +12,7 @@ import (
 	"gobot.io/x/gobot"
 	"gobot.io/x/gobot/api"
 
-	"github.com/munbot/master/api/wapp"
+	"github.com/munbot/master/internal/api/wapp"
 	"github.com/munbot/master/log"
 	"github.com/munbot/master/platform"
 )

@@ -6,7 +6,7 @@ package master
 import (
 	"net/http"
 
-	"github.com/munbot/master/api/wapp"
+	"github.com/munbot/master/internal/api/wapp"
 )
 
 type Munbot interface {
