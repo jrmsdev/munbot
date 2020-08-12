@@ -48,7 +48,7 @@ func NewRobot() *Robot {
 		api:    wapp.New(api.NewAPI(m)),
 		state:  "Init",
 		born:   time.Now(),
-		stop:   make(chan bool, 1),
+		stop:   make(chan bool, 0),
 		rw:     new(sync.RWMutex),
 	}
 	r.addCommands(r.Master)

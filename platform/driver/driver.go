@@ -9,6 +9,7 @@ import (
 
 	"gobot.io/x/gobot"
 
+	"github.com/munbot/master/log"
 	"github.com/munbot/master/platform/adaptor"
 )
 
@@ -51,19 +52,13 @@ func (m *Munbot) SetName(name string) {
 }
 
 func (m *Munbot) Start() error {
-	go func() {
-		for {
-			select {
-			case <-time.After(m.interval()):
-			case <-m.halt:
-				return
-			}
-		}
-	}()
+	log.Debug("start")
+	<-m.halt
 	return nil
 }
 
 func (m *Munbot) Halt() error {
+	log.Debug("halt")
 	m.halt <- true
 	return nil
 }

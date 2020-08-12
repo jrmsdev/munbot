@@ -67,6 +67,7 @@ func (s *Console) Configure(cfg *Config) error {
 }
 
 func (s *Console) Stop() error {
+	log.Debug("stop")
 	defer close(s.done)
 	s.done <- true
 	err := s.ln.Close()
@@ -75,6 +76,7 @@ func (s *Console) Stop() error {
 }
 
 func (s *Console) Start() error {
+	log.Debug("start")
 	var err error
 	// listen
 	s.ln, err = net.Listen("tcp", s.addr)
@@ -82,38 +84,25 @@ func (s *Console) Start() error {
 		log.Debugf("listen error: %v", err)
 		return err
 	}
-	defer s.ln.Close()
 	log.Printf("Console server ssh://%s", s.addr)
 	// accept connections
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
-	s.wg.Add(1)
-	go s.accept(ctx)
-	// monitor...
-LOOP:
-	for {
-		select {
-		case <-s.done:
-			break LOOP
-		default:
-			time.Sleep(s.wait)
-		}
-	}
-	return err
+	return s.accept(ctx)
 }
 
-func (s *Console) accept(ctx context.Context) {
+func (s *Console) accept(ctx context.Context) error {
 	log.Debug("accept connections")
 	var err error
-	defer s.wg.Done()
-LOOP:
 	for {
 		select {
 		case <-ctx.Done():
-			log.Debugf("context done, error: %v", ctx.Err())
-			break LOOP
+			err := ctx.Err()
+			log.Debugf("context done, error: %v", err)
+			return err
 		case <-s.done:
-			break LOOP
+			log.Debug("done!")
+			return nil
 		default:
 		}
 		var nc net.Conn
