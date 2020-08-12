@@ -25,11 +25,11 @@ func NewFlags(fs *flag.FlagSet) *Flags {
 	f := &Flags{Profile: profile.New()}
 	// log
 	fs.BoolVar(&f.Debug, "debug", false, "enable debug settings")
-	fs.BoolVar(&f.Quiet, "q", false, "set quiet mode")
-	fs.BoolVar(&f.Verbose, "v", false, "set verbose mode")
+	fs.BoolVar(&f.Quiet, "q", false, "quiet mode")
+	fs.BoolVar(&f.Verbose, "v", false, "verbose mode")
 	// profile
-	fs.StringVar(&f.Profile.Name, "profile", "", "profile `name`")
-	fs.StringVar(&f.Profile.Config, "config", "", "config dir `path`")
+	fs.StringVar(&f.Profile.Name, "profile", "", "config profile `name`")
+	fs.StringVar(&f.Profile.Config, "config", "", "config `dir/path`")
 	return f
 }
 

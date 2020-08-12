@@ -11,11 +11,11 @@ import (
 
 // Flags holds main flags settings.
 type Flags struct {
-	authDisable    bool
 	apiDisable     bool
 	apiDebug       bool
 	apiAddr        string
 	apiPort        uint
+	authDisable    bool
 	consoleDisable bool
 	consoleAddr    string
 	consolePort    uint
@@ -27,28 +27,22 @@ func NewFlags() *Flags {
 
 // Set sets the flags to the provided handler.
 func (f *Flags) Set(fs *flag.FlagSet) {
-	fs.BoolVar(&f.authDisable, "auth.disable", false, "disable auth")
-	fs.BoolVar(&f.apiDisable, "api.disable", false, "disable api")
+	fs.BoolVar(&f.apiDisable, "api.disable", false, "disable api server")
 	fs.BoolVar(&f.apiDebug, "api.debug", false, "debug api")
-	fs.StringVar(&f.apiAddr, "api.addr", "", "api tcp `address` to bind to")
-	fs.UintVar(&f.apiPort, "api.port", 0, "api tcp `port` to bind to")
-	fs.BoolVar(&f.consoleDisable, "console.disable", false, "disable console")
-	fs.StringVar(&f.consoleAddr, "console.addr", "", "console tcp `address` to bind to")
-	fs.UintVar(&f.consolePort, "console.port", 0, "console tcp `port` to bind to")
+	fs.StringVar(&f.apiAddr, "api.addr", "", "api tcp network `address`")
+	fs.UintVar(&f.apiPort, "api.port", 0, "api tcp port `number`")
+	fs.BoolVar(&f.authDisable, "auth.disable", false, "disable auth")
+	fs.BoolVar(&f.consoleDisable, "console.disable", false, "disable console server")
+	fs.StringVar(&f.consoleAddr, "console.addr", "", "console tcp network `address`")
+	fs.UintVar(&f.consolePort, "console.port", 0, "console tcp port `number`")
 }
 
 // Parse parses the flags that were not set via the flags handler (cmd args
 // usually) and sets them with their respective values from the configuration.
 func (f *Flags) Parse() {
-	f.parseAuth()
 	f.parseApi()
+	f.parseAuth()
 	f.parseConsole()
-}
-
-func (f *Flags) parseAuth() {
-	if f.authDisable {
-		env.Set("MBAUTH", "false")
-	}
 }
 
 func (f *Flags) parseApi() {
@@ -60,6 +54,12 @@ func (f *Flags) parseApi() {
 	}
 	if f.apiPort != 0 {
 		env.SetUint("MBAPI_PORT", f.apiPort)
+	}
+}
+
+func (f *Flags) parseAuth() {
+	if f.authDisable {
+		env.Set("MBAUTH", "false")
 	}
 }
 
