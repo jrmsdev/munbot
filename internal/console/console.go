@@ -147,14 +147,19 @@ func (s *Console) dispatch(ctx context.Context, nc net.Conn) {
 		defer s.wg.Done()
 		ssh.DiscardRequests(reqs)
 	}(reqs)
+	// ctx session
+	ctx = s.ctxNewSession(ctx)
+	sid := s.ctxSession(ctx)
+	// serve
 	fp := conn.Permissions.Extensions["pubkey-fp"]
-	log.Printf("Auth login %s", fp)
+	log.Printf("Auth login %s %s", fp, sid)
 	s.serve(ctx, chans)
-	log.Printf("Auth logout %s", fp)
+	log.Printf("Auth logout %s", sid)
 }
 
 func (s *Console) serve(ctx context.Context, chans <-chan ssh.NewChannel) {
-	log.Debug("serve")
+	sid := s.ctxSession(ctx)
+	log.Debugf("serve session %s", sid)
 	for nc := range chans {
 		select {
 		case <-ctx.Done():
