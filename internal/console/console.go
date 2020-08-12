@@ -7,6 +7,7 @@ package console
 import (
 	"context"
 	"fmt"
+	"io"
 	"net"
 	"sync"
 	"time"
@@ -163,24 +164,25 @@ func (s *Console) serve(ctx context.Context, chans <-chan ssh.NewChannel) {
 	for nc := range chans {
 		select {
 		case <-ctx.Done():
-			log.Debugf("serve context done: %v", ctx.Err())
+			log.Debugf("%s serve context done: %v", sid, ctx.Err())
 			return
 		default:
 		}
 		t := nc.ChannelType()
-		log.Debugf("serve channel type %s", t)
+		log.Debugf("%s serve channel type %s",sid, t)
 		if t != "session" {
 			nc.Reject(ssh.UnknownChannelType, "unknown channel type")
+			log.Errorf("Console %s unknown channel type: %s", sid, t)
 			continue
 		}
 		ch, req, err := nc.Accept()
 		if err != nil {
-			log.Errorf("could not accept channel: %v", err)
+			log.Errorf("Console %s could not accept channel: %v", sid, err)
 			continue
 		}
 		s.wg.Add(1)
 		go func(ctx context.Context, in <-chan *ssh.Request) {
-			log.Debug("serve request")
+			log.Debugf("%s serve request", sid)
 			defer s.wg.Done()
 			for req := range in {
 				select {
@@ -188,7 +190,7 @@ func (s *Console) serve(ctx context.Context, chans <-chan ssh.NewChannel) {
 					return
 				default:
 				}
-				log.Debugf("serve request type %s", req.Type)
+				log.Debugf("%s serve request type %s", sid, req.Type)
 				serve := false
 				switch req.Type {
 				case "pty-req":
@@ -202,7 +204,7 @@ func (s *Console) serve(ctx context.Context, chans <-chan ssh.NewChannel) {
 		term := terminal.NewTerminal(ch, "munbot> ")
 		s.wg.Add(1)
 		go func(ctx context.Context, ch ssh.Channel) {
-			log.Debug("serve shell")
+			log.Debugf("%s serve shell", sid)
 			defer s.wg.Done()
 			defer ch.Close()
 			for {
@@ -211,13 +213,15 @@ func (s *Console) serve(ctx context.Context, chans <-chan ssh.NewChannel) {
 					return
 				default:
 				}
-				log.Debug("shell read line...")
+				log.Debugf("%s shell read line...", sid)
 				line, err := term.ReadLine()
 				if err != nil {
-					log.Error(err)
+					if err != io.EOF {
+						log.Errorf("Console %s: %v", sid, err)
+					}
 					break
 				}
-				log.Printf("TERM: %s", line)
+				log.Printf("%s TERM: %s", sid, line)
 			}
 		}(ctx, ch)
 	}
