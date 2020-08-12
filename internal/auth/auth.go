@@ -27,7 +27,8 @@ type Auth struct {
 	keys string
 	id   ssh.Signer
 	auth map[string]bool
-	rw   *sync.RWMutex
+	rw       *sync.RWMutex
+	lastHash string
 }
 
 // New creates a new Auth instance.
@@ -73,14 +74,22 @@ func (a *Auth) parseAuthKeys() error {
 	log.Debug("parse authorized keys")
 	a.rw.Lock()
 	defer a.rw.Unlock()
-	if !vfs.Exist(a.keys) {
-		log.Warnf("%s: file not found", a.keys)
+	hash, herr := vfs.StatHash(a.keys)
+	if herr != nil {
+		if os.IsNotExist(herr) {
+			log.Warn(herr)
+			return nil
+		}
+		return log.Error(herr)
+	}
+	if hash == a.lastHash {
 		return nil
 	}
 	blob, err := vfs.ReadFile(a.keys)
 	if err != nil {
 		return log.Error(err)
 	}
+	a.lastHash = hash
 	for fp := range a.auth {
 		delete(a.auth, fp)
 	}
@@ -98,6 +107,9 @@ func (a *Auth) parseAuthKeys() error {
 }
 
 func (a *Auth) publicKeyCallback(c ssh.ConnMetadata, k ssh.PublicKey) (*ssh.Permissions, error) {
+	if err := a.parseAuthKeys(); err != nil {
+		return nil, err
+	}
 	a.rw.RLock()
 	defer a.rw.RUnlock()
 	fp := a.keyfp(k)
