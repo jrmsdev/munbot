@@ -69,6 +69,7 @@ type tempFileFunc func(string, string) (*os.File, error)
 // (WithReadError) and/or at writes (WithWriteError).
 type MockFilesystem struct {
 	root           map[string]File
+	stat           map[string]os.FileInfo
 	tempfile       tempFileFunc
 	WithOpenError  bool
 	WithReadError  bool
@@ -80,6 +81,7 @@ type MockFilesystem struct {
 func NewMockFilesystem(files ...string) *MockFilesystem {
 	fs := &MockFilesystem{}
 	fs.root = make(map[string]File)
+	fs.stat = make(map[string]os.FileInfo)
 	fs.tempfile = ioutil.TempFile
 	for i := range files {
 		fn := files[i]
@@ -121,13 +123,21 @@ func (fs *MockFilesystem) Stat(name string) (os.FileInfo, error) {
 	if !found {
 		return nil, fs.notfound(name)
 	}
+	i, ok := fs.stat[name]
+	if ok {
+		return i, nil
+	}
 	fh, err := fs.tempfile("", name)
 	if err != nil {
 		return nil, err
 	}
 	defer fh.Close()
 	defer os.Remove(fh.Name())
-	return fh.Stat()
+	fs.stat[name], err = fh.Stat()
+	if err != nil {
+		return nil, err
+	}
+	return fs.stat[name], nil
 }
 
 // returns a "real" file not found error.
