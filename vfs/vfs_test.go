@@ -50,6 +50,16 @@ func (s *Suite) TestStat() {
 	assert.Equal(int64(0), i.Size(), "file size")
 }
 
+func (s *Suite) TestStatHash() {
+	require := require.New(s.T())
+	assert := assert.New(s.T())
+	i, ierr := Stat("stat.txt")
+	require.NoError(ierr, "stat error")
+	h, herr := StatHash("stat.txt")
+	require.NoError(herr, "stat hash error")
+	assert.Equal(hash(fileInfoString(i)), h)
+}
+
 func (s *Suite) TestOpen() {
 	require := require.New(s.T())
 	_, err := Open("stat.txt")

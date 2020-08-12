@@ -5,6 +5,9 @@
 package vfs
 
 import (
+	"bytes"
+	"crypto/sha256"
+	"fmt"
 	"io"
 	"io/ioutil"
 	"os"
@@ -46,6 +49,32 @@ func OpenFile(name string, flag int, perm os.FileMode) (File, error) {
 // Stat calls current fs manager Stat method.
 func Stat(name string) (os.FileInfo, error) {
 	return fs.Stat(name)
+}
+
+// StatHash returns a hash string from stat information of named file.
+func StatHash(name string) (string, error) {
+	st, err := Stat(name)
+	if err != nil {
+		return "", err
+	}
+	return hash(fileInfoString(st)), nil
+}
+
+func fileInfoString(st os.FileInfo) string {
+	return fmt.Sprintf("Name:%s:Size:%d:Mode:%o:Time:%s:Dir:%v",
+		st.Name(),
+		st.Size(),
+		st.Mode(),
+		st.ModTime(),
+		st.IsDir(),
+	)
+}
+
+func hash(s string) string {
+	buf := new(bytes.Buffer)
+	buf.WriteString(s)
+	h := sha256.Sum256(buf.Bytes())
+	return fmt.Sprintf("%x", h)
 }
 
 // Open opens the named file as read only.
