@@ -81,6 +81,9 @@ func (a *Auth) parseAuthKeys() error {
 	if err != nil {
 		return log.Error(err)
 	}
+	for fp := range a.auth {
+		delete(a.auth, fp)
+	}
 	for len(blob) > 0 {
 		key, _, _, rest, err := ssh.ParseAuthorizedKey(blob)
 		if err != nil {
