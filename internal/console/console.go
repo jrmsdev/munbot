@@ -82,12 +82,11 @@ func (s *Console) Start() error {
 	defer s.ln.Close()
 	log.Printf("Console server ssh://%s", s.addr)
 	// accept connections
-	ttl := time.Now().Add(time.Hour)
-	ctx, cancel := context.WithDeadline(context.Background(), ttl)
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
 	s.wg.Add(1)
 	go s.accept(ctx)
 	// monitor...
-	defer cancel()
 LOOP:
 	for {
 		select {
@@ -103,7 +102,6 @@ LOOP:
 func (s *Console) accept(ctx context.Context) {
 	var err error
 	defer s.wg.Done()
-	ttl, _ := ctx.Deadline()
 LOOP:
 	for {
 		select {
@@ -118,11 +116,6 @@ LOOP:
 		nc, err = s.ln.Accept()
 		if err != nil {
 			log.Errorf("Console accept: %v", err)
-			continue
-		}
-		if err := nc.SetDeadline(ttl); err != nil {
-			log.Errorf("Console set connection deadline: %v", err)
-			nc.Close()
 			continue
 		}
 		s.wg.Add(1)
