@@ -45,6 +45,7 @@ type Console struct {
 	wg     *sync.WaitGroup
 	lock   *sync.Mutex
 	q      map[string]net.Conn
+	closed bool
 }
 
 func New() *Console {
@@ -71,6 +72,7 @@ func (s *Console) Stop() error {
 	log.Debug("stop")
 	defer close(s.done)
 	s.done <- true
+	s.closed = true
 	err := s.ln.Close()
 	s.wg.Wait()
 	return err
@@ -110,7 +112,9 @@ LOOP:
 		var nc net.Conn
 		nc, err = s.ln.Accept()
 		if err != nil {
-			log.Errorf("Console accept: %v", err)
+			if !s.closed {
+				log.Errorf("Console accept: %v", err)
+			}
 			continue
 		}
 		// ctx session
