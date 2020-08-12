@@ -72,8 +72,6 @@ func (a *Auth) setup() error {
 
 func (a *Auth) parseAuthKeys() error {
 	log.Debug("parse authorized keys")
-	a.rw.Lock()
-	defer a.rw.Unlock()
 	hash, herr := vfs.StatHash(a.keys)
 	if herr != nil {
 		if os.IsNotExist(herr) {
@@ -89,6 +87,8 @@ func (a *Auth) parseAuthKeys() error {
 	if err != nil {
 		return log.Error(err)
 	}
+	a.rw.Lock()
+	defer a.rw.Unlock()
 	a.lastHash = hash
 	for fp := range a.auth {
 		delete(a.auth, fp)
