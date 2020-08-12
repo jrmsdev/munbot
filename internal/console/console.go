@@ -12,6 +12,7 @@ import (
 	"time"
 
 	"golang.org/x/crypto/ssh"
+	"golang.org/x/crypto/ssh/terminal"
 
 	"github.com/munbot/master/internal/auth"
 	"github.com/munbot/master/log"
@@ -100,6 +101,7 @@ LOOP:
 }
 
 func (s *Console) accept(ctx context.Context) {
+	log.Debug("accept connections")
 	var err error
 	defer s.wg.Done()
 LOOP:
@@ -124,6 +126,7 @@ LOOP:
 }
 
 func (s *Console) dispatch(ctx context.Context, nc net.Conn) {
+	log.Debug("dispatch")
 	defer s.wg.Done()
 	defer nc.Close()
 	select {
@@ -132,18 +135,75 @@ func (s *Console) dispatch(ctx context.Context, nc net.Conn) {
 	default:
 	}
 	// ssh handshake
-	conn, _, reqs, err := ssh.NewServerConn(nc, s.cfg)
+	conn, chans, reqs, err := ssh.NewServerConn(nc, s.cfg)
 	if err != nil {
 		log.Debugf("handshake error: %v", err)
 		return
 	}
 	defer conn.Close()
 	s.wg.Add(1)
-	go func() {
+	go func(reqs <-chan *ssh.Request) {
 		defer s.wg.Done()
 		ssh.DiscardRequests(reqs)
-	}()
+	}(reqs)
 	fp := conn.Permissions.Extensions["pubkey-fp"]
 	log.Printf("Auth login %s", fp)
+	s.serve(ctx, chans)
 	log.Printf("Auth logout %s", fp)
+}
+
+func (s *Console) serve(ctx context.Context, chans <-chan ssh.NewChannel) {
+	log.Debug("serve")
+	for nc := range chans {
+		select {
+		case <-ctx.Done():
+			log.Debugf("serve context done: %v", ctx.Err())
+			return
+		default:
+		}
+		t := nc.ChannelType()
+		log.Debugf("serve channel type %s", t)
+		if t != "session" {
+			nc.Reject(ssh.UnknownChannelType, "unknown channel type")
+			continue
+		}
+		ch, req, err := nc.Accept()
+		if err != nil {
+			log.Errorf("could not accept channel: %v", err)
+			continue
+		}
+		s.wg.Add(1)
+		go func(ctx context.Context, in <-chan *ssh.Request) {
+			defer s.wg.Done()
+			for req := range in {
+				select {
+				case <-ctx.Done():
+					return
+				default:
+				}
+				log.Debugf("serve request type %s", req.Type)
+				// serve shell type only
+				req.Reply(req.Type == "shell", nil)
+			}
+		}(ctx, req)
+		term := terminal.NewTerminal(ch, "munbot> ")
+		s.wg.Add(1)
+		go func(ctx context.Context, ch ssh.Channel) {
+			defer s.wg.Done()
+			defer ch.Close()
+			for {
+				select {
+				case <-ctx.Done():
+					return
+				default:
+				}
+				line, err := term.ReadLine()
+				if err != nil {
+					log.Error(err)
+					break
+				}
+				log.Printf("TERM: %s", line)
+			}
+		}(ctx, ch)
+	}
 }
