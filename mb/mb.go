@@ -11,7 +11,7 @@ import (
 
 	"github.com/munbot/master/cmd"
 	"github.com/munbot/master/config"
-	"github.com/munbot/master/core"
+	"github.com/munbot/master/internal/core"
 	"github.com/munbot/master/log"
 )
 

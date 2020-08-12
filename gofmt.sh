@@ -8,8 +8,8 @@ exec gofmt -w -l -s \
 	cmd \
 	config \
 	console \
-	core \
 	env \
+	internal \
 	log \
 	mb \
 	platform \
