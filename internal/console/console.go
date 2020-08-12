@@ -68,8 +68,9 @@ func (s *Console) Configure(cfg *Config) error {
 func (s *Console) Stop() error {
 	defer close(s.done)
 	s.done <- true
+	err := s.ln.Close()
 	s.wg.Wait()
-	return s.ln.Close()
+	return err
 }
 
 func (s *Console) Start() error {
@@ -174,6 +175,7 @@ func (s *Console) serve(ctx context.Context, chans <-chan ssh.NewChannel) {
 		}
 		s.wg.Add(1)
 		go func(ctx context.Context, in <-chan *ssh.Request) {
+			log.Debug("serve request")
 			defer s.wg.Done()
 			for req := range in {
 				select {
@@ -182,13 +184,20 @@ func (s *Console) serve(ctx context.Context, chans <-chan ssh.NewChannel) {
 				default:
 				}
 				log.Debugf("serve request type %s", req.Type)
-				// serve shell type only
-				req.Reply(req.Type == "shell", nil)
+				serve := false
+				switch req.Type {
+				case "pty-req":
+					serve = true
+				case "shell":
+					serve = true
+				}
+				req.Reply(serve, nil)
 			}
 		}(ctx, req)
 		term := terminal.NewTerminal(ch, "munbot> ")
 		s.wg.Add(1)
 		go func(ctx context.Context, ch ssh.Channel) {
+			log.Debug("serve shell")
 			defer s.wg.Done()
 			defer ch.Close()
 			for {
@@ -197,6 +206,7 @@ func (s *Console) serve(ctx context.Context, chans <-chan ssh.NewChannel) {
 					return
 				default:
 				}
+				log.Debug("shell read line...")
 				line, err := term.ReadLine()
 				if err != nil {
 					log.Error(err)
