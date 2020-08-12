@@ -168,7 +168,7 @@ func (s *Console) dispatch(ctx context.Context, nc net.Conn, sid string) {
 	fp := conn.Permissions.Extensions["pubkey-fp"]
 	log.Printf("Auth login %s %s", fp, sid)
 	s.serve(ctx, chans)
-	log.Printf("Auth logout %s", sid)
+	log.Printf("Auth logout %s %s", sid, s.ctxSessionElapsed(ctx))
 }
 
 func (s *Console) serve(ctx context.Context, chans <-chan ssh.NewChannel) {
