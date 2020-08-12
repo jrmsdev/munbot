@@ -10,7 +10,6 @@ import (
 	"io"
 	"net"
 	"sync"
-	"time"
 
 	"golang.org/x/crypto/ssh"
 	"golang.org/x/crypto/ssh/terminal"
@@ -44,14 +43,16 @@ type Console struct {
 	addr   string
 	ln     net.Listener
 	wg     *sync.WaitGroup
-	wait   time.Duration
+	lock   *sync.Mutex
+	q      map[string]net.Conn
 }
 
 func New() *Console {
 	return &Console{
 		done: make(chan bool, 1),
 		wg:   &sync.WaitGroup{},
-		wait: 300 * time.Millisecond,
+		lock: new(sync.Mutex),
+		q:    make(map[string]net.Conn),
 	}
 }
 
@@ -94,6 +95,7 @@ func (s *Console) Start() error {
 func (s *Console) accept(ctx context.Context) error {
 	log.Debug("accept connections")
 	var err error
+LOOP:
 	for {
 		select {
 		case <-ctx.Done():
@@ -102,7 +104,7 @@ func (s *Console) accept(ctx context.Context) error {
 			return err
 		case <-s.done:
 			log.Debug("done!")
-			return nil
+			break LOOP
 		default:
 		}
 		var nc net.Conn
@@ -111,15 +113,40 @@ func (s *Console) accept(ctx context.Context) error {
 			log.Errorf("Console accept: %v", err)
 			continue
 		}
+		// ctx session
+		var sid string
+		ctx, sid = s.ctxNewSession(ctx)
+		// dispatch
 		s.wg.Add(1)
-		go s.dispatch(ctx, nc)
+		go func(ctx context.Context, nc net.Conn, sid string) {
+			defer s.wg.Done()
+			defer nc.Close()
+			s.lock.Lock()
+			log.Debugf("%s queue", sid)
+			s.q[sid] = nc
+			s.lock.Unlock()
+			s.dispatch(ctx, nc, sid)
+			s.lock.Lock()
+			log.Debugf("%s dequeue", sid)
+			delete(s.q, sid)
+			s.lock.Unlock()
+		}(ctx, nc, sid)
 	}
+	log.Debug("check active connections...")
+	s.lock.Lock()
+	defer s.lock.Unlock()
+	count := 0
+	for sid, nc := range s.q {
+		log.Debugf("%s close connection", sid)
+		nc.Close()
+		count++
+	}
+	log.Debugf("closed %d active connection(s)", count)
+	return nil
 }
 
-func (s *Console) dispatch(ctx context.Context, nc net.Conn) {
-	log.Debug("dispatch")
-	defer s.wg.Done()
-	defer nc.Close()
+func (s *Console) dispatch(ctx context.Context, nc net.Conn, sid string) {
+	log.Debugf("%s dispatch", sid)
 	select {
 	case <-ctx.Done():
 		return
@@ -128,7 +155,7 @@ func (s *Console) dispatch(ctx context.Context, nc net.Conn) {
 	// ssh handshake
 	conn, chans, reqs, err := ssh.NewServerConn(nc, s.cfg)
 	if err != nil {
-		log.Debugf("handshake error: %v", err)
+		log.Debugf("%s handshake error: %v", sid, err)
 		return
 	}
 	defer conn.Close()
@@ -137,9 +164,6 @@ func (s *Console) dispatch(ctx context.Context, nc net.Conn) {
 		defer s.wg.Done()
 		ssh.DiscardRequests(reqs)
 	}(reqs)
-	// ctx session
-	ctx = s.ctxNewSession(ctx)
-	sid := s.ctxSession(ctx)
 	// serve
 	fp := conn.Permissions.Extensions["pubkey-fp"]
 	log.Printf("Auth login %s %s", fp, sid)
@@ -158,7 +182,7 @@ func (s *Console) serve(ctx context.Context, chans <-chan ssh.NewChannel) {
 		default:
 		}
 		t := nc.ChannelType()
-		log.Debugf("%s serve channel type %s",sid, t)
+		log.Debugf("%s serve channel type %s", sid, t)
 		if t != "session" {
 			nc.Reject(ssh.UnknownChannelType, "unknown channel type")
 			log.Errorf("Console %s unknown channel type: %s", sid, t)
@@ -176,6 +200,7 @@ func (s *Console) serve(ctx context.Context, chans <-chan ssh.NewChannel) {
 			for req := range in {
 				select {
 				case <-ctx.Done():
+					log.Debug("serve request context done!")
 					return
 				default:
 				}
@@ -199,6 +224,7 @@ func (s *Console) serve(ctx context.Context, chans <-chan ssh.NewChannel) {
 			for {
 				select {
 				case <-ctx.Done():
+					log.Debug("serve shell context done!")
 					return
 				default:
 				}

@@ -10,12 +10,14 @@ import (
 )
 
 type ctxKey int
+
 const (
 	ctxSession ctxKey = iota
 )
 
-func (s *Console) ctxNewSession(ctx context.Context) context.Context {
-	return context.WithValue(ctx, ctxSession, uuid.Rand())
+func (s *Console) ctxNewSession(ctx context.Context) (context.Context, string) {
+	sid := uuid.Rand()
+	return context.WithValue(ctx, ctxSession, sid), sid
 }
 
 func (s *Console) ctxSession(ctx context.Context) string {
