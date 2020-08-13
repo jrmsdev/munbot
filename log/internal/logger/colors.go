@@ -104,7 +104,6 @@ func istty(fh *os.File) bool {
 }
 
 func setColors(cfg string) {
-	println("SET COLORS")
 	for _, opt := range strings.Split(cfg, ":") {
 		i := strings.Split(opt, "=")
 		if len(i) == 2 {
