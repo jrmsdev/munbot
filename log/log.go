@@ -18,7 +18,7 @@ import (
 var (
 	cdepth     int  = 1
 	debug      bool = false
-	debugFlags int  = gol.Ldate | gol.Ltime | gol.Lmicroseconds | gol.Llongfile
+	debugFlags int  = gol.Llongfile
 	verbose    bool = true
 	stdFlags   int  = gol.Ldate | gol.Ltime | gol.Lmicroseconds
 )

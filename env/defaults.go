@@ -10,8 +10,6 @@ import (
 	"sync"
 
 	"github.com/gobuffalo/envy"
-
-	"github.com/munbot/master/log"
 )
 
 // MBENV is the default env name.
@@ -117,9 +115,6 @@ func loadEnv() {
 		fn := filepath.Join(cfgdir, fmt.Sprintf("%s.env", env))
 		envy.Load(fn)
 	}
-	log.SetMode(Get("MB_LOG"))
-	log.SetColors(Get("MB_LOG_COLORS"))
-	log.SetPrefix(Get("MUNBOT"))
 }
 
 func init() {

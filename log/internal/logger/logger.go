@@ -102,7 +102,7 @@ func (l *Logger) Write(d []byte) (int, error) {
 }
 
 func (l *Logger) Output(d int, s string) error {
-	return l.log.Output(d + 2, s)
+	return l.log.Output(d+2, s)
 }
 
 func (l *Logger) tag(lvl Level, msg string) string {

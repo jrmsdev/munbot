@@ -11,6 +11,7 @@ import (
 
 	"github.com/munbot/master/cmd"
 	"github.com/munbot/master/config"
+	"github.com/munbot/master/env"
 	"github.com/munbot/master/internal/core"
 	"github.com/munbot/master/log"
 )
@@ -39,6 +40,11 @@ type Main struct {
 }
 
 func newMain(kf *core.Flags, cf *config.Flags) *Main {
+	log.SetMode(env.Get("MB_LOG"))
+	log.SetColors(env.Get("MB_LOG_COLORS"))
+	if !cf.Debug {
+		log.SetPrefix(env.Get("MUNBOT"))
+	}
 	return &Main{
 		kf:  kf,
 		cf:  cf,

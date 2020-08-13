@@ -19,8 +19,7 @@ func TestDefaults(t *testing.T) {
 	require := require.New(t)
 	require.Equal(1, cdepth, "call depth")
 	require.Equal(false, debug, "debug")
-	require.Equal(gol.Ldate|gol.Ltime|gol.Lmicroseconds|gol.Llongfile,
-		debugFlags, "debug flags")
+	require.Equal(gol.Llongfile, debugFlags, "debug flags")
 	require.Equal(true, verbose, "verbose")
 	require.Equal(gol.Ldate|gol.Ltime|gol.Lmicroseconds, stdFlags, "default flags")
 }
@@ -31,7 +30,7 @@ func TestSuite(t *testing.T) {
 
 type Suite struct {
 	*suite.Suite
-	buf    *bytes.Buffer
+	buf *bytes.Buffer
 }
 
 func (s *Suite) SetupTest() {
@@ -107,11 +106,13 @@ func (s *Suite) TestDebug() {
 	s.buf.Reset()
 	SetDebug()
 	Debug("test")
-	s.Regexp("^\\d\\d\\d\\d/\\d\\d/\\d\\d \\d\\d:\\d\\d:\\d\\d\\.\\d\\d\\d\\d\\d\\d .*log_test\\.go.* test\n$", s.buf.String(), "debug msg")
+	//~ s.Regexp("^\\d\\d\\d\\d/\\d\\d/\\d\\d \\d\\d:\\d\\d:\\d\\d\\.\\d\\d\\d\\d\\d\\d .*log_test\\.go.* test\n$", s.buf.String(), "debug msg")
+	s.Regexp("^.*log_test\\.go.* test\n$", s.buf.String(), "debug msg")
 
 	s.buf.Reset()
 	Debugf("te%s", "st")
-	s.Regexp("\\d .*log_test\\.go.* test\n$", s.buf.String(), "debugf msg")
+	//~ s.Regexp("\\d .*log_test\\.go.* test\n$", s.buf.String(), "debugf msg")
+	s.Regexp(".*log_test\\.go.* test\n$", s.buf.String(), "debugf msg")
 }
 
 func (s *Suite) TestError() {
