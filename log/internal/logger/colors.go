@@ -26,14 +26,34 @@ var (
 )
 
 var levelColor = map[Level]string{
-	PANIC:  blue,
-	FATAL:  blue,
-	ERROR:  red,
-	WARN:   yellow,
+	PANIC:  tilt(red),
+	FATAL:  bold(blue),
+	ERROR:  bold(red),
+	WARN:   italic(yellow),
 	MSG:    magenta,
-	INFO:   cyan,
+	INFO:   italic(cyan),
 	DEBUG:  green,
 	cReset: reset,
+}
+
+func bold(v string) string {
+	return v + ";01"
+}
+
+func italic(v string) string {
+	return v + ";03"
+}
+
+func underline(v string) string {
+	return v + ";04"
+}
+
+func tilt(v string) string {
+	return v + ";05"
+}
+
+func invert(v string) string {
+	return v + ";07"
 }
 
 func (l *Logger) Colors() bool {
