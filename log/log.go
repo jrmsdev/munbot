@@ -31,7 +31,7 @@ var setPrefix func(string) = gol.SetPrefix
 
 func init() {
 	l = logger.New()
-	l.SetDepth(cdepth + 1)
+	l.SetDepth(1)
 	setFlags(stdFlags)
 	l.SetFlags(stdFlags)
 }
@@ -41,16 +41,20 @@ func SetDebug() {
 	verbose = true
 	setFlags(debugFlags)
 	l.SetFlags(debugFlags)
+	l.SetDebug(true)
 }
 
 func SetQuiet() {
 	if !debug {
 		verbose = false
+		l.SetDebug(false)
 	}
 }
 
 func SetVerbose() {
+	debug = false
 	verbose = true
+	l.SetDebug(false)
 }
 
 func SetMode(lvl string) {
