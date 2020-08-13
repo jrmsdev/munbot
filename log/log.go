@@ -29,6 +29,7 @@ func init() {
 	l = logger.New()
 	l.SetDepth(cdepth)
 	l.SetFlags(stdFlags)
+	gol.SetFlags(stdFlags)
 }
 
 func SetDebug() {
@@ -38,6 +39,7 @@ func SetDebug() {
 	defer l.Unlock()
 	debug = true
 	verbose = true
+	gol.SetFlags(debugFlags)
 }
 
 func SetQuiet() {
@@ -47,6 +49,7 @@ func SetQuiet() {
 		l.Lock()
 		defer l.Unlock()
 		verbose = false
+		gol.SetFlags(stdFlags)
 	}
 }
 
@@ -57,6 +60,7 @@ func SetVerbose() {
 	defer l.Unlock()
 	debug = false
 	verbose = true
+	gol.SetFlags(stdFlags)
 }
 
 func SetMode(lvl string) {
@@ -75,7 +79,11 @@ func SetColors(cfg string) {
 }
 
 func SetPrefix(name string) {
-	l.SetPrefix(fmt.Sprintf("[%s:%d] ", name, os.Getpid()))
+	p := fmt.Sprintf("[%s:%d] ", name, os.Getpid())
+	l.SetPrefix(p)
+	l.Lock()
+	defer l.Unlock()
+	gol.SetPrefix(p)
 }
 
 func SetOutput(out io.Writer) {
