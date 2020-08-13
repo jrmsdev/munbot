@@ -119,6 +119,7 @@ func loadEnv() {
 	}
 	log.SetMode(Get("MB_LOG"))
 	log.SetColors(Get("MB_LOG_COLORS"))
+	log.SetPrefix(Get("MUNBOT"))
 }
 
 func init() {

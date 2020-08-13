@@ -17,7 +17,7 @@ import (
 
 func TestDefaults(t *testing.T) {
 	require := require.New(t)
-	require.Equal(2, cdepth, "call depth")
+	require.Equal(1, cdepth, "call depth")
 	require.Equal(false, debug, "debug")
 	require.Equal(gol.Ldate|gol.Ltime|gol.Lmicroseconds|gol.Llongfile,
 		debugFlags, "debug flags")
@@ -31,31 +31,27 @@ func TestSuite(t *testing.T) {
 
 type Suite struct {
 	*suite.Suite
-	logger *gol.Logger
 	buf    *bytes.Buffer
 }
 
 func (s *Suite) SetupTest() {
 	s.buf.Reset()
-	s.logger = nil
-	s.logger = gol.New(s.buf, "", stdFlags)
-	Output = s.logger.Output
-	setFlags = s.logger.SetFlags
-	setPrefix = s.logger.SetPrefix
 	debug = false
 	verbose = true
+	l.SetPrefix("")
 	l.SetColors("off")
 	l.SetOutput(s.buf)
 	l.SetFlags(stdFlags)
+	l.SetDebug(false)
 }
 
 func (s *Suite) TestSetDebug() {
 	require := s.Require()
 	require.Equal(false, debug, "debug disabled")
-	require.Equal(stdFlags, s.logger.Flags(), "logger init flags")
+	require.Equal(stdFlags, l.Flags(), "logger init flags")
 	SetDebug()
 	s.Equal(true, debug, "debug enabled")
-	s.Equal(debugFlags, s.logger.Flags(), "logger debug flags")
+	s.Equal(debugFlags, l.Flags(), "logger debug flags")
 	// check SetQuiet does nothing in debug mode
 	SetQuiet()
 	s.Equal(true, verbose, "verbose disabled by SetQuiet in debug mode")
@@ -81,10 +77,10 @@ func (s *Suite) TestSetVerbose() {
 
 func (s *Suite) TestSetPrefix() {
 	require := s.Require()
-	require.Equal("", s.logger.Prefix(), "logger init prefix")
+	require.Equal("", l.Prefix(), "logger init prefix")
 	SetPrefix("testing")
 	prefix := fmt.Sprintf("[testing:%d] ", os.Getpid())
-	s.Equal(prefix, s.logger.Prefix(), "logger set prefix")
+	s.Equal(prefix, l.Prefix(), "logger set prefix")
 }
 
 func (s *Suite) TestPrint() {

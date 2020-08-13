@@ -16,7 +16,7 @@ import (
 )
 
 var (
-	cdepth     int  = 2
+	cdepth     int  = 1
 	debug      bool = false
 	debugFlags int  = gol.Ldate | gol.Ltime | gol.Lmicroseconds | gol.Llongfile
 	verbose    bool = true
@@ -25,36 +25,38 @@ var (
 
 var l *logger.Logger
 
-var Output func(int, string) error = gol.Output
-var setFlags func(int) = gol.SetFlags
-var setPrefix func(string) = gol.SetPrefix
-
 func init() {
 	l = logger.New()
-	l.SetDepth(1)
-	setFlags(stdFlags)
+	l.SetDepth(cdepth)
 	l.SetFlags(stdFlags)
 }
 
 func SetDebug() {
-	debug = true
-	verbose = true
-	setFlags(debugFlags)
 	l.SetFlags(debugFlags)
 	l.SetDebug(true)
+	l.Lock()
+	defer l.Unlock()
+	debug = true
+	verbose = true
 }
 
 func SetQuiet() {
 	if !debug {
-		verbose = false
 		l.SetDebug(false)
+		l.SetFlags(stdFlags)
+		l.Lock()
+		defer l.Unlock()
+		verbose = false
 	}
 }
 
 func SetVerbose() {
+	l.SetDebug(false)
+	l.SetFlags(stdFlags)
+	l.Lock()
+	defer l.Unlock()
 	debug = false
 	verbose = true
-	l.SetDebug(false)
 }
 
 func SetMode(lvl string) {
@@ -73,11 +75,15 @@ func SetColors(cfg string) {
 }
 
 func SetPrefix(name string) {
-	setPrefix(fmt.Sprintf("[%s:%d] ", name, os.Getpid()))
+	l.SetPrefix(fmt.Sprintf("[%s:%d] ", name, os.Getpid()))
 }
 
 func SetOutput(out io.Writer) {
 	l.SetOutput(out)
+}
+
+func Output(calldepth int, s string) error {
+	return l.Output(calldepth, s)
 }
 
 func Panic(v ...interface{}) {

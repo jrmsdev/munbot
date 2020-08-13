@@ -13,7 +13,7 @@ import (
 	"github.com/munbot/master/utils/lock"
 )
 
-var ErrMemLock error = errors.New("core: mem lock failed")
+var ErrMemLock error = errors.New("mem lock failed")
 
 type Mem struct {
 	mu      *lock.Locker

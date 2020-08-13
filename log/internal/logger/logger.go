@@ -54,6 +54,14 @@ func New() *Logger {
 	return l
 }
 
+func (l *Logger) Flags() int {
+	return l.log.Flags()
+}
+
+func (l *Logger) Prefix() string {
+	return l.log.Prefix()
+}
+
 func (l *Logger) SetDepth(n int) {
 	l.Lock()
 	defer l.Unlock()
@@ -80,11 +88,21 @@ func (l *Logger) SetFlags(f int) {
 	l.log.SetFlags(f)
 }
 
+func (l *Logger) SetPrefix(p string) {
+	l.Lock()
+	defer l.Unlock()
+	l.log.SetPrefix(p)
+}
+
 func (l *Logger) Write(d []byte) (int, error) {
 	if l.debug {
 		return l.out.Write(d)
 	}
 	return len(d), nil
+}
+
+func (l *Logger) Output(d int, s string) error {
+	return l.log.Output(d + 2, s)
 }
 
 func (l *Logger) tag(lvl Level, msg string) string {
