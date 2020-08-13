@@ -6,6 +6,7 @@ package logger
 import (
 	"io"
 	"log"
+	"sync"
 
 	gfmt "fmt"
 )
@@ -33,44 +34,52 @@ var levelTag = map[Level]string{
 }
 
 type Logger struct {
+	*sync.Mutex
 	depth   int
 	colored bool
 }
 
 func New() *Logger {
-	return &Logger{}
+	return &Logger{Mutex: new(sync.Mutex)}
 }
 
 func (l *Logger) SetDepth(n int) {
+	l.Lock()
+	defer l.Unlock()
 	l.depth = n
+}
+
+func (l *Logger) SetOutput(out io.Writer) {
+	l.Lock()
+	defer l.Unlock()
+	log.SetOutput(out)
+}
+
+func (l *Logger) SetFlags(f int) {
+	l.Lock()
+	defer l.Unlock()
+	log.SetFlags(f)
+}
+
+func (l *Logger) tag(lvl Level, msg string) string {
+	tag := levelTag[lvl]
+	return tag+msg
 }
 
 func (l *Logger) Print(lvl Level, args ...interface{}) {
 	msg := gfmt.Sprint(args...)
 	if l.colored {
-		clr := levelColor[lvl]
-		log.Output(l.depth, clr+msg+reset)
+		log.Output(l.depth, l.color(lvl, msg))
 	} else {
-		tag := levelTag[lvl]
-		log.Output(l.depth, tag+msg)
+		log.Output(l.depth, l.tag(lvl, msg))
 	}
 }
 
 func (l *Logger) Printf(lvl Level, fmt string, args ...interface{}) {
 	msg := gfmt.Sprintf(fmt, args...)
 	if l.colored {
-		clr := levelColor[lvl]
-		log.Output(l.depth, clr+msg+reset)
+		log.Output(l.depth, l.color(lvl, msg))
 	} else {
-		tag := levelTag[lvl]
-		log.Output(l.depth, tag+msg)
+		log.Output(l.depth, l.tag(lvl, msg))
 	}
-}
-
-func (l *Logger) SetOutput(out io.Writer) {
-	log.SetOutput(out)
-}
-
-func (l *Logger) SetFlags(f int) {
-	log.SetFlags(f)
 }

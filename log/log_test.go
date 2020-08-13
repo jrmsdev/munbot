@@ -44,7 +44,7 @@ func (s *Suite) SetupTest() {
 	setPrefix = s.logger.SetPrefix
 	debug = false
 	verbose = true
-	l.SetColors(false)
+	l.SetColors("off")
 	l.SetOutput(s.buf)
 	l.SetFlags(stdFlags)
 }

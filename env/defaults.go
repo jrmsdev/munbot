@@ -27,9 +27,11 @@ var MBENV_CONFIG string = ""
 var Init map[string]string = map[string]string{
 	"MUNBOT": "master",
 
-	"MB_LOG":     "verbose",
 	"MB_DEBUG":   "false",
 	"MB_PROFILE": "default",
+
+	"MB_LOG":        "verbose",
+	"MB_LOG_COLORS": "auto",
 
 	// these will be set at init() time based on os user env
 	"MB_HOME":   "",
@@ -116,6 +118,7 @@ func loadEnv() {
 		envy.Load(fn)
 	}
 	log.SetMode(Get("MB_LOG"))
+	log.SetColors(Get("MB_LOG_COLORS"))
 }
 
 func init() {

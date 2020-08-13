@@ -3,33 +3,27 @@
 
 package logger
 
+import (
+	"fmt"
+	"os"
+	"strings"
+)
+
 // colors and escape stolen from: golang.org/x/crypto/ssh/terminal/terminal.go
 const escape = 27
 
 var (
-	black = []byte{escape, '[', '3', '0', 'm'}
-	red = []byte{escape, '[', '3', '1', 'm'}
-	green = []byte{escape, '[', '3', '2', 'm'}
-	yellow = []byte{escape, '[', '3', '3', 'm'}
-	blue = []byte{escape, '[', '3', '4', 'm'}
-	magenta = []byte{escape, '[', '3', '5', 'm'}
-	cyan = []byte{escape, '[', '3', '6', 'm'}
-	white = []byte{escape, '[', '3', '7', 'm'}
-	grey = []byte{escape, '[', '1', ';', '3', '0', 'm'}
-	reset = string([]byte{escape, '[', '0', 'm'})
+	reset = "0"
+	black = "30"
+	red = "31"
+	green = "32"
+	yellow = "33"
+	blue = "34"
+	magenta = "35"
+	cyan = "36"
+	white = "37"
+	grey = "1;30"
 )
-
-//~ var (
-	//~ no change? = "\033[0;0m"
-	//~ grey   = "\033[1;30m"
-	//~ red    = "\033[0;31m"
-	//~ green  = "\033[0;32m"
-	//~ yellow = "\033[0;33m"
-	//~ blue = "\033[0;34m"
-	//~ magenta?? = "\033[0;35m"
-	//~ cyan  = "\033[0;36m"
-	//~ reset  = "\033[0m"
-//~ )
 
 var levelColor = map[Level]string{
 	PANIC: string(red),
@@ -45,6 +39,43 @@ func (l *Logger) Colors() bool {
 	return l.colored
 }
 
-func (l *Logger) SetColors(enable bool) {
-	l.colored = enable
+func (l *Logger) color(lvl Level, msg string) string {
+	esc := []byte{escape}
+	col := levelColor[lvl]
+	return fmt.Sprintf("%s[%sm%s%s[%sm", esc, col, msg, esc, reset)
+}
+
+func (l *Logger) SetColors(cfg string) {
+	l.Lock()
+	defer l.Unlock()
+	cfg = strings.TrimSpace(cfg)
+	l.colored = false
+	switch cfg {
+	case "":
+		return
+	case "off":
+		return
+	case "on":
+		l.colored = true
+	case "auto":
+		if istty(os.Stdout) && istty(os.Stderr) {
+			l.colored = true
+		}
+	}
+	if l.colored {
+		setColors(cfg)
+	}
+}
+
+func istty(fh *os.File) bool {
+	if st, err := fh.Stat(); err == nil {
+		m := st.Mode()
+		if m&os.ModeDevice != 0 && m&os.ModeCharDevice != 0 {
+			return true
+		}
+	}
+	return false
+}
+
+func setColors(cfg string) {
 }

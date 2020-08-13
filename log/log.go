@@ -7,6 +7,7 @@ package log
 import (
 	"errors"
 	"fmt"
+	"io"
 	"os"
 
 	gol "log"
@@ -31,21 +32,8 @@ var setPrefix func(string) = gol.SetPrefix
 func init() {
 	l = logger.New()
 	l.SetDepth(cdepth + 1)
-	if istty(os.Stdout) && istty(os.Stderr) {
-		l.SetColors(true)
-	}
 	setFlags(stdFlags)
 	l.SetFlags(stdFlags)
-}
-
-func istty(fh *os.File) bool {
-	if st, err := fh.Stat(); err == nil {
-		m := st.Mode()
-		if m&os.ModeDevice != 0 && m&os.ModeCharDevice != 0 {
-			return true
-		}
-	}
-	return false
 }
 
 func SetDebug() {
@@ -76,8 +64,16 @@ func SetMode(lvl string) {
 	}
 }
 
+func SetColors(cfg string) {
+	l.SetColors(cfg)
+}
+
 func SetPrefix(name string) {
 	setPrefix(fmt.Sprintf("[%s:%d] ", name, os.Getpid()))
+}
+
+func SetOutput(out io.Writer) {
+	l.SetOutput(out)
 }
 
 func Panic(v ...interface{}) {
