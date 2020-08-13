@@ -75,14 +75,31 @@ func (a *Auth) parseAuthKeys() error {
 	hash, herr := vfs.StatHash(a.keys)
 	if herr != nil {
 		if os.IsNotExist(herr) {
-			log.Warn(herr)
-			return nil
+			if a.lastHash == "" || a.lastHash == "__notfound__" {
+				if a.lastHash == "" {
+					// warn only once...
+					log.Warn(herr)
+					a.lastHash = "__notfound__"
+				}
+				return nil
+			} else {
+				log.Warnf("%s: was file removed", a.keys)
+				log.Debug("delete loaded keys")
+				a.rw.Lock()
+				for fp := range a.auth {
+					delete(a.auth, fp)
+				}
+				a.lastHash = ""
+				a.rw.Unlock()
+				return nil
+			}
 		}
 		return log.Error(herr)
 	}
 	if hash == a.lastHash {
 		return nil
 	}
+	log.Print("Auth load keys...")
 	blob, err := vfs.ReadFile(a.keys)
 	if err != nil {
 		return log.Error(err)
