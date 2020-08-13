@@ -21,6 +21,7 @@ const (
 	MSG
 	INFO
 	DEBUG
+	cReset
 )
 
 var levelTag = map[Level]string{
@@ -63,7 +64,7 @@ func (l *Logger) SetFlags(f int) {
 
 func (l *Logger) tag(lvl Level, msg string) string {
 	tag := levelTag[lvl]
-	return tag+msg
+	return tag + msg
 }
 
 func (l *Logger) Print(lvl Level, args ...interface{}) {

@@ -13,36 +13,39 @@ import (
 const escape = 27
 
 var (
-	reset = "0"
-	black = "30"
-	red = "31"
-	green = "32"
-	yellow = "33"
-	blue = "34"
+	reset   = "0"
+	black   = "30"
+	red     = "31"
+	green   = "32"
+	yellow  = "33"
+	blue    = "34"
 	magenta = "35"
-	cyan = "36"
-	white = "37"
-	grey = "1;30"
+	cyan    = "36"
+	white   = "37"
+	grey    = "1;30"
 )
 
 var levelColor = map[Level]string{
-	PANIC: string(red),
-	FATAL: string(red),
-	ERROR: string(red),
-	WARN:  string(yellow),
-	MSG:   string(magenta),
-	INFO:  string(cyan),
-	DEBUG: string(green),
+	PANIC:  blue,
+	FATAL:  blue,
+	ERROR:  red,
+	WARN:   yellow,
+	MSG:    magenta,
+	INFO:   cyan,
+	DEBUG:  green,
+	cReset: reset,
 }
 
 func (l *Logger) Colors() bool {
 	return l.colored
 }
 
+var esc = []byte{escape}
+
 func (l *Logger) color(lvl Level, msg string) string {
-	esc := []byte{escape}
 	col := levelColor[lvl]
-	return fmt.Sprintf("%s[%sm%s%s[%sm", esc, col, msg, esc, reset)
+	rst := levelColor[cReset]
+	return fmt.Sprintf("%s[%sm%s%s[%sm", esc, col, msg, esc, rst)
 }
 
 func (l *Logger) SetColors(cfg string) {
@@ -61,6 +64,8 @@ func (l *Logger) SetColors(cfg string) {
 		if istty(os.Stdout) && istty(os.Stderr) {
 			l.colored = true
 		}
+	default:
+		l.colored = true
 	}
 	if l.colored {
 		setColors(cfg)
@@ -78,4 +83,34 @@ func istty(fh *os.File) bool {
 }
 
 func setColors(cfg string) {
+	println("SET COLORS")
+	for _, opt := range strings.Split(cfg, ":") {
+		i := strings.Split(opt, "=")
+		if len(i) == 2 {
+			key := i[0]
+			val := i[1]
+			if val == "" {
+				continue
+			}
+			// TODO: validate value?
+			switch key {
+			case "rst":
+				levelColor[cReset] = val
+			case "pnc":
+				levelColor[PANIC] = val
+			case "ftl":
+				levelColor[FATAL] = val
+			case "err":
+				levelColor[ERROR] = val
+			case "wrn":
+				levelColor[WARN] = val
+			case "msg":
+				levelColor[MSG] = val
+			case "inf":
+				levelColor[INFO] = val
+			case "dbg":
+				levelColor[DEBUG] = val
+			}
+		}
+	}
 }
