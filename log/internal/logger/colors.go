@@ -37,23 +37,23 @@ var levelColor = map[Level]string{
 }
 
 func bold(v string) string {
-	return v + ";01"
+	return "01;" + v
 }
 
 func italic(v string) string {
-	return v + ";03"
+	return "03;" + v
 }
 
 func underline(v string) string {
-	return v + ";04"
+	return "04;" + v
 }
 
 func tilt(v string) string {
-	return v + ";05"
+	return "05;" + v
 }
 
 func invert(v string) string {
-	return v + ";07"
+	return "07;" + v
 }
 
 func (l *Logger) Colors() bool {
@@ -65,7 +65,8 @@ var esc = []byte{escape}
 func (l *Logger) color(lvl Level, msg string) string {
 	col := levelColor[lvl]
 	rst := levelColor[cReset]
-	return fmt.Sprintf("%s[%sm%s%s[%sm", esc, col, msg, esc, rst)
+	tag := levelTag[lvl]
+	return fmt.Sprintf("%s[%sm%s%s%s[%sm", esc, col, tag, msg, esc, rst)
 }
 
 func (l *Logger) SetColors(cfg string) {
