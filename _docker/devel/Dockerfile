@@ -22,7 +22,9 @@ RUN apk add --no-cache git \
 	&& apk del --no-cache --purge git \
 	&& rm -rf ${GOPATH} /root/.cache
 
-RUN apk add -U --no-cache openssh-keygen
+LABEL version="2020.08.16"
+
+RUN apk add -U --no-cache openssh-client openssh-keygen
 
 RUN printf '\n%%munbot ALL=(ALL) NOPASSWD: ALL\n' >>/etc/sudoers
 
