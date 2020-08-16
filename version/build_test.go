@@ -16,7 +16,7 @@ func TestBuildString(t *testing.T) {
 	buildDate = "date"
 	defer func() { buildDate = "nodate" }()
 	s := b.String()
-	x := fmt.Sprintf("%s %s/%s [%s]", buildDate, buildOS, buildArch, buildTags)
+	x := fmt.Sprintf("%s %s/%s", buildDate, buildOS, buildArch)
 	assert.Equal(x, s)
 }
 
@@ -26,8 +26,10 @@ func TestBuildArgs(t *testing.T) {
 	assert.Equal("nodate", b.Date())
 	assert.Equal("noos", b.OS())
 	assert.Equal("noarch", b.Arch())
-	assert.Equal([]string{"notags"}, b.Tags())
-	buildTags = "tag1,tag2,tag3"
+	assert.Equal([]string{}, b.Tags())
+	buildTags = "munbot,static"
 	defer func() { buildTags = "notags" }()
-	assert.Equal([]string{"tag1", "tag2", "tag3"}, b.Tags())
+	assert.Equal([]string{"static"}, b.Tags())
+	buildTags = "munbot"
+	assert.Equal([]string{}, b.Tags())
 }

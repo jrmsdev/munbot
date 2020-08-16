@@ -19,7 +19,12 @@ type Build struct{}
 
 func (b *Build) String() string {
 	if buildDate != "nodate" {
-		return fmt.Sprintf("%s %s/%s [%s]", buildDate, buildOS, buildArch, buildTags)
+		tags := ""
+		t := b.Tags()
+		if len(t) > 0 {
+			tags = fmt.Sprintf(" %v", t)
+		}
+		return fmt.Sprintf("%s %s/%s%s", buildDate, buildOS, buildArch, tags)
 	}
 	return ""
 }
@@ -37,5 +42,9 @@ func (b *Build) Arch() string {
 }
 
 func (b *Build) Tags() []string {
-	return strings.Split(buildTags, ",")
+	idx := strings.Index(buildTags, "static")
+	if idx >= 0 {
+		return []string{"static"}
+	}
+	return []string{}
 }

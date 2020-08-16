@@ -25,8 +25,7 @@ func TestString(t *testing.T) {
 	buildDate = "date"
 	defer func() { buildDate = "nodate" }()
 	s = String()
-	x = fmt.Sprintf("%s (%s %s/%s [%s])", x,
-		buildDate, buildOS, buildArch, buildTags)
+	x = fmt.Sprintf("%s (%s %s/%s)", x, buildDate, buildOS, buildArch)
 	assert.Equal(x, s)
 }
 
