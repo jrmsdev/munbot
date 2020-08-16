@@ -167,6 +167,7 @@ func (s *Console) dispatch(ctx context.Context, nc net.Conn, sid string) {
 	log.Debugf("%s dispatch", sid)
 	select {
 	case <-ctx.Done():
+		log.Debugf("%s dispatch context done: %v", sid, ctx.Err())
 		return
 	default:
 	}
@@ -185,13 +186,6 @@ func (s *Console) dispatch(ctx context.Context, nc net.Conn, sid string) {
 	// serve
 	fp := conn.Permissions.Extensions["pubkey-fp"]
 	log.Printf("Auth login %s %s", fp, sid)
-	s.serve(ctx, chans)
-	log.Printf("Auth logout %s %s", sid, s.ctxSessionElapsed(ctx))
-}
-
-func (s *Console) serve(ctx context.Context, chans <-chan ssh.NewChannel) {
-	sid := s.ctxSession(ctx)
-	log.Debugf("serve session %s", sid)
 	for nc := range chans {
 		select {
 		case <-ctx.Done():
@@ -199,63 +193,69 @@ func (s *Console) serve(ctx context.Context, chans <-chan ssh.NewChannel) {
 			return
 		default:
 		}
-		t := nc.ChannelType()
-		log.Debugf("%s serve channel type %s", sid, t)
-		if t != "session" {
-			nc.Reject(ssh.UnknownChannelType, "unknown channel type")
-			log.Errorf("Console %s unknown channel type: %s", sid, t)
-			continue
-		}
-		ch, req, err := nc.Accept()
-		if err != nil {
-			log.Errorf("Console %s could not accept channel: %v", sid, err)
-			continue
-		}
-		s.wg.Add(1)
-		go func(ctx context.Context, in <-chan *ssh.Request) {
-			log.Debugf("%s serve request", sid)
-			defer s.wg.Done()
-			for req := range in {
-				select {
-				case <-ctx.Done():
-					log.Debug("serve request context done!")
-					return
-				default:
-				}
-				log.Debugf("%s serve request type %s", sid, req.Type)
-				serve := false
-				switch req.Type {
-				case "pty-req":
-					serve = true
-				case "shell":
-					serve = true
-				}
-				req.Reply(serve, nil)
-			}
-		}(ctx, req)
-		term := terminal.NewTerminal(ch, fmt.Sprintf("%s> ", env.Get("MUNBOT")))
-		s.wg.Add(1)
-		go func(ctx context.Context, ch ssh.Channel) {
-			log.Debugf("%s serve shell", sid)
-			defer s.wg.Done()
-			defer ch.Close()
-			for {
-				select {
-				case <-ctx.Done():
-					log.Debug("serve shell context done!")
-					return
-				default:
-				}
-				log.Debugf("%s shell read line...", sid)
-				line, err := term.ReadLine()
-				if err != nil {
-					if err != io.EOF {
-						log.Errorf("Console %s: %v", sid, err)
-					}
-					break
-				}
-				log.Printf("%s TERM: %s", sid, line)
-			}
-		}(ctx, ch)
+		s.serve(ctx, nc, sid)
 	}
+	log.Printf("Auth logout %s %s", sid, s.ctxSessionElapsed(ctx))
+}
+
+func (s *Console) serve(ctx context.Context, nc ssh.NewChannel, sid string) {
+	log.Debugf("serve session %s", sid)
+	t := nc.ChannelType()
+	log.Debugf("%s serve channel type %s", sid, t)
+	if t != "session" {
+		nc.Reject(ssh.UnknownChannelType, "unknown channel type")
+		log.Errorf("Console %s unknown channel type: %s", sid, t)
+		return
+	}
+	ch, reqs, err := nc.Accept()
+	if err != nil {
+		log.Errorf("Console %s could not accept channel: %v", sid, err)
+		return
+	}
+	s.wg.Add(1)
+	go func(ctx context.Context, in <-chan *ssh.Request) {
+		log.Debugf("%s serve request", sid)
+		defer s.wg.Done()
+		for req := range in {
+			select {
+			case <-ctx.Done():
+				log.Debug("serve request context done!")
+				return
+			default:
+			}
+			log.Debugf("%s serve request type %s", sid, req.Type)
+			serve := false
+			switch req.Type {
+			case "pty-req":
+				serve = true
+			case "shell":
+				serve = true
+			}
+			req.Reply(serve, nil)
+		}
+	}(ctx, reqs)
+	term := terminal.NewTerminal(ch, fmt.Sprintf("%s> ", env.Get("MUNBOT")))
+	s.wg.Add(1)
+	go func(ctx context.Context, ch ssh.Channel) {
+		log.Debugf("%s serve shell", sid)
+		defer s.wg.Done()
+		defer ch.Close()
+		for {
+			select {
+			case <-ctx.Done():
+				log.Debug("serve shell context done!")
+				return
+			default:
+			}
+			log.Debugf("%s shell read line...", sid)
+			line, err := term.ReadLine()
+			if err != nil {
+				if err != io.EOF {
+					log.Errorf("Console %s: %v", sid, err)
+				}
+				break
+			}
+			log.Printf("%s TERM: %s", sid, line)
+		}
+	}(ctx, ch)
 }
