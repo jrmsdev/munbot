@@ -74,7 +74,10 @@ func (s *Console) Stop() error {
 		defer close(s.done)
 		s.done <- true
 		s.closed = true
-		err := s.ln.Close()
+		var err error
+		if s.ln != nil {
+			err = s.ln.Close()
+		}
 		s.wg.Wait()
 		return err
 	}

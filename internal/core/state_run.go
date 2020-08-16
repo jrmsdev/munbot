@@ -127,12 +127,14 @@ LOOP:
 	// maybe not a good idea? but at least it makes them panic...
 	defer close(s.fail)
 	if fail.err != nil {
-		log.Errorf("core %s failed: %s", fail.name, fail.err)
+		log.Debugf("FAIL: core %s: %s", fail.name, fail.err)
 		abort = true
 	}
 	if abort {
-		log.Debug("abort!")
-		return s.m.Abort()
+		log.Debug("ABORT!")
+		if err := s.m.Abort(); err != nil {
+			return err
+		}
 	}
 	return fail.err
 }
