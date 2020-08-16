@@ -61,11 +61,17 @@ func (s *sshCmdSuite) SetupTest() {
 	if err := s.cons.Configure(s.cfg); err != nil {
 		s.T().Fatal(err)
 	}
-	// console start
+	go func(t *testing.T, c console.Server) {
+		if err := c.Start(); err != nil {
+			t.Fatal(err)
+		}
+	}(s.T(), s.cons)
 }
 
 func (s *sshCmdSuite) TearDownTest() {
-	// console stop
+	if err := s.cons.Stop(); err != nil {
+		s.T().Log(err)
+	}
 	s.cfg = nil
 	s.cons = nil
 	if err := os.RemoveAll(s.tmpdir); err != nil {
