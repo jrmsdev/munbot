@@ -157,6 +157,7 @@ func (s *Console) Start() error {
 		// accept connections
 		ctx, cancel := context.WithCancel(context.Background())
 		defer cancel()
+		defer s.ln.Close()
 		return s.accept(ctx)
 	} else {
 		log.Warn("Console server is disabled")
@@ -277,8 +278,7 @@ func (s *Console) serve(ctx context.Context, nc ssh.NewChannel, sid string) {
 		log.Errorf("Console %s could not accept channel: %v", sid, err)
 		return
 	}
-	defer ch.Close()
-	reqs := make(chan request, 0)
+	reqs := make(chan request, 1)
 	s.wgadd("serve-request")
 	go func(ctx context.Context, in <-chan *ssh.Request, out chan<- request) {
 		log.Debugf("%s serve request", sid)
@@ -306,7 +306,6 @@ func (s *Console) serve(ctx context.Context, nc ssh.NewChannel, sid string) {
 	s.wgadd("serve")
 	go func(ctx context.Context, ch ssh.Channel, in <-chan request) {
 		defer s.wgdone("serve")
-		defer ch.Close()
 		req := <-in
 		switch req.Type {
 		case "pty-req", "shell":
@@ -320,6 +319,7 @@ func (s *Console) serve(ctx context.Context, nc ssh.NewChannel, sid string) {
 func (s *Console) serveTerminal(ctx context.Context, ch ssh.Channel, sid string) {
 	term := terminal.NewTerminal(ch, fmt.Sprintf("%s> ", env.Get("MUNBOT")))
 	log.Debugf("%s serve shell", sid)
+	defer ch.Close()
 	for {
 		select {
 		case <-ctx.Done():
