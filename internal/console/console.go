@@ -65,6 +65,7 @@ type Console struct {
 	lock   *sync.Mutex
 	q      map[string]net.Conn
 	closed bool
+	wgc    map[string]int
 }
 
 func New() *Console {
@@ -73,7 +74,29 @@ func New() *Console {
 		wg:   &sync.WaitGroup{},
 		lock: new(sync.Mutex),
 		q:    make(map[string]net.Conn),
+		wgc:  make(map[string]int),
 	}
+}
+
+func (s *Console) wgadd(n string) {
+	s.lock.Lock()
+	defer s.lock.Unlock()
+	s.wg.Add(1)
+	s.wgc[n] += 1
+}
+
+func (s *Console) wgdone(n string) {
+	s.lock.Lock()
+	defer s.lock.Unlock()
+	s.wg.Done()
+	s.wgc[n] -= 1
+}
+
+func (s *Console) wgwait() {
+	s.lock.Lock()
+	log.Debugf("wgwait %v", s.wgc)
+	s.lock.Unlock()
+	s.wg.Wait()
 }
 
 func (s *Console) Addr() *Addr {
@@ -112,7 +135,7 @@ func (s *Console) Stop() error {
 		if s.ln != nil {
 			err = s.ln.Close()
 		}
-		s.wg.Wait()
+		s.wgwait()
 		return err
 	}
 	log.Debug("api server is disabled")
@@ -168,9 +191,9 @@ LOOP:
 		ctx, sid = s.ctxNewSession(ctx)
 		log.Debugf("new session %s", sid)
 		// dispatch
-		s.wg.Add(1)
+		s.wgadd("dispatch")
 		go func(ctx context.Context, nc net.Conn, sid string) {
-			defer s.wg.Done()
+			defer s.wgdone("dispatch")
 			defer nc.Close()
 			s.lock.Lock()
 			log.Debugf("%s queue", sid)
@@ -213,9 +236,9 @@ func (s *Console) dispatch(ctx context.Context, nc net.Conn, sid string) {
 		return
 	}
 	defer conn.Close()
-	s.wg.Add(1)
+	s.wgadd("discard-requests")
 	go func(reqs <-chan *ssh.Request) {
-		defer s.wg.Done()
+		defer s.wgdone("discard-requests")
 		ssh.DiscardRequests(reqs)
 	}(reqs)
 	// serve
@@ -254,10 +277,10 @@ func (s *Console) serve(ctx context.Context, nc ssh.NewChannel, sid string) {
 		return
 	}
 	reqs := make(chan request, 0)
-	s.wg.Add(1)
+	s.wgadd("serve-request")
 	go func(ctx context.Context, in <-chan *ssh.Request, out chan<- request) {
 		log.Debugf("%s serve request", sid)
-		defer s.wg.Done()
+		defer s.wgdone("serve-request")
 		for req := range in {
 			select {
 			case <-ctx.Done():
@@ -278,9 +301,9 @@ func (s *Console) serve(ctx context.Context, nc ssh.NewChannel, sid string) {
 			out <- request{Type: req.Type}
 		}
 	}(ctx, chr, reqs)
-	s.wg.Add(1)
+	s.wgadd("serve")
 	go func(ctx context.Context, ch ssh.Channel, in <-chan request) {
-		defer s.wg.Done()
+		defer s.wgdone("serve")
 		defer ch.Close()
 		req := <-in
 		switch req.Type {
