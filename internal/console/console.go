@@ -153,9 +153,9 @@ LOOP:
 	defer s.lock.Unlock()
 	count := 0
 	for sid, nc := range s.q {
-		log.Debugf("%s close connection", sid)
-		nc.Close()
 		count++
+		log.Debugf("%s close connection #%d", sid, count)
+		nc.Close()
 	}
 	s.q = nil
 	s.q = make(map[string]net.Conn)
