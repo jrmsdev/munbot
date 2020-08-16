@@ -78,8 +78,7 @@ func New() *Console {
 
 func (s *Console) Addr() *Addr {
 	if s.ln != nil {
-		uri, _ := url.Parse(s.ln.Addr().String())
-		uri.Scheme = "ssh"
+		uri, _ := url.Parse(fmt.Sprintf("ssh://%s", s.ln.Addr().String()))
 		return &Addr{uri: uri}
 	}
 	return &Addr{uri: &url.URL{Scheme: "ssh"}}

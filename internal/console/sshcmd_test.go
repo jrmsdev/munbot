@@ -9,6 +9,7 @@ import (
 	"os/exec"
 	"path/filepath"
 	"testing"
+	"time"
 
 	"github.com/munbot/master/env"
 	"github.com/munbot/master/internal/console"
@@ -24,8 +25,9 @@ type sshCmdSuite struct {
 	cmd  string
 	skip string
 	cfg  *console.Config
-	cons console.Server
+	cons *console.Console
 	tmpdir string
+	addr string
 }
 
 func (s *sshCmdSuite) SetupTest() {
@@ -66,6 +68,12 @@ func (s *sshCmdSuite) SetupTest() {
 			t.Fatal(err)
 		}
 	}(s.T(), s.cons)
+	time.Sleep(50 * time.Millisecond)
+	s.addr = s.cons.Addr().String()
+	if s.addr == "ssh:" {
+		s.T().Fatal("could not get console server address")
+	}
+	s.T().Logf("setup done: %s", s.addr)
 }
 
 func (s *sshCmdSuite) TearDownTest() {
