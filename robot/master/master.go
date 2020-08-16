@@ -12,6 +12,7 @@ import (
 	"gobot.io/x/gobot"
 	"gobot.io/x/gobot/api"
 
+	"github.com/munbot/master/env"
 	"github.com/munbot/master/internal/api/wapp"
 	"github.com/munbot/master/log"
 	"github.com/munbot/master/platform"
@@ -44,7 +45,7 @@ func NewRobot() *Robot {
 	m.AutoRun = false
 	r := &Robot{
 		Master: m,
-		name:   "master",
+		name:   env.Get("MUNBOT"),
 		api:    wapp.New(api.NewAPI(m)),
 		state:  "Init",
 		born:   time.Now(),
@@ -60,30 +61,14 @@ func NewRobot() *Robot {
 // gobot interface
 
 func (m *Robot) Start() error {
-	for _, bot := range *m.Master.Robots() {
-		autorun := false
-		log.Debugf("robot %s start...", bot.Name)
-		if err := bot.Start(autorun); err != nil {
-			m.Stop()
-			return err
-		}
-	}
-	<-m.stop
-	log.Printf("Uptime %s", time.Since(m.born))
-	return nil
+	log.Debugf("start master robot %s...", m.name)
+	autorun := false
+	return m.Master.Robots().Start(autorun)
 }
 
 func (m *Robot) Stop() error {
-	var err error
-	for _, bot := range *m.Master.Robots() {
-		log.Debugf("robot %s stop...", bot.Name)
-		if err = bot.Stop(); err != nil {
-			log.Warnf("stop robot %s error: %v", bot.Name, err)
-		}
-	}
-	defer close(m.stop)
-	m.stop <- true
-	return err
+	log.Debugf("stop master robot %s...", m.name)
+	return m.Master.Robots().Stop()
 }
 
 // munbot interface
