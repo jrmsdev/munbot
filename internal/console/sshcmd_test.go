@@ -114,19 +114,31 @@ func (s *sshCmdSuite) TearDownTest() {
 	env.Set("MB_CONFIG", "etc")
 }
 
+type sshcmdTest struct {
+	Args     []string
+	ExitCode int
+	Output   string
+}
+
+var allTests map[string]*sshcmdTest = map[string]*sshcmdTest{
+	"Connect": &sshcmdTest{[]string{}, 255, "master> "},
+}
+
 func (s *sshCmdSuite) TestAll() {
 	check := s.Require()
 	check.NotNil(s.cons)
-	buf := new(bytes.Buffer)
-	cmd := exec.Command("ssh", "-p", s.port, "-i", s.ident, "-n", "-T",
-		"-o", fmt.Sprintf("UserKnownHostsFile=%s", os.DevNull),
-		"-F", filepath.FromSlash("./testdata/ssh_config"),
-		"testing.munbot.local")
-	cmd.Stdout = buf
-	cmd.Stderr = buf
-	cmd.Run()
-	st := cmd.ProcessState
-	check.True(st.Exited())
-	check.Equal(255, st.ExitCode())
-	check.Equal("master> ", buf.String())
+	for tname, tcmd := range allTests {
+		buf := new(bytes.Buffer)
+		cmd := exec.Command("ssh", "-p", s.port, "-i", s.ident, "-n", "-T",
+			"-o", fmt.Sprintf("UserKnownHostsFile=%s", os.DevNull),
+			"-F", filepath.FromSlash("./testdata/ssh_config"),
+			"testing.munbot.local")
+		cmd.Stdout = buf
+		cmd.Stderr = buf
+		cmd.Run()
+		st := cmd.ProcessState
+		check.True(st.Exited(), tname)
+		check.Equal(tcmd.ExitCode, st.ExitCode(), tname)
+		check.Equal(tcmd.Output, buf.String(), tname)
+	}
 }
