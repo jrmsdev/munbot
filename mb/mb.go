@@ -40,11 +40,12 @@ type Main struct {
 }
 
 func newMain(kf *core.Flags, cf *config.Flags) *Main {
+	if cf.Debug {
+		log.DebugFlags(env.Get("MB_LOG_DEBUG"))
+	}
 	log.SetMode(env.Get("MB_LOG"))
 	log.SetColors(env.Get("MB_LOG_COLORS"))
-	if !cf.Debug {
-		log.SetPrefix(env.Get("MUNBOT"))
-	}
+	log.SetPrefix(env.Get("MUNBOT"))
 	return &Main{
 		kf:  kf,
 		cf:  cf,

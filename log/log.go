@@ -39,7 +39,20 @@ func DebugFlags(s string) {
 		switch f {
 		case "date":
 			flags = flags | log.Ldate
+		case "time":
+			flags = flags | log.Ltime
+		case "microseconds":
+			flags = flags | log.Lmicroseconds
+		case "longfile":
+			flags = flags | log.Llongfile
+		case "shortfile":
+			flags = flags | log.Lshortfile
+		case "UTC":
+			flags = flags | log.LUTC
 		}
+	}
+	if flags == 0 {
+		flags = stdFlags | log.Llongfile
 	}
 	debugFlags = flags
 }

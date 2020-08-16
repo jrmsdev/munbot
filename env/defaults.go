@@ -30,6 +30,7 @@ var Init map[string]string = map[string]string{
 
 	"MB_LOG":        "verbose",
 	"MB_LOG_COLORS": "auto",
+	"MB_LOG_DEBUG":  "",
 
 	// these will be set at init() time based on os user env
 	"MB_HOME":   "",
