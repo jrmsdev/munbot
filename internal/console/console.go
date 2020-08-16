@@ -14,6 +14,7 @@ import (
 	"golang.org/x/crypto/ssh"
 	"golang.org/x/crypto/ssh/terminal"
 
+	"github.com/munbot/master/env"
 	"github.com/munbot/master/internal/auth"
 	"github.com/munbot/master/log"
 )
@@ -230,7 +231,7 @@ func (s *Console) serve(ctx context.Context, chans <-chan ssh.NewChannel) {
 				req.Reply(serve, nil)
 			}
 		}(ctx, req)
-		term := terminal.NewTerminal(ch, "munbot> ")
+		term := terminal.NewTerminal(ch, fmt.Sprintf("%s> ", env.Get("MUNBOT")))
 		s.wg.Add(1)
 		go func(ctx context.Context, ch ssh.Channel) {
 			log.Debugf("%s serve shell", sid)
