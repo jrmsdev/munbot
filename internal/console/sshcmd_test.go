@@ -36,6 +36,13 @@ func (s *sshCmdSuite) SetupTest() {
 			s.skip = "ssh command not found"
 			s.T().Skip(s.skip)
 		}
+		if s.skip == "" {
+			_, err = exec.LookPath("ssh-keygen")
+			if err != nil {
+				s.skip = "ssh-keygen command not found"
+				s.T().Skip(s.skip)
+			}
+		}
 	} else if s.skip != "" {
 		s.T().Skip(s.skip)
 	}
@@ -54,10 +61,11 @@ func (s *sshCmdSuite) SetupTest() {
 	if err := s.cons.Configure(s.cfg); err != nil {
 		s.T().Fatal(err)
 	}
-	s.T().Log("setup done")
+	// console start
 }
 
 func (s *sshCmdSuite) TearDownTest() {
+	// console stop
 	s.cfg = nil
 	s.cons = nil
 	if err := os.RemoveAll(s.tmpdir); err != nil {
