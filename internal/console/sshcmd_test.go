@@ -20,7 +20,7 @@ type sshCmdSuite struct {
 	cmd  string
 	skip string
 	cfg  *console.Config
-	cons *console.Console
+	cons console.Server
 }
 
 func (s *sshCmdSuite) SetupTest() {
@@ -33,14 +33,17 @@ func (s *sshCmdSuite) SetupTest() {
 		}
 	} else if s.skip != "" {
 		s.T().Skip(s.skip)
-	} else {
-		s.cfg = &console.Config{
-			Enable: true,
-			Addr:   "127.0.0.1",
-			Port:   0,
-		}
-		s.cons = console.New()
 	}
+	s.cfg = &console.Config{
+		Enable: true,
+		Addr:   "127.0.0.1",
+		Port:   0,
+	}
+	s.cons = console.New()
+	if err := s.cons.Configure(s.cfg); err != nil {
+		s.T().Fatal(err)
+	}
+	s.T().Log("setup done")
 }
 
 func (s *sshCmdSuite) TearDownTest() {
@@ -49,4 +52,6 @@ func (s *sshCmdSuite) TearDownTest() {
 }
 
 func (s *sshCmdSuite) TestStart() {
+	check := s.Require()
+	check.NotNil(s.cons)
 }
