@@ -4,9 +4,13 @@
 package console_test
 
 import (
+	"io/ioutil"
+	"os"
 	"os/exec"
+	"path/filepath"
 	"testing"
 
+	"github.com/munbot/master/env"
 	"github.com/munbot/master/internal/console"
 	"github.com/munbot/master/testing/suite"
 )
@@ -21,6 +25,7 @@ type sshCmdSuite struct {
 	skip string
 	cfg  *console.Config
 	cons console.Server
+	tmpdir string
 }
 
 func (s *sshCmdSuite) SetupTest() {
@@ -33,6 +38,12 @@ func (s *sshCmdSuite) SetupTest() {
 		}
 	} else if s.skip != "" {
 		s.T().Skip(s.skip)
+	}
+	if tmpdir, err := ioutil.TempDir("", "test_console_sshcmd_"); err != nil {
+		s.T().Fatal(err)
+	} else {
+		s.tmpdir = tmpdir
+		env.Set("MB_CONFIG", filepath.Join(s.tmpdir, "etc"))
 	}
 	s.cfg = &console.Config{
 		Enable: true,
@@ -49,6 +60,11 @@ func (s *sshCmdSuite) SetupTest() {
 func (s *sshCmdSuite) TearDownTest() {
 	s.cfg = nil
 	s.cons = nil
+	if err := os.RemoveAll(s.tmpdir); err != nil {
+		s.T().Log(err)
+	}
+	s.tmpdir = ""
+	env.Set("MB_CONFIG", "etc")
 }
 
 func (s *sshCmdSuite) TestStart() {
