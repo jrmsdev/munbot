@@ -232,6 +232,10 @@ LOOP:
 	log.Printf("Auth logout %s %s", sid, s.ctxSessionElapsed(ctx))
 }
 
+type request struct {
+	Type string
+}
+
 func (s *Console) serve(ctx context.Context, nc ssh.NewChannel, sid string) {
 	log.Debugf("serve session %s", sid)
 	t := nc.ChannelType()
@@ -241,13 +245,14 @@ func (s *Console) serve(ctx context.Context, nc ssh.NewChannel, sid string) {
 		log.Errorf("Console %s unknown channel type: %s", sid, t)
 		return
 	}
-	ch, reqs, err := nc.Accept()
+	ch, chr, err := nc.Accept()
 	if err != nil {
 		log.Errorf("Console %s could not accept channel: %v", sid, err)
 		return
 	}
+	reqs := make(chan request, 0)
 	s.wg.Add(1)
-	go func(ctx context.Context, in <-chan *ssh.Request) {
+	go func(ctx context.Context, in <-chan *ssh.Request, out chan<- request) {
 		log.Debugf("%s serve request", sid)
 		defer s.wg.Done()
 		for req := range in {
@@ -266,30 +271,42 @@ func (s *Console) serve(ctx context.Context, nc ssh.NewChannel, sid string) {
 				serve = true
 			}
 			req.Reply(serve, nil)
+			if serve {
+				out <- request{Type: req.Type}
+			}
 		}
-	}(ctx, reqs)
-	term := terminal.NewTerminal(ch, fmt.Sprintf("%s> ", env.Get("MUNBOT")))
+	}(ctx, chr, reqs)
 	s.wg.Add(1)
-	go func(ctx context.Context, ch ssh.Channel) {
-		log.Debugf("%s serve shell", sid)
+	go func(ctx context.Context, ch ssh.Channel, in <-chan request) {
 		defer s.wg.Done()
-		defer ch.Close()
-		for {
-			select {
-			case <-ctx.Done():
-				log.Debug("serve shell context done!")
-				return
-			default:
-			}
-			log.Debugf("%s shell read line...", sid)
-			line, err := term.ReadLine()
-			if err != nil {
-				if err != io.EOF {
-					log.Errorf("Console %s: %v", sid, err)
-				}
-				break
-			}
-			log.Printf("%s TERM: %s", sid, line)
+		req := <-in
+		switch req.Type {
+		case "pty-req", "shell":
+			s.serveTerminal(ctx, ch, sid)
 		}
-	}(ctx, ch)
+	}(ctx, ch, reqs)
+}
+
+func (s *Console) serveTerminal(ctx context.Context, ch ssh.Channel, sid string) {
+	term := terminal.NewTerminal(ch, fmt.Sprintf("%s> ", env.Get("MUNBOT")))
+	log.Debugf("%s serve shell", sid)
+	defer s.wg.Done()
+	defer ch.Close()
+	for {
+		select {
+		case <-ctx.Done():
+			log.Debug("serve shell context done!")
+			return
+		default:
+		}
+		log.Debugf("%s shell read line...", sid)
+		line, err := term.ReadLine()
+		if err != nil {
+			if err != io.EOF {
+				log.Errorf("Console %s: %v", sid, err)
+			}
+			break
+		}
+		log.Printf("%s TERM: %s", sid, line)
+	}
 }
