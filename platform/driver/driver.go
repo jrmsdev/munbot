@@ -24,14 +24,12 @@ type Munbot struct {
 	gobot.Commander
 	name string
 	conn gobot.Connection
-	halt chan bool
 }
 
 func New(a adaptor.Adaptor) *Munbot {
 	return &Munbot{
 		name:      "munbot",
 		conn:      a,
-		halt:      make(chan bool, 0),
 		Eventer:   gobot.NewEventer(),
 		Commander: gobot.NewCommander(),
 	}
@@ -53,13 +51,11 @@ func (m *Munbot) SetName(name string) {
 
 func (m *Munbot) Start() error {
 	log.Debug("start")
-	<-m.halt
 	return nil
 }
 
 func (m *Munbot) Halt() error {
 	log.Debug("halt")
-	m.halt <- true
 	return nil
 }
 
