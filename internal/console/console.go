@@ -9,6 +9,7 @@ import (
 	"fmt"
 	"io"
 	"net"
+	"net/url"
 	"sync"
 
 	"golang.org/x/crypto/ssh"
@@ -34,6 +35,22 @@ type Server interface {
 	Stop() error
 }
 
+type Addr struct {
+	uri *url.URL
+}
+
+func (a *Addr) String() string {
+	return a.uri.String()
+}
+
+func (a *Addr) Hostname() string {
+	return a.uri.Hostname()
+}
+
+func (a *Addr) Port() string {
+	return a.uri.Port()
+}
+
 var _ Server = &Console{}
 
 // Console Consoleements the ssh console server.
@@ -57,6 +74,15 @@ func New() *Console {
 		lock: new(sync.Mutex),
 		q:    make(map[string]net.Conn),
 	}
+}
+
+func (s *Console) Addr() *Addr {
+	if s.ln != nil {
+		uri, _ := url.Parse(s.ln.Addr().String())
+		uri.Scheme = "ssh"
+		return &Addr{uri: uri}
+	}
+	return &Addr{uri: &url.URL{Scheme: "ssh"}}
 }
 
 func (s *Console) Configure(cfg *Config) error {
