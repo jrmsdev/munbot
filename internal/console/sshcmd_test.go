@@ -129,7 +129,7 @@ func (s *sshCmdSuite) TestAll() {
 	check.NotNil(s.cons)
 	for tname, tcmd := range allTests {
 		buf := new(bytes.Buffer)
-		cmd := exec.Command("ssh", "-p", s.port, "-i", s.ident, "-n", "-T",
+		cmd := exec.Command("ssh", "-p", s.port, "-i", s.ident, "-n", "-tt",
 			"-o", fmt.Sprintf("UserKnownHostsFile=%s", os.DevNull),
 			"-F", filepath.FromSlash("./testdata/ssh_config"),
 			"testing.munbot.local")
