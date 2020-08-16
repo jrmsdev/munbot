@@ -28,6 +28,13 @@ func New() *Profile {
 	}
 }
 
+// String returns profile base path. But just for info/debug purposes. It will
+// always be slash (/) separated.
+func (p *Profile) String() string {
+	d := filepath.Clean(p.Config)
+	return filepath.ToSlash(filepath.Join(d, p.Name))
+}
+
 // GetPath returns the absolute profile named filepath.
 func (p *Profile) GetPath(name string) string {
 	d := filepath.Clean(p.Config)

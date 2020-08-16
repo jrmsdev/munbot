@@ -14,6 +14,7 @@ import (
 	"golang.org/x/crypto/ssh"
 	"golang.org/x/crypto/ssh/terminal"
 
+	"github.com/munbot/master/config/profile"
 	"github.com/munbot/master/env"
 	"github.com/munbot/master/internal/auth"
 	"github.com/munbot/master/log"
@@ -61,8 +62,15 @@ func New() *Console {
 func (s *Console) Configure(cfg *Config) error {
 	if cfg.Enable {
 		s.enable = true
-		// TODO: check cfg.Auth is not nil or get a default one
 		s.auth = cfg.Auth
+		if s.auth == nil {
+			p := profile.New()
+			s.auth = auth.New()
+			if err := s.auth.Configure(p.GetPath("auth")); err != nil {
+				log.Debugf("auth manager configure error: %v", err)
+				return err
+			}
+		}
 		s.cfg = s.auth.ServerConfig()
 		s.addr = fmt.Sprintf("%s:%d", cfg.Addr, cfg.Port)
 	}
