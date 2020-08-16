@@ -70,28 +70,36 @@ func (s *Console) Configure(cfg *Config) error {
 
 func (s *Console) Stop() error {
 	log.Debug("stop")
-	defer close(s.done)
-	s.done <- true
-	s.closed = true
-	err := s.ln.Close()
-	s.wg.Wait()
-	return err
+	if s.enable {
+		defer close(s.done)
+		s.done <- true
+		s.closed = true
+		err := s.ln.Close()
+		s.wg.Wait()
+		return err
+	}
+	log.Debug("api server is disabled")
+	return nil
 }
 
 func (s *Console) Start() error {
 	log.Debug("start")
-	var err error
-	// listen
-	s.ln, err = net.Listen("tcp", s.addr)
-	if err != nil {
-		log.Debugf("listen error: %v", err)
-		return err
+	if s.enable {
+		var err error
+		// listen
+		s.ln, err = net.Listen("tcp", s.addr)
+		if err != nil {
+			log.Debugf("listen error: %v", err)
+			return err
+		}
+		log.Printf("Console server ssh://%s", s.addr)
+		// accept connections
+		ctx, cancel := context.WithCancel(context.Background())
+		defer cancel()
+		return s.accept(ctx)
 	}
-	log.Printf("Console server ssh://%s", s.addr)
-	// accept connections
-	ctx, cancel := context.WithCancel(context.Background())
-	defer cancel()
-	return s.accept(ctx)
+	log.Warn("Console server is disabled")
+	return nil
 }
 
 func (s *Console) accept(ctx context.Context) error {
