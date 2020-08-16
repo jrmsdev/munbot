@@ -277,6 +277,7 @@ func (s *Console) serve(ctx context.Context, nc ssh.NewChannel, sid string) {
 		log.Errorf("Console %s could not accept channel: %v", sid, err)
 		return
 	}
+	defer ch.Close()
 	reqs := make(chan request, 0)
 	s.wgadd("serve-request")
 	go func(ctx context.Context, in <-chan *ssh.Request, out chan<- request) {

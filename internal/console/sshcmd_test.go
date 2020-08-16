@@ -5,6 +5,7 @@ package console_test
 
 import (
 	"bytes"
+	"context"
 	"fmt"
 	"io/ioutil"
 	"os"
@@ -127,18 +128,31 @@ var allTests map[string]*sshcmdTest = map[string]*sshcmdTest{
 func (s *sshCmdSuite) TestAll() {
 	check := s.Require()
 	check.NotNil(s.cons)
+	buf := new(bytes.Buffer)
 	for tname, tcmd := range allTests {
-		buf := new(bytes.Buffer)
-		cmd := exec.Command("ssh", "-p", s.port, "-i", s.ident, "-n", "-tt",
-			"-o", fmt.Sprintf("UserKnownHostsFile=%s", os.DevNull),
-			"-F", filepath.FromSlash("./testdata/ssh_config"),
-			"testing.munbot.local")
-		cmd.Stdout = buf
-		cmd.Stderr = buf
-		cmd.Run()
-		st := cmd.ProcessState
+		buf.Reset()
+		st := s.runCmd(buf)
 		check.True(st.Exited(), tname)
 		check.Equal(tcmd.ExitCode, st.ExitCode(), tname)
 		check.Equal(tcmd.Output, buf.String(), tname)
 	}
+}
+
+func (s *sshCmdSuite) runCmd(buf *bytes.Buffer) *os.ProcessState {
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+	go func(cancel context.CancelFunc) {
+		select {
+		case <-time.After(2 * time.Second):
+			cancel()
+		}
+	}(cancel)
+	cmd := exec.CommandContext(ctx, "ssh", "-p", s.port, "-i", s.ident, "-n", "-tt",
+		"-o", fmt.Sprintf("UserKnownHostsFile=%s", os.DevNull),
+		"-F", filepath.FromSlash("./testdata/ssh_config"),
+		"testing.munbot.local")
+	cmd.Stdout = buf
+	cmd.Stderr = buf
+	cmd.Run()
+	return cmd.ProcessState
 }
