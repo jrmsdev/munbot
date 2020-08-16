@@ -135,6 +135,7 @@ func (s *Console) Stop() error {
 		if s.ln != nil {
 			err = s.ln.Close()
 		}
+		log.Debug("wait for them to finish...")
 		s.wgwait()
 		return err
 	}

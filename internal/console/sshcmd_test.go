@@ -121,7 +121,7 @@ type sshcmdTest struct {
 }
 
 var allTests map[string]*sshcmdTest = map[string]*sshcmdTest{
-	"Connect": &sshcmdTest{[]string{}, 255, "master> "},
+	"Connect": {[]string{}, 255, "master> "},
 }
 
 func (s *sshCmdSuite) TestAll() {
