@@ -15,7 +15,6 @@ import (
 // Flags holds some configuration settings that can be overriden from cmd args.
 type Flags struct {
 	Debug   bool
-	LogDbg  bool
 	Quiet   bool
 	Verbose bool
 	Profile *profile.Profile
@@ -25,10 +24,9 @@ type Flags struct {
 func NewFlags(fs *flag.FlagSet) *Flags {
 	f := &Flags{Profile: profile.New()}
 	// log
-	fs.BoolVar(&f.Debug, "debug", false, "enable debug settings")
-	fs.BoolVar(&f.Quiet, "q", false, "log quiet mode")
-	fs.BoolVar(&f.Verbose, "v", false, "log verbose mode")
-	fs.BoolVar(&f.LogDbg, "d", false, "log debug mode")
+	fs.BoolVar(&f.Debug, "debug", false, "debug mode")
+	fs.BoolVar(&f.Quiet, "quiet", false, "quiet mode")
+	fs.BoolVar(&f.Verbose, "verbose", false, "verbose mode")
 	// profile
 	fs.StringVar(&f.Profile.Name, "profile", "", "config profile `name`")
 	fs.StringVar(&f.Profile.Config, "config", "", "config `dir/path`")
@@ -47,9 +45,6 @@ func (f *Flags) Parse() error {
 	if f.Debug {
 		env.Set("MB_LOG", "debug")
 		env.Set("MB_DEBUG", "true")
-	}
-	if f.LogDbg {
-		env.Set("MB_LOG", "debug")
 	}
 	log.SetMode(env.Get("MB_LOG"))
 	// profile
