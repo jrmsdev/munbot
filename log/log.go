@@ -8,9 +8,9 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"log"
 	"os"
-
-	gol "log"
+	"strings"
 
 	"github.com/munbot/master/log/internal/logger"
 )
@@ -18,9 +18,9 @@ import (
 var (
 	cdepth     int  = 1
 	debug      bool = false
-	debugFlags int  = gol.Llongfile
+	debugFlags int  = log.Llongfile
 	verbose    bool = true
-	stdFlags   int  = gol.Ldate | gol.Ltime | gol.Lmicroseconds
+	stdFlags   int  = log.Ldate | log.Ltime | log.Lmicroseconds
 )
 
 var l *logger.Logger
@@ -29,7 +29,19 @@ func init() {
 	l = logger.New()
 	l.SetDepth(cdepth)
 	l.SetFlags(stdFlags)
-	gol.SetFlags(stdFlags)
+}
+
+func DebugFlags(s string) {
+	l.Lock()
+	defer l.Unlock()
+	var flags int
+	for _, f := range strings.Fields(s) {
+		switch f {
+		case "date":
+			flags = flags | log.Ldate
+		}
+	}
+	debugFlags = flags
 }
 
 func SetDebug() {
@@ -39,7 +51,6 @@ func SetDebug() {
 	defer l.Unlock()
 	debug = true
 	verbose = true
-	gol.SetFlags(debugFlags)
 }
 
 func SetQuiet() {
@@ -49,7 +60,6 @@ func SetQuiet() {
 		l.Lock()
 		defer l.Unlock()
 		verbose = false
-		gol.SetFlags(stdFlags)
 	}
 }
 
@@ -60,7 +70,6 @@ func SetVerbose() {
 	defer l.Unlock()
 	debug = false
 	verbose = true
-	gol.SetFlags(stdFlags)
 }
 
 func SetMode(lvl string) {
@@ -83,7 +92,6 @@ func SetPrefix(name string) {
 	l.SetPrefix(p)
 	l.Lock()
 	defer l.Unlock()
-	gol.SetPrefix(p)
 }
 
 func SetOutput(out io.Writer) {

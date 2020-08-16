@@ -85,12 +85,14 @@ func (l *Logger) SetOutput(out io.Writer) {
 func (l *Logger) SetFlags(f int) {
 	l.Lock()
 	defer l.Unlock()
+	log.SetFlags(f)
 	l.log.SetFlags(f)
 }
 
 func (l *Logger) SetPrefix(p string) {
 	l.Lock()
 	defer l.Unlock()
+	log.SetPrefix(p)
 	l.log.SetPrefix(p)
 }
 
