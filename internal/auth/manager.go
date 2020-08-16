@@ -42,6 +42,9 @@ func (a *Auth) ServerConfig() *ssh.ServerConfig {
 		return cfg
 	}
 	cfg.AddHostKey(a.id)
+	cfg.MaxAuthTries = 3
+	cfg.PasswordCallback = a.passwordCallback
+	cfg.KeyboardInteractiveCallback = a.keyboardCallback
 	cfg.PublicKeyCallback = a.publicKeyCallback
 	cfg.BannerCallback = a.bannerCallback
 	return cfg
@@ -49,4 +52,12 @@ func (a *Auth) ServerConfig() *ssh.ServerConfig {
 
 func (a *Auth) bannerCallback(conn ssh.ConnMetadata) string {
 	return fmt.Sprintf("Munbot %s %s\n", a.name, version.String())
+}
+
+func (a *Auth) passwordCallback(c ssh.ConnMetadata, p []byte) (*ssh.Permissions, error) {
+	return nil, log.Errorf("Password auth not supported")
+}
+
+func (a *Auth) keyboardCallback(c ssh.ConnMetadata, d ssh.KeyboardInteractiveChallenge) (*ssh.Permissions, error) {
+	return nil, log.Errorf("Password auth not supported")
 }

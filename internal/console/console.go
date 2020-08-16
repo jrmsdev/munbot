@@ -106,8 +106,8 @@ func (s *Console) Stop() error {
 	log.Debug("stop")
 	if s.enable {
 		defer close(s.done)
-		s.done <- true
 		s.closed = true
+		s.done <- true
 		var err error
 		if s.ln != nil {
 			err = s.ln.Close()
@@ -134,8 +134,9 @@ func (s *Console) Start() error {
 		ctx, cancel := context.WithCancel(context.Background())
 		defer cancel()
 		return s.accept(ctx)
+	} else {
+		log.Warn("Console server is disabled")
 	}
-	log.Warn("Console server is disabled")
 	return nil
 }
 
@@ -165,6 +166,7 @@ LOOP:
 		// ctx session
 		var sid string
 		ctx, sid = s.ctxNewSession(ctx)
+		log.Debugf("new session %s", sid)
 		// dispatch
 		s.wg.Add(1)
 		go func(ctx context.Context, nc net.Conn, sid string) {
@@ -224,6 +226,7 @@ LOOP:
 		select {
 		case <-ctx.Done():
 			log.Debugf("%s serve context done: %v", sid, ctx.Err())
+			nc.Reject(ssh.ConnectionFailed, "context done")
 			break LOOP
 		default:
 		}
@@ -259,6 +262,7 @@ func (s *Console) serve(ctx context.Context, nc ssh.NewChannel, sid string) {
 			select {
 			case <-ctx.Done():
 				log.Debug("serve request context done!")
+				req.Reply(false, nil)
 				return
 			default:
 			}
@@ -271,18 +275,19 @@ func (s *Console) serve(ctx context.Context, nc ssh.NewChannel, sid string) {
 				serve = true
 			}
 			req.Reply(serve, nil)
-			if serve {
-				out <- request{Type: req.Type}
-			}
+			out <- request{Type: req.Type}
 		}
 	}(ctx, chr, reqs)
 	s.wg.Add(1)
 	go func(ctx context.Context, ch ssh.Channel, in <-chan request) {
 		defer s.wg.Done()
+		defer ch.Close()
 		req := <-in
 		switch req.Type {
 		case "pty-req", "shell":
 			s.serveTerminal(ctx, ch, sid)
+		default:
+			log.Errorf("%s ssh invalid request: %s", sid, req.Type)
 		}
 	}(ctx, ch, reqs)
 }
@@ -290,8 +295,6 @@ func (s *Console) serve(ctx context.Context, nc ssh.NewChannel, sid string) {
 func (s *Console) serveTerminal(ctx context.Context, ch ssh.Channel, sid string) {
 	term := terminal.NewTerminal(ch, fmt.Sprintf("%s> ", env.Get("MUNBOT")))
 	log.Debugf("%s serve shell", sid)
-	defer s.wg.Done()
-	defer ch.Close()
 	for {
 		select {
 		case <-ctx.Done():
