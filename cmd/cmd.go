@@ -10,6 +10,7 @@ import (
 	_ "github.com/munbot/master/env"
 
 	"github.com/munbot/master/config"
+	"github.com/munbot/master/version"
 )
 
 type Command interface {
@@ -67,12 +68,18 @@ func (m *Main) Main(args []string) {
 		cmdargs = args
 		progname = m.name
 	}
+	var showVersion bool
 	fs := flag.NewFlagSet(progname, flagsErrorHandler)
+	fs.BoolVar(&showVersion, "version", false, "show version info and exit")
 	flags := config.NewFlags(fs)
 	build.FlagSet(fs)
 	fs.Parse(cmdargs)
 	if err := flags.Parse(); err != nil {
 		osExit(1)
+	}
+	if showVersion {
+		m.showVersion(progname)
+		osExit(0)
 	}
 	cmd := build.Command(flags)
 	if cmd == nil {
@@ -80,4 +87,8 @@ func (m *Main) Main(args []string) {
 	}
 	rc := cmd.Run(fs.Args())
 	osExit(rc)
+}
+
+func (m *Main) showVersion(progname string) {
+	version.Print(progname)
 }
