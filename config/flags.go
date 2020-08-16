@@ -17,6 +17,7 @@ type Flags struct {
 	Debug   bool
 	Quiet   bool
 	Verbose bool
+	Name    string
 	Profile *profile.Profile
 }
 
@@ -28,6 +29,7 @@ func NewFlags(fs *flag.FlagSet) *Flags {
 	fs.BoolVar(&f.Quiet, "quiet", false, "quiet mode")
 	fs.BoolVar(&f.Verbose, "verbose", false, "verbose mode")
 	// profile
+	fs.StringVar(&f.Name, "name", "", "master `robot` name")
 	fs.StringVar(&f.Profile.Name, "profile", "", "config profile `name`")
 	fs.StringVar(&f.Profile.Config, "config", "", "config `dir/path`")
 	return f
@@ -48,6 +50,11 @@ func (f *Flags) Parse() error {
 	}
 	log.SetMode(env.Get("MB_LOG"))
 	// profile
+	if f.Name == "" {
+		f.Name = env.Get("MUNBOT")
+	} else {
+		env.Set("MUNBOT", f.Name)
+	}
 	if f.Profile.Name == "" {
 		f.Profile.Name = env.Get("MB_PROFILE")
 	} else {
