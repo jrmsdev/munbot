@@ -186,3 +186,11 @@ func Warnf(format string, v ...interface{}) {
 		l.Printf(logger.WARN, format, v...)
 	}
 }
+
+func Info(v ...interface{}) {
+	l.Print(logger.INFO, v...)
+}
+
+func Infof(format string, v ...interface{}) {
+	l.Printf(logger.INFO, format, v...)
+}

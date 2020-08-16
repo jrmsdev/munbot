@@ -144,6 +144,20 @@ func (s *Suite) TestWarn() {
 	s.Equal("", s.buf.String(), "warn worked in quiet mode")
 }
 
+func (s *Suite) TestInfo() {
+	Info("test")
+	s.Regexp("\\d\\d test\n$", s.buf.String(), "info msg")
+
+	s.buf.Reset()
+	Infof("te%s", "st")
+	s.Regexp("\\d\\d test\n$", s.buf.String(), "infof msg")
+
+	s.buf.Reset()
+	SetQuiet()
+	Info("test")
+	s.Regexp("\\d\\d test\n$", s.buf.String(), "info msg in quiet mode")
+}
+
 func (s *Suite) TestPanic() {
 	p := func() {
 		Panic("test")
