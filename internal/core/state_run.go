@@ -99,20 +99,20 @@ LOOP:
 	for {
 		select {
 		case fail = <-s.fail:
-			log.Debug("fail...")
+			log.Info("fail...")
 			break LOOP
 		case <-s.exit:
-			log.Debug("master exit...")
+			log.Info("master exit...")
 			abort = true
 			break LOOP
 		case <-s.osint:
-			log.Debug("os interrupt...")
+			log.Info("os interrupt...")
 			abort = true
 			break LOOP
 		default:
 			time.Sleep(s.wait)
 			if !s.rt.Master.Running() {
-				log.Debug("master is not running...")
+				log.Info("master robot is not running...")
 				select {
 				case fail = <-s.fail:
 					log.Debug("there was a failure before abort")
