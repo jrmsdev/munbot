@@ -4,6 +4,8 @@
 package console_test
 
 import (
+	"bytes"
+	"fmt"
 	"io/ioutil"
 	"os"
 	"os/exec"
@@ -13,21 +15,25 @@ import (
 
 	"github.com/munbot/master/env"
 	"github.com/munbot/master/internal/console"
+	"github.com/munbot/master/log"
 	"github.com/munbot/master/testing/suite"
 )
 
 func TestSSHCmdSuite(t *testing.T) {
+	log.SetMode(env.Get("MB_LOG"))
 	suite.Run(t, &sshCmdSuite{Suite: suite.New()})
 }
 
 type sshCmdSuite struct {
 	*suite.Suite
-	cmd  string
-	skip string
-	cfg  *console.Config
-	cons *console.Console
+	cmd    string
+	skip   string
+	cfg    *console.Config
+	cons   *console.Console
 	tmpdir string
-	addr string
+	addr   string
+	port   string
+	ident  string
 }
 
 func (s *sshCmdSuite) SetupTest() {
@@ -48,7 +54,7 @@ func (s *sshCmdSuite) SetupTest() {
 	} else if s.skip != "" {
 		s.T().Skip(s.skip)
 	}
-	if tmpdir, err := ioutil.TempDir("", "test_console_sshcmd_"); err != nil {
+	if tmpdir, err := ioutil.TempDir("", "munbot_test_console_sshcmd_"); err != nil {
 		s.T().Fatal(err)
 	} else {
 		s.tmpdir = tmpdir
@@ -73,7 +79,26 @@ func (s *sshCmdSuite) SetupTest() {
 	if s.addr == "ssh:" {
 		s.T().Fatal("could not get console server address")
 	}
-	s.T().Logf("setup done: %s", s.addr)
+	s.port = s.cons.Addr().Port()
+	s.T().Logf("setup server: %s", s.addr)
+	s.ident = filepath.Join(s.tmpdir, "id_ed25519")
+	cmd := exec.Command("ssh-keygen", "-q", "-f", s.ident,
+		"-t", "ed25519", "-N", "")
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stderr
+	if err := cmd.Run(); err != nil {
+		s.T().Fatal(err)
+	}
+	s.T().Logf("setup ident %s", s.ident)
+	authkeys := filepath.Join(s.tmpdir, "etc", "testing", "auth", "authorized_keys")
+	if src, err := ioutil.ReadFile(s.ident + ".pub"); err != nil {
+		s.T().Fatal(err)
+	} else {
+		if err := ioutil.WriteFile(authkeys, src, 0600); err != nil {
+			s.T().Fatal(err)
+		}
+	}
+	s.T().Logf("setup %s", authkeys)
 }
 
 func (s *sshCmdSuite) TearDownTest() {
@@ -89,7 +114,19 @@ func (s *sshCmdSuite) TearDownTest() {
 	env.Set("MB_CONFIG", "etc")
 }
 
-func (s *sshCmdSuite) TestStart() {
+func (s *sshCmdSuite) TestAll() {
 	check := s.Require()
 	check.NotNil(s.cons)
+	buf := new(bytes.Buffer)
+	cmd := exec.Command("ssh", "-p", s.port, "-i", s.ident, "-n", "-T",
+		"-o", fmt.Sprintf("UserKnownHostsFile=%s", os.DevNull),
+		"-F", filepath.FromSlash("./testdata/ssh_config"),
+		"testing.munbot.local")
+	cmd.Stdout = buf
+	cmd.Stderr = buf
+	cmd.Run()
+	st := cmd.ProcessState
+	check.True(st.Exited())
+	check.Equal(255, st.ExitCode())
+	check.Equal("master> ", buf.String())
 }
