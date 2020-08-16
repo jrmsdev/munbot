@@ -157,6 +157,8 @@ LOOP:
 		nc.Close()
 		count++
 	}
+	s.q = nil
+	s.q = make(map[string]net.Conn)
 	log.Debugf("closed %d active connection(s)", count)
 	return nil
 }
