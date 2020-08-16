@@ -186,11 +186,12 @@ func (s *Console) dispatch(ctx context.Context, nc net.Conn, sid string) {
 	// serve
 	fp := conn.Permissions.Extensions["pubkey-fp"]
 	log.Printf("Auth login %s %s", fp, sid)
+LOOP:
 	for nc := range chans {
 		select {
 		case <-ctx.Done():
 			log.Debugf("%s serve context done: %v", sid, ctx.Err())
-			return
+			break LOOP
 		default:
 		}
 		s.serve(ctx, nc, sid)
