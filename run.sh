@@ -10,4 +10,5 @@ fi
 export MBENV='devel'
 export MBENV_CONFIG=${PWD}/env
 export MB_CONFIG=${PWD}/_devel/etc
+export MB_RUN=${PWD}/_devel/run
 exec ./_build/cmd/${SRC}.bin $@
