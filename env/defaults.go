@@ -39,6 +39,7 @@ var Init map[string]string = map[string]string{
 
 	"MBAPI":       "true",
 	"MBAPI_DEBUG": "false",
+	"MBAPI_NET":   "tcp",
 	"MBAPI_ADDR":  "127.0.0.1",
 	"MBAPI_PORT":  "6490",
 	"MBAPI_PATH":  "/",

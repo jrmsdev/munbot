@@ -27,6 +27,7 @@ func TestDefaults(t *testing.T) {
 
 	check.Equal("true", env.Init["MBAPI"], "MBAPI")
 	check.Equal("false", env.Init["MBAPI_DEBUG"], "MBAPI_DEBUG")
+	check.Equal("tcp", env.Init["MBAPI_NET"], "MBAPI_NET")
 	check.Equal("127.0.0.1", env.Init["MBAPI_ADDR"], "MBAPI_ADDR")
 	check.Equal("6490", env.Init["MBAPI_PORT"], "MBAPI_PORT")
 	check.Equal("/", env.Init["MBAPI_PATH"], "MBAPI_PATH")

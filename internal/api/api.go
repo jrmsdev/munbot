@@ -13,6 +13,7 @@ import (
 
 	"github.com/gorilla/mux"
 
+	"github.com/munbot/master/env"
 	"github.com/munbot/master/log"
 )
 
@@ -43,6 +44,12 @@ func New() Server {
 
 func (a *Api) Configure(c *ServerConfig) error {
 	a.enable = c.Enable
+	if c.Net == "" {
+		c.Net = env.Get("MBAPI_NET")
+	}
+	if c.Addr == "" {
+		c.Net = env.Get("MBAPI_ADDR")
+	}
 	a.server.Addr = fmt.Sprintf("%s:%d", c.Addr, c.Port)
 	return nil
 }

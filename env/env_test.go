@@ -24,9 +24,13 @@ func TestEnvFile(t *testing.T) {
 	check.Equal("home", env.Get("MB_HOME"), "MB_HOME")
 	check.Equal("etc", env.Get("MB_CONFIG"), "MB_CONFIG")
 	check.Equal("run", env.Get("MB_RUN"), "MB_RUN")
+
 	check.Equal("true", env.Get("MBAPI"), "MBAPI")
+	check.Equal("tcp", env.Get("MBAPI_NET"), "MBAPI_NET")
 	check.Equal("127.0.0.1", env.Get("MBAPI_ADDR"), "MBAPI_ADDR")
+
 	check.Equal("true", env.Get("MBAUTH"), "MBAUTH")
+
 	check.Equal("true", env.Get("MBCONSOLE"), "MBCONSOLE")
 	check.Equal("127.0.0.1", env.Get("MBCONSOLE_ADDR"), "MBCONSOLE_ADDR")
 }

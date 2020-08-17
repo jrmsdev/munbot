@@ -9,6 +9,7 @@ import (
 
 type ServerConfig struct {
 	Enable bool
+	Net    string
 	Addr   string
 	Port   uint
 }
