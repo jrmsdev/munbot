@@ -122,7 +122,8 @@ type sshcmdTest struct {
 }
 
 var allTests map[string]*sshcmdTest = map[string]*sshcmdTest{
-	"Connect": {[]string{}, 255, "master> "},
+	"Connect":   {[]string{}, 255, "master> "},
+	"ExecError": {[]string{"testing"}, 255, ""},
 }
 
 func (s *sshCmdSuite) TestAll() {
@@ -131,14 +132,14 @@ func (s *sshCmdSuite) TestAll() {
 	buf := new(bytes.Buffer)
 	for tname, tcmd := range allTests {
 		buf.Reset()
-		st := s.runCmd(buf)
+		st := s.runCmd(buf, tcmd.Args)
 		check.True(st.Exited(), tname)
 		check.Equal(tcmd.ExitCode, st.ExitCode(), tname)
 		check.Equal(tcmd.Output, buf.String(), tname)
 	}
 }
 
-func (s *sshCmdSuite) runCmd(buf *bytes.Buffer) *os.ProcessState {
+func (s *sshCmdSuite) runCmd(buf *bytes.Buffer, args []string) *os.ProcessState {
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 	go func(cancel context.CancelFunc) {
@@ -153,6 +154,9 @@ func (s *sshCmdSuite) runCmd(buf *bytes.Buffer) *os.ProcessState {
 		"testing.munbot.local")
 	cmd.Stdout = buf
 	cmd.Stderr = buf
+	for _, a := range args {
+		cmd.Args = append(cmd.Args, a)
+	}
 	cmd.Run()
 	return cmd.ProcessState
 }
