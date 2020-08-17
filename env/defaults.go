@@ -35,6 +35,7 @@ var Init map[string]string = map[string]string{
 	// these will be set at init() time based on os user env
 	"MB_HOME":   "",
 	"MB_CONFIG": "",
+	"MB_RUN": "",
 
 	"MBAPI":       "true",
 	"MBAPI_DEBUG": "false",
@@ -90,6 +91,7 @@ var (
 func userDefaults() {
 	defrw.Lock()
 	defer defrw.Unlock()
+	// home dir
 	if homeDir == "" || homeDirErr != nil {
 		homeDir = filepath.FromSlash("./.munbot")
 	} else {
@@ -97,7 +99,7 @@ func userDefaults() {
 	}
 	homeDir = filepath.Clean(envy.Get("MB_HOME", homeDir))
 	defvals["MB_HOME"] = homeDir
-
+	// config dir
 	if configDir == "" || configDirErr != nil {
 		configDir = filepath.Join(homeDir, "config")
 	} else {
@@ -106,6 +108,10 @@ func userDefaults() {
 	configDir = filepath.Clean(envy.Get("MB_CONFIG", configDir))
 	defvals["MB_CONFIG"] = configDir
 	MBENV_CONFIG = filepath.Join(homeDir, "env")
+	// run dir
+	runDir := filepath.Clean(envy.Get("XDG_RUNTIME_DIR",
+		filepath.Join(homeDir, ".local", "share")))
+	defvals["MB_RUN"] = filepath.Join(runDir, "munbot")
 }
 
 func loadEnv() {
