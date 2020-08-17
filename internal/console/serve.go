@@ -71,6 +71,7 @@ func (s *Console) serve(ctx context.Context, nc ssh.NewChannel, sid string) {
 				if !req.Serve {
 					log.Errorf("%s ssh invalid request: %s", sid, req.Type)
 					wait = false
+					ch.Close()
 				}
 			}
 		}
