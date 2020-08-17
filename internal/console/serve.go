@@ -7,8 +7,6 @@ import (
 	"context"
 	"fmt"
 	"io"
-	"net/textproto"
-	"strconv"
 
 	"golang.org/x/crypto/ssh"
 	"golang.org/x/crypto/ssh/terminal"
@@ -20,18 +18,12 @@ import (
 type request struct {
 	Type    string
 	Serve   bool
-	Payload []byte
-}
-
-func payload(r *request) string {
-	b := textproto.TrimBytes(r.Payload)
-	return strconv.Quote(fmt.Sprintf("%s", b))
 }
 
 func (s *Console) serve(ctx context.Context, nc ssh.NewChannel, sid string) {
-	log.Debugf("serve session %s", sid)
+	log.Debugf("session %s", sid)
 	t := nc.ChannelType()
-	log.Debugf("%s serve channel type %s", sid, t)
+	log.Debugf("%s channel type %s", sid, t)
 	if t != "session" {
 		nc.Reject(ssh.UnknownChannelType, "unknown channel type")
 		log.Errorf("Console %s unknown channel type: %s", sid, t)
@@ -50,23 +42,19 @@ func (s *Console) serve(ctx context.Context, nc ssh.NewChannel, sid string) {
 		for req := range in {
 			select {
 			case <-ctx.Done():
-				log.Debug("serve request context done!")
+				log.Debug("request context done!")
 				req.Reply(false, nil)
 				return
 			default:
 			}
-			log.Debugf("%s serve request type %s", sid, req.Type)
+			log.Debugf("%s request type %s", sid, req.Type)
 			serve := false
 			switch req.Type {
 			case "pty-req", "shell":
 				serve = true
 			}
 			req.Reply(serve, nil)
-			out <- request{
-				Type:    req.Type,
-				Serve:   serve,
-				Payload: req.Payload[:],
-			}
+			out <- request{Type: req.Type, Serve: serve}
 		}
 	}(ctx, chr, reqs)
 	s.wgadd("serve")
@@ -96,7 +84,7 @@ func (s *Console) serveShell(ctx context.Context, ch ssh.Channel, sid string) {
 	for {
 		select {
 		case <-ctx.Done():
-			log.Debug("serve shell context done!")
+			log.Debug("shell context done!")
 			return
 		default:
 		}
