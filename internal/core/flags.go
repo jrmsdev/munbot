@@ -49,6 +49,9 @@ func (f *Flags) parseApi() {
 	if f.apiDisable {
 		env.Set("MBAPI", "false")
 	}
+	if f.apiDebug {
+		env.Set("MBAPI_DEBUG", "true")
+	}
 	if f.apiAddr != "" {
 		env.Set("MBAPI_ADDR", f.apiAddr)
 	}

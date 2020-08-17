@@ -61,6 +61,7 @@ func (a *Api) Start() error {
 
 func (a *Api) Stop() error {
 	if a.enable {
+		log.Debugf("server shutdown... timeout in %s", stopTimeout)
 		ctx, cancel := context.WithTimeout(context.Background(), stopTimeout)
 		defer cancel()
 		if err := a.server.Shutdown(ctx); err != http.ErrServerClosed {
