@@ -261,7 +261,8 @@ LOOP:
 }
 
 type request struct {
-	Type string
+	Type  string
+	Serve bool
 }
 
 func (s *Console) serve(ctx context.Context, nc ssh.NewChannel, sid string) {
@@ -294,13 +295,15 @@ func (s *Console) serve(ctx context.Context, nc ssh.NewChannel, sid string) {
 			log.Debugf("%s serve request type %s", sid, req.Type)
 			serve := false
 			switch req.Type {
+			case "env":
+				serve = true
 			case "pty-req":
 				serve = true
 			case "shell":
 				serve = true
 			}
 			req.Reply(serve, nil)
-			out <- request{Type: req.Type}
+			out <- request{Type: req.Type, Serve: serve}
 		}
 	}(ctx, chr, reqs)
 	s.wgadd("serve")
@@ -310,13 +313,14 @@ func (s *Console) serve(ctx context.Context, nc ssh.NewChannel, sid string) {
 		for wait {
 			req := <-in
 			switch req.Type {
-			case "pty-req":
 			case "shell":
 				wait = false
 				s.serveTerminal(ctx, ch, sid)
 			default:
-				log.Errorf("%s ssh invalid request: %s", sid, req.Type)
-				wait = false
+				if !req.Serve {
+					log.Errorf("%s ssh invalid request: %s", sid, req.Type)
+					wait = false
+				}
 			}
 		}
 	}(ctx, ch, reqs)
