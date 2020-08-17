@@ -125,7 +125,7 @@ type sshcmdTest struct {
 var allTests map[string]*sshcmdTest = map[string]*sshcmdTest{
 	"Connect":   {[]string{}, 255, "master> "},
 	"PtyReq":    {[]string{"-tt"}, 255, "master> "},
-	"Tunnel":    {[]string{"-tt", "-L", "999:localhost:6492"}, 255, "master> "},
+	"Tunnel":    {[]string{"-tt", "-L", "9999:localhost:6492"}, 255, "master> "},
 	"ExecError": {[]string{"testing"}, 255, ""},
 }
 
@@ -263,7 +263,7 @@ func (s *sshCmdSuite) TestSSHKeyScan() {
 	s.NoError(err)
 	st := cmd.ProcessState
 	s.Equal(0, st.ExitCode())
-	s.Contains(buf.String(), fmt.Sprintf("# 127.0.0.1:%s SSH-2.0-Go", s.port))
+	s.Contains(buf.String(), fmt.Sprintf("# 127.0.0.1:%s SSH-2.0-Munbot", s.port))
 	fn := filepath.Join(s.tmpdir, "etc", "testing", "auth", "id_ed25519.pub")
 	blob, ferr := ioutil.ReadFile(fn)
 	if ferr != nil {

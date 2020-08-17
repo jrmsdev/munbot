@@ -43,6 +43,7 @@ func (a *Auth) ServerConfig() *ssh.ServerConfig {
 	}
 	cfg.AddHostKey(a.id)
 	cfg.MaxAuthTries = 3
+	cfg.ServerVersion = "SSH-2.0-Munbot"
 	cfg.PublicKeyCallback = a.publicKeyCallback
 	cfg.BannerCallback = a.bannerCallback
 	return cfg
