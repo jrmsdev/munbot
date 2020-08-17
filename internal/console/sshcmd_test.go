@@ -162,7 +162,7 @@ func (s *sshCmdSuite) runCmd(buf *bytes.Buffer, args []string) *os.ProcessState 
 	return cmd.ProcessState
 }
 
-func (s *sshCmdSuite) TestSSHCopyID() {
+func (s *sshCmdSuite) TestSSHCopyIDError() {
 	command, err := exec.LookPath("ssh-copy-id")
 	if err != nil {
 		s.T().Skip(err)
@@ -172,7 +172,7 @@ func (s *sshCmdSuite) TestSSHCopyID() {
 	cmd := exec.Command(command, "-i", s.ident, "-p", s.port,
 		"-o", fmt.Sprintf("UserKnownHostsFile=%s", os.DevNull),
 		"-o", "StrictHostKeyChecking=no",
-		s.addr)
+		"127.0.0.1")
 	cmd.Stdout = buf
 	cmd.Stderr = buf
 	err = cmd.Run()
@@ -183,7 +183,7 @@ func (s *sshCmdSuite) TestSSHCopyID() {
 	s.Contains(buf.String(), "ERROR: exec request failed on channel 0")
 }
 
-func (s *sshCmdSuite) TestSCP() {
+func (s *sshCmdSuite) TestSCPError() {
 	command, err := exec.LookPath("scp")
 	if err != nil {
 		s.T().Skip(err)
@@ -201,4 +201,22 @@ func (s *sshCmdSuite) TestSCP() {
 	st := cmd.ProcessState
 	s.Equal(1, st.ExitCode())
 	s.Contains(buf.String(), "lost connection")
+}
+
+func (s *sshCmdSuite) TestSSHKeyScan() {
+	command, err := exec.LookPath("ssh-keyscan")
+	if err != nil {
+		s.T().Skip(err)
+	}
+	buf := new(bytes.Buffer)
+	defer buf.Reset()
+	cmd := exec.Command(command, "-p", s.port, "127.0.0.1")
+	cmd.Stdout = buf
+	cmd.Stderr = buf
+	err = cmd.Run()
+	s.NoError(err)
+	st := cmd.ProcessState
+	s.Equal(0, st.ExitCode())
+	s.Contains(buf.String(), fmt.Sprintf("# 127.0.0.1:%s SSH-2.0-Go", s.port))
+	s.Contains(buf.String(), fmt.Sprintf("[127.0.0.1]:%s ssh-ed25519 ", s.port))
 }
