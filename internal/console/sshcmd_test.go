@@ -204,6 +204,26 @@ func (s *sshCmdSuite) TestSCPError() {
 	s.Contains(buf.String(), "lost connection")
 }
 
+func (s *sshCmdSuite) TestSFTPError() {
+	command, err := exec.LookPath("sftp")
+	if err != nil {
+		s.T().Skip(err)
+	}
+	buf := new(bytes.Buffer)
+	defer buf.Reset()
+	cmd := exec.Command(command, "-i", s.ident, "-P", s.port,
+		"-o", fmt.Sprintf("UserKnownHostsFile=%s", os.DevNull),
+		"-F", filepath.FromSlash("./testdata/ssh_config"),
+		"testing.munbot.local")
+	cmd.Stdout = buf
+	cmd.Stderr = buf
+	err = cmd.Run()
+	s.Error(err)
+	st := cmd.ProcessState
+	s.Equal(255, st.ExitCode())
+	s.Contains(buf.String(), "Connection closed")
+}
+
 func (s *sshCmdSuite) TestSSHKeyScan() {
 	command, err := exec.LookPath("ssh-keyscan")
 	if err != nil {
