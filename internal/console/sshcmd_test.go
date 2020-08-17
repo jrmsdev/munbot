@@ -171,7 +171,8 @@ func (s *sshCmdSuite) TestSSHCopyID() {
 	defer buf.Reset()
 	cmd := exec.Command(command, "-i", s.ident, "-p", s.port,
 		"-o", fmt.Sprintf("UserKnownHostsFile=%s", os.DevNull),
-		"-o", "StrictHostKeyChecking=no", s.addr)
+		"-o", "StrictHostKeyChecking=no",
+		s.addr)
 	cmd.Stdout = buf
 	cmd.Stderr = buf
 	err = cmd.Run()
@@ -180,4 +181,24 @@ func (s *sshCmdSuite) TestSSHCopyID() {
 	s.Equal(1, st.ExitCode())
 	s.Contains(buf.String(), "ERROR: Munbot master")
 	s.Contains(buf.String(), "ERROR: exec request failed on channel 0")
+}
+
+func (s *sshCmdSuite) TestSCP() {
+	command, err := exec.LookPath("scp")
+	if err != nil {
+		s.T().Skip(err)
+	}
+	buf := new(bytes.Buffer)
+	defer buf.Reset()
+	cmd := exec.Command(command, "-i", s.ident, "-P", s.port,
+		"-o", fmt.Sprintf("UserKnownHostsFile=%s", os.DevNull),
+		"-F", filepath.FromSlash("./testdata/ssh_config"),
+		"/etc/passwd", "testing.munbot.local:/etc/passwd")
+	cmd.Stdout = buf
+	cmd.Stderr = buf
+	err = cmd.Run()
+	s.Error(err)
+	st := cmd.ProcessState
+	s.Equal(1, st.ExitCode())
+	s.Contains(buf.String(), "lost connection")
 }
