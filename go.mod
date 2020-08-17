@@ -9,6 +9,5 @@ require (
 	github.com/stretchr/testify v1.6.1
 	github.com/subchen/go-trylock/v2 v2.0.0
 	gobot.io/x/gobot v1.14.0
-	golang.org/x/crypto v0.0.0-20200323165209-0ec3e9974c59
-	gopkg.in/check.v1 v1.0.0-20190902080502-41f04d3bba15 // indirect
+	golang.org/x/crypto v0.0.0-20200728195943-123391ffb6de
 )

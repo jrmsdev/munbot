@@ -35,7 +35,7 @@ github.com/subchen/go-trylock/v2
 gobot.io/x/gobot
 gobot.io/x/gobot/api
 gobot.io/x/gobot/api/robeaux
-# golang.org/x/crypto v0.0.0-20200323165209-0ec3e9974c59
+# golang.org/x/crypto v0.0.0-20200728195943-123391ffb6de
 golang.org/x/crypto/blowfish
 golang.org/x/crypto/chacha20
 golang.org/x/crypto/curve25519
