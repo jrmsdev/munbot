@@ -37,7 +37,7 @@ type sshCmdSuite struct {
 	ident  string
 }
 
-func (s *sshCmdSuite) SetupTest() {
+func (s *sshCmdSuite) SetupSuite() {
 	if s.cmd == "" {
 		var err error
 		s.cmd, err = exec.LookPath("ssh")
@@ -102,7 +102,7 @@ func (s *sshCmdSuite) SetupTest() {
 	s.T().Logf("setup %s", authkeys)
 }
 
-func (s *sshCmdSuite) TearDownTest() {
+func (s *sshCmdSuite) TearDownSuite() {
 	if err := s.cons.Stop(); err != nil {
 		s.T().Log(err)
 	}
