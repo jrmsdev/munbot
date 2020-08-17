@@ -11,6 +11,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"strings"
 	"testing"
 	"time"
 
@@ -218,5 +219,13 @@ func (s *sshCmdSuite) TestSSHKeyScan() {
 	st := cmd.ProcessState
 	s.Equal(0, st.ExitCode())
 	s.Contains(buf.String(), fmt.Sprintf("# 127.0.0.1:%s SSH-2.0-Go", s.port))
-	s.Contains(buf.String(), fmt.Sprintf("[127.0.0.1]:%s ssh-ed25519 ", s.port))
+	fn := filepath.Join(s.tmpdir, "etc", "testing", "auth", "id_ed25519.pub")
+	blob, ferr := ioutil.ReadFile(fn)
+	if ferr != nil {
+		s.T().Fatal(ferr)
+	}
+	fields := strings.Fields(string(blob))
+	s.Len(fields, 3)
+	s.Contains(buf.String(),
+		fmt.Sprintf("[127.0.0.1]:%s %s %s", s.port, fields[0], fields[1]))
 }
