@@ -4,9 +4,11 @@
 package console
 
 import (
+	"bufio"
 	"context"
 	"fmt"
 	"io"
+	"net/textproto"
 
 	"golang.org/x/crypto/ssh"
 	"golang.org/x/crypto/ssh/terminal"
@@ -81,12 +83,15 @@ func (s *Console) serve(ctx context.Context, nc ssh.NewChannel, sid string) {
 func (s *Console) serveShell(ctx context.Context, ch ssh.Channel, sid string) {
 	log.Debugf("%s serve shell", sid)
 	defer ch.Close()
-	term := terminal.NewTerminal(ch, fmt.Sprintf("%s> ", env.Get("MUNBOT")))
+	ps1 := fmt.Sprintf("%s> ", env.Get("MUNBOT"))
+	term := terminal.NewTerminal(ch, ps1)
+	resp := textproto.NewWriter(bufio.NewWriter(term))
+LOOP:
 	for {
 		select {
 		case <-ctx.Done():
 			log.Debug("shell context done!")
-			return
+			break LOOP
 		default:
 		}
 		log.Debugf("%s shell read line...", sid)
@@ -94,9 +99,18 @@ func (s *Console) serveShell(ctx context.Context, ch ssh.Channel, sid string) {
 		if err != nil {
 			if err != io.EOF {
 				log.Errorf("Console %s: %v", sid, err)
+				return
 			}
-			return
+			break LOOP
 		}
 		log.Printf("%s SHELL: %s", sid, line)
+		if err := resp.PrintfLine("%q", line); err != nil {
+			log.Errorf("Console %s: %v", sid, err)
+			return
+		}
+	}
+	term.SetPrompt("")
+	if err := resp.PrintfLine("%s%s", ps1, "logout"); err != nil {
+		log.Errorf("Console %s: %v", sid, err)
 	}
 }
