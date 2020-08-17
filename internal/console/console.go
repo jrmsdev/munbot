@@ -306,12 +306,18 @@ func (s *Console) serve(ctx context.Context, nc ssh.NewChannel, sid string) {
 	s.wgadd("serve")
 	go func(ctx context.Context, ch ssh.Channel, in <-chan request) {
 		defer s.wgdone("serve")
-		req := <-in
-		switch req.Type {
-		case "pty-req", "shell":
-			s.serveTerminal(ctx, ch, sid)
-		default:
-			log.Errorf("%s ssh invalid request: %s", sid, req.Type)
+		wait := true
+		for wait {
+			req := <-in
+			switch req.Type {
+			case "pty-req":
+			case "shell":
+				wait = false
+				s.serveTerminal(ctx, ch, sid)
+			default:
+				log.Errorf("%s ssh invalid request: %s", sid, req.Type)
+				wait = false
+			}
 		}
 	}(ctx, ch, reqs)
 }
