@@ -40,6 +40,6 @@ func (s *SHalt) Stop() error {
 
 func (s *SHalt) Halt() error {
 	log.Print("Halt...")
-	log.Print("Bye!")
+	log.Info("Bye!")
 	return nil
 }

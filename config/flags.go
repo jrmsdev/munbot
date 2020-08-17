@@ -14,8 +14,9 @@ import (
 
 // Flags holds some configuration settings that can be overriden from cmd args.
 type Flags struct {
-	Debug   bool
 	Quiet   bool
+	Debug   bool
+	Info    bool
 	Verbose bool
 	Name    string
 	Profile *profile.Profile
@@ -25,9 +26,14 @@ type Flags struct {
 func NewFlags(fs *flag.FlagSet) *Flags {
 	f := &Flags{Profile: profile.New()}
 	// log
-	fs.BoolVar(&f.Debug, "debug", false, "debug mode")
-	fs.BoolVar(&f.Quiet, "quiet", false, "quiet mode")
-	fs.BoolVar(&f.Verbose, "verbose", false, "verbose mode")
+	fs.BoolVar(&f.Quiet, "quiet",
+		false, "quiet mode: errors only")
+	fs.BoolVar(&f.Debug, "debug",
+		false, "debug mode: all messages")
+	fs.BoolVar(&f.Info, "info",
+		false, "info mode: errors plus info")
+	fs.BoolVar(&f.Verbose, "verbose",
+		true, "verbose mode: all but debug messages")
 	// profile
 	fs.StringVar(&f.Name, "name", "", "master `robot` name")
 	fs.StringVar(&f.Profile.Name, "profile", "", "config profile `name`")
@@ -40,6 +46,9 @@ func (f *Flags) Parse() error {
 	// log
 	if f.Verbose {
 		env.Set("MB_LOG", "verbose")
+	}
+	if f.Info {
+		env.Set("MB_LOG", "info")
 	}
 	if f.Quiet {
 		env.Set("MB_LOG", "quiet")
@@ -61,7 +70,7 @@ func (f *Flags) Parse() error {
 		env.Set("MB_PROFILE", f.Profile.Name)
 	}
 	if f.Profile.Config == "" {
-		f.Profile.Config = env.Get("MB_CONFIG")
+		f.Profile.Config = filepath.Clean(env.Get("MB_CONFIG"))
 	} else {
 		env.Set("MB_CONFIG", filepath.Clean(f.Profile.Config))
 	}

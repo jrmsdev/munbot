@@ -36,6 +36,7 @@ type Suite struct {
 func (s *Suite) SetupTest() {
 	s.buf.Reset()
 	debug = false
+	info = true
 	verbose = true
 	l.SetPrefix("")
 	l.SetColors("off")
@@ -44,34 +45,38 @@ func (s *Suite) SetupTest() {
 	l.SetDebug(false)
 }
 
-func (s *Suite) TestSetDebug() {
-	require := s.Require()
-	require.Equal(false, debug, "debug disabled")
-	require.Equal(stdFlags, l.Flags(), "logger init flags")
-	SetDebug()
-	s.Equal(true, debug, "debug enabled")
-	s.Equal(debugFlags, l.Flags(), "logger debug flags")
-	// check SetQuiet does nothing in debug mode
+func (s *Suite) TestSetQuiet() {
 	SetQuiet()
-	s.Equal(true, verbose, "verbose disabled by SetQuiet in debug mode")
+	s.False(debug, "debug enabled")
+	s.False(info, "info enabled")
+	s.False(verbose, "verbose enabled")
 }
 
-func (s *Suite) TestSetQuiet() {
-	require := s.Require()
-	require.Equal(false, debug, "debug disabled")
-	require.Equal(true, verbose, "verbose enabled")
+func (s *Suite) TestSetDebug() {
 	SetQuiet()
-	s.Equal(false, verbose, "verbose enabled after SetQuiet")
+	s.False(debug, "debug enabled")
+	SetDebug()
+	s.True(debug, "debug disabled")
+	s.True(info, "info disabled")
+	s.True(verbose, "verbose disabled")
+}
+
+func (s *Suite) TestSetInfo() {
+	SetQuiet()
+	s.False(info, "info enabled")
+	SetInfo()
+	s.False(debug, "debug enabled")
+	s.True(info, "info disabled")
+	s.False(verbose, "verbose enabled")
 }
 
 func (s *Suite) TestSetVerbose() {
-	require := s.Require()
-	require.Equal(false, debug, "debug disabled")
-	require.Equal(true, verbose, "verbose enabled")
 	SetQuiet()
-	s.Equal(false, verbose, "verbose enabled after SetQuiet")
+	s.False(verbose, "verbose enabled")
 	SetVerbose()
-	s.Equal(true, verbose, "verbose disabled after SetVerbose")
+	s.False(debug, "debug enabled")
+	s.True(info, "info disabled")
+	s.True(verbose, "verbose disabled")
 }
 
 func (s *Suite) TestSetPrefix() {
@@ -145,6 +150,7 @@ func (s *Suite) TestWarn() {
 }
 
 func (s *Suite) TestInfo() {
+	SetInfo()
 	Info("test")
 	s.Regexp("\\d\\d test\n$", s.buf.String(), "info msg")
 
@@ -155,7 +161,7 @@ func (s *Suite) TestInfo() {
 	s.buf.Reset()
 	SetQuiet()
 	Info("test")
-	s.Regexp("\\d\\d test\n$", s.buf.String(), "info msg in quiet mode")
+	s.Equal("", s.buf.String(), "info msg in quiet mode")
 }
 
 func (s *Suite) TestPanic() {

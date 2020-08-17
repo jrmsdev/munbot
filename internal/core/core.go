@@ -38,7 +38,7 @@ func init() {
 }
 
 func New(m *Mem) *Core {
-	log.Printf("Munbot version %s", version.String())
+	log.Infof("Munbot version %s", version.String())
 	k := &Core{rt: m, uuid: uuid.Rand()}
 	k.sInit = newInit(k, k.rt)
 	k.sRun = newRun(k, k.rt)

@@ -18,8 +18,9 @@ import (
 var (
 	cdepth     int  = 1
 	debug      bool = false
-	debugFlags int  = log.Llongfile
+	info       bool = true
 	verbose    bool = true
+	debugFlags int  = log.Llongfile
 	stdFlags   int  = log.Ldate | log.Ltime | log.Lmicroseconds
 )
 
@@ -57,23 +58,34 @@ func DebugFlags(s string) {
 	debugFlags = flags
 }
 
+func SetQuiet() {
+	l.SetDebug(false)
+	l.SetFlags(stdFlags)
+	l.Lock()
+	defer l.Unlock()
+	debug = false
+	info = false
+	verbose = false
+}
+
 func SetDebug() {
 	l.SetFlags(debugFlags)
 	l.SetDebug(true)
 	l.Lock()
 	defer l.Unlock()
 	debug = true
+	info = true
 	verbose = true
 }
 
-func SetQuiet() {
-	if !debug {
-		l.SetDebug(false)
-		l.SetFlags(stdFlags)
-		l.Lock()
-		defer l.Unlock()
-		verbose = false
-	}
+func SetInfo() {
+	l.SetDebug(false)
+	l.SetFlags(stdFlags)
+	l.Lock()
+	defer l.Unlock()
+	debug = false
+	info = true
+	verbose = false
 }
 
 func SetVerbose() {
@@ -82,6 +94,7 @@ func SetVerbose() {
 	l.Lock()
 	defer l.Unlock()
 	debug = false
+	info = true
 	verbose = true
 }
 
@@ -91,6 +104,8 @@ func SetMode(lvl string) {
 		SetQuiet()
 	case "debug":
 		SetDebug()
+	case "info":
+		SetInfo()
 	default:
 		SetVerbose()
 	}
@@ -188,9 +203,13 @@ func Warnf(format string, v ...interface{}) {
 }
 
 func Info(v ...interface{}) {
-	l.Print(logger.INFO, v...)
+	if info {
+		l.Print(logger.INFO, v...)
+	}
 }
 
 func Infof(format string, v ...interface{}) {
-	l.Printf(logger.INFO, format, v...)
+	if info {
+		l.Printf(logger.INFO, format, v...)
+	}
 }

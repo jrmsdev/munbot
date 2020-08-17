@@ -15,7 +15,7 @@ func (s *Suite) TestFlagsDefaults() {
 	f := NewFlags(newTestFS())
 	s.False(f.Debug, "default debug")
 	s.False(f.Quiet, "default quiet")
-	s.False(f.Verbose, "default verbose")
+	s.True(f.Verbose, "default verbose")
 	s.Equal("", f.Name, "default name")
 	s.Equal("", f.Profile.Name, "default profile")
 }
@@ -25,7 +25,7 @@ func (s *Suite) TestFlagsParse() {
 	f.Parse()
 	s.False(f.Debug)
 	s.False(f.Quiet)
-	s.False(f.Verbose)
+	s.True(f.Verbose)
 	s.Equal("master", f.Name)
 	s.Equal("testing", f.Profile.Name)
 }
