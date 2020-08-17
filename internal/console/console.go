@@ -242,7 +242,7 @@ func (s *Console) dispatch(ctx context.Context, nc net.Conn, sid string) {
 	}(reqs)
 	// serve
 	fp := conn.Permissions.Extensions["pubkey-fp"]
-	log.Printf("Auth login %s %s", fp, sid)
+	log.Infof("Auth login %s %s", fp, sid)
 LOOP:
 	for nc := range chans {
 		select {
@@ -254,5 +254,5 @@ LOOP:
 		}
 		s.serve(ctx, nc, sid)
 	}
-	log.Printf("Auth logout %s %s", sid, s.ctxSessionElapsed(ctx))
+	log.Infof("Auth logout %s %s", sid, s.ctxSessionElapsed(ctx))
 }
