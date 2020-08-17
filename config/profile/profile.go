@@ -16,29 +16,29 @@ type Profile struct {
 	Home       string
 	Config     string
 	ConfigFile string
+	Run        string
 }
 
 // New creates a new object with defaults values set.
 func New() *Profile {
 	return &Profile{
 		Name:       env.Get("MB_PROFILE"),
-		Home:       env.Get("MB_HOME"),
-		Config:     env.Get("MB_CONFIG"),
+		Home:       filepath.Clean(env.Get("MB_HOME")),
+		Config:     filepath.Clean(env.Get("MB_CONFIG")),
 		ConfigFile: "config.json",
+		Run:        filepath.Clean(env.Get("MB_RUN")),
 	}
 }
 
 // String returns profile base path. But just for info/debug purposes. It will
 // always be slash (/) separated.
 func (p *Profile) String() string {
-	d := filepath.Clean(p.Config)
-	return filepath.ToSlash(filepath.Join(d, p.Name))
+	return filepath.ToSlash(filepath.Join(p.Config, p.Name))
 }
 
 // GetPath returns the absolute profile named filepath.
 func (p *Profile) GetPath(name string) string {
-	d := filepath.Clean(p.Config)
-	return filepath.Join(d, p.Name, name)
+	return filepath.Join(p.Config, p.Name, name)
 }
 
 // GetConfigFile returns the absolute filename of the configuration file for the
@@ -55,4 +55,14 @@ func (p *Profile) ListConfigFiles() []string {
 		filepath.Join(d, p.ConfigFile),
 		p.GetConfigFile(),
 	}
+}
+
+// GetRundir returns the profile named rundir path.
+func (p *Profile) GetRundir() string {
+	return filepath.Join(p.Run, p.Name)
+}
+
+// GetRundirPath returns an absolute rundir profile named filepath.
+func (p *Profile) GetRundirPath(name string) string {
+	return filepath.Join(p.GetRundir(), name)
 }
