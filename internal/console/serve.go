@@ -50,7 +50,7 @@ func (s *Console) serve(ctx context.Context, nc ssh.NewChannel, sid string) {
 			log.Debugf("%s request type %s", sid, req.Type)
 			serve := false
 			switch req.Type {
-			case "pty-req", "shell":
+			case "pty-req", "env", "shell":
 				serve = true
 			}
 			req.Reply(serve, nil)
