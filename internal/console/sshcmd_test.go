@@ -165,6 +165,27 @@ func (s *sshCmdSuite) runCmd(buf *bytes.Buffer, args []string) *os.ProcessState 
 	return cmd.ProcessState
 }
 
+func (s *sshCmdSuite) TestSSHIdentError() {
+	command, err := exec.LookPath("ssh")
+	if err != nil {
+		s.T().Skip(err)
+	}
+	buf := new(bytes.Buffer)
+	defer buf.Reset()
+	//~ cmd := exec.Command(command, "-p", s.port, "-n", "-i", s.ident,
+	cmd := exec.Command(command, "-p", s.port, "-n",
+		"-o", fmt.Sprintf("UserKnownHostsFile=%s", os.DevNull),
+		"-F", filepath.FromSlash("./testdata/ssh_config"),
+		"testing.munbot.local")
+	cmd.Stdout = buf
+	cmd.Stderr = buf
+	err = cmd.Run()
+	s.Error(err)
+	st := cmd.ProcessState
+	s.Equal(255, st.ExitCode())
+	s.Equal("", buf.String())
+}
+
 func (s *sshCmdSuite) TestSSHCopyIDError() {
 	command, err := exec.LookPath("ssh-copy-id")
 	if err != nil {
