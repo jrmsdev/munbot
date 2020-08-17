@@ -13,8 +13,8 @@ import (
 type Runtime interface {
 	Context() context.Context
 	WithContext(context.Context) (context.Context, error)
-	Init(context.Context) (context.Context, error)
-	Configure(*config.Flags, *config.Config) error
+	Init(context.Context, *config.Flags, *config.Config) (context.Context, error)
+	Configure() error
 	Start() error
 	Stop() error
 }
@@ -32,7 +32,7 @@ func (k *Core) WithContext(ctx context.Context) (context.Context, error) {
 	return k.ctx, nil
 }
 
-func (k *Core) Init(ctx context.Context) (context.Context, error) {
+func (k *Core) Init(ctx context.Context, cfl *config.Flags, cfg *config.Config) (context.Context, error) {
 	log.Debugf("[%s] Init", k.State())
 	var err error
 	ctx, err = k.WithContext(ctx)
@@ -48,13 +48,15 @@ func (k *Core) Init(ctx context.Context) (context.Context, error) {
 		}
 	}
 	defer k.rt.Unlock()
+	k.cfg = cfg
+	k.cfl = cfl
 	if err = k.state.Init(); err != nil {
 		return ctx, err
 	}
 	return ctx, nil
 }
 
-func (k *Core) Configure(cfl *config.Flags, cfg *config.Config) error {
+func (k *Core) Configure() error {
 	log.Debugf("[%s] Configure", k.State())
 	select {
 	case <-k.ctx.Done():
@@ -65,8 +67,6 @@ func (k *Core) Configure(cfl *config.Flags, cfg *config.Config) error {
 		}
 	}
 	defer k.rt.Unlock()
-	k.cfg = cfg
-	k.cfl = cfl
 	if err := k.state.Configure(); err != nil {
 		return err
 	}

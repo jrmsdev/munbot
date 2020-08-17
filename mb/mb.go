@@ -62,10 +62,10 @@ func (m *Main) Run(args []string) int {
 	m.kf.Parse()
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
-	if _, err := m.rt.Init(ctx); err != nil {
+	if _, err := m.rt.Init(ctx, m.cf, m.cfg); err != nil {
 		return 10
 	}
-	if err := m.rt.Configure(m.cf, m.cfg); err != nil {
+	if err := m.rt.Configure(); err != nil {
 		return 11
 	}
 	if err := m.rt.Start(); err != nil {
