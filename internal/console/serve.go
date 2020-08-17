@@ -58,8 +58,6 @@ func (s *Console) serve(ctx context.Context, nc ssh.NewChannel, sid string) {
 			log.Debugf("%s serve request type %s", sid, req.Type)
 			serve := false
 			switch req.Type {
-			//~ case "env", "exec":
-				//~ serve = true
 			case "pty-req", "shell":
 				serve = true
 			}
@@ -78,9 +76,6 @@ func (s *Console) serve(ctx context.Context, nc ssh.NewChannel, sid string) {
 		for wait {
 			req := <-in
 			switch req.Type {
-			case "exec":
-				wait = false
-				s.serveExec(ctx, ch, sid, payload(&req))
 			case "shell":
 				wait = false
 				s.serveShell(ctx, ch, sid)
@@ -114,20 +109,5 @@ func (s *Console) serveShell(ctx context.Context, ch ssh.Channel, sid string) {
 			return
 		}
 		log.Printf("%s SHELL: %s", sid, line)
-	}
-}
-
-func (s *Console) serveExec(ctx context.Context, ch ssh.Channel, sid, payload string) {
-	log.Debugf("%s serve exec: %s", sid, payload)
-	defer ch.Close()
-	line, err := strconv.Unquote(payload)
-	if err != nil {
-		log.Errorf("Console %s: %v", sid, err)
-		return
-	}
-	if line == "lalala" {
-		log.Printf("%s EXEC: ***%s***", sid, line)
-	} else {
-		log.Errorf("Console %s unknown command: %q", sid, line)
 	}
 }
