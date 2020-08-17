@@ -124,6 +124,7 @@ type sshcmdTest struct {
 
 var allTests map[string]*sshcmdTest = map[string]*sshcmdTest{
 	"Connect":   {[]string{}, 255, "master> "},
+	"PtyReq":    {[]string{"-tt"}, 255, "master> "},
 	"ExecError": {[]string{"testing"}, 255, ""},
 }
 
@@ -134,6 +135,7 @@ func (s *sshCmdSuite) TestAll() {
 	defer buf.Reset()
 	for tname, tcmd := range allTests {
 		buf.Reset()
+		s.T().Logf("sshcmd/%s", tname)
 		st := s.runCmd(buf, tcmd.Args)
 		check.True(st.Exited(), tname)
 		check.Equal(tcmd.ExitCode, st.ExitCode(), tname)
@@ -150,7 +152,7 @@ func (s *sshCmdSuite) runCmd(buf *bytes.Buffer, args []string) *os.ProcessState 
 			cancel()
 		}
 	}(cancel)
-	cmd := exec.CommandContext(ctx, "ssh", "-p", s.port, "-i", s.ident, "-n", "-tt",
+	cmd := exec.CommandContext(ctx, "ssh", "-p", s.port, "-i", s.ident, "-n",
 		"-o", fmt.Sprintf("UserKnownHostsFile=%s", os.DevNull),
 		"-F", filepath.FromSlash("./testdata/ssh_config"),
 		"testing.munbot.local")
