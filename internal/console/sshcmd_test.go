@@ -42,13 +42,13 @@ func (s *sshCmdSuite) SetupSuite() {
 		var err error
 		s.cmd, err = exec.LookPath("ssh")
 		if err != nil {
-			s.skip = "ssh command not found"
+			s.skip = err.Error()
 			s.T().Skip(s.skip)
 		}
 		if s.skip == "" {
 			_, err = exec.LookPath("ssh-keygen")
 			if err != nil {
-				s.skip = "ssh-keygen command not found"
+				s.skip = err.Error()
 				s.T().Skip(s.skip)
 			}
 		}
@@ -130,6 +130,7 @@ func (s *sshCmdSuite) TestAll() {
 	check := s.Require()
 	check.NotNil(s.cons)
 	buf := new(bytes.Buffer)
+	defer buf.Reset()
 	for tname, tcmd := range allTests {
 		buf.Reset()
 		st := s.runCmd(buf, tcmd.Args)
@@ -159,4 +160,24 @@ func (s *sshCmdSuite) runCmd(buf *bytes.Buffer, args []string) *os.ProcessState 
 	}
 	cmd.Run()
 	return cmd.ProcessState
+}
+
+func (s *sshCmdSuite) TestSSHCopyID() {
+	command, err := exec.LookPath("ssh-copy-id")
+	if err != nil {
+		s.T().Skip(err)
+	}
+	buf := new(bytes.Buffer)
+	defer buf.Reset()
+	cmd := exec.Command(command, "-i", s.ident, "-p", s.port,
+		"-o", fmt.Sprintf("UserKnownHostsFile=%s", os.DevNull),
+		"-o", "StrictHostKeyChecking=no", s.addr)
+	cmd.Stdout = buf
+	cmd.Stderr = buf
+	err = cmd.Run()
+	s.Error(err)
+	st := cmd.ProcessState
+	s.Equal(1, st.ExitCode())
+	s.Contains(buf.String(), "ERROR: Munbot master")
+	s.Contains(buf.String(), "ERROR: exec request failed on channel 0")
 }
