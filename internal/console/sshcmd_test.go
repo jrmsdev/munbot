@@ -125,6 +125,7 @@ type sshcmdTest struct {
 var allTests map[string]*sshcmdTest = map[string]*sshcmdTest{
 	"Connect":   {[]string{}, 255, "master> "},
 	"PtyReq":    {[]string{"-tt"}, 255, "master> "},
+	"Tunnel":    {[]string{"-tt", "-L", "999:localhost:6492"}, 255, "master> "},
 	"ExecError": {[]string{"testing"}, 255, ""},
 }
 
@@ -135,8 +136,9 @@ func (s *sshCmdSuite) TestAll() {
 	defer buf.Reset()
 	for tname, tcmd := range allTests {
 		buf.Reset()
-		s.T().Logf("sshcmd/%s", tname)
+		log.Printf("[TEST]: sshcmd/%s", tname)
 		st := s.runCmd(buf, tcmd.Args)
+		log.Print("[TEST]: *****")
 		check.True(st.Exited(), tname)
 		check.Equal(tcmd.ExitCode, st.ExitCode(), tname)
 		check.Equal(tcmd.Output, buf.String(), tname)
