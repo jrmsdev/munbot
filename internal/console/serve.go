@@ -16,8 +16,8 @@ import (
 )
 
 type request struct {
-	Type    string
-	Serve   bool
+	Type  string
+	Serve bool
 }
 
 func (s *Console) serve(ctx context.Context, nc ssh.NewChannel, sid string) {
