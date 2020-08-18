@@ -10,6 +10,6 @@ import (
 	"github.com/munbot/master/robot/worker"
 )
 
-func NewRobot() *gobot.Robot {
-	return worker.New().Gobot()
+func AddRobots(m *gobot.Master) {
+	m.AddRobot(worker.New().Gobot())
 }

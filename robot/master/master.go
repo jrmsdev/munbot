@@ -54,7 +54,7 @@ func NewRobot() *Robot {
 	}
 	r.addCommands(r.Master)
 	r.Master.Start()
-	r.Master.AddRobot(platform.NewRobot())
+	platform.AddRobots(r.Master)
 	return r
 }
 
