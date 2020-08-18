@@ -48,7 +48,7 @@ func (a *Auth) setup() error {
 	log.Debug("setup")
 	a.name = env.Get("MUNBOT")
 	var err error
-	if err = os.MkdirAll(a.dir, 0750); err != nil {
+	if err = vfs.MkdirAll(a.dir); err != nil {
 		return log.Error(err)
 	}
 	a.priv = filepath.Join(a.dir, "id_ed25519")

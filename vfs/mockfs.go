@@ -92,13 +92,13 @@ func NewMockFilesystem(files ...string) *MockFilesystem {
 }
 
 // Mkdir creates a mocking dir path.
-func (fs *MockFilesystem) Mkdir(path string, perm os.FileMode) error {
+func (fs *MockFilesystem) Mkdir(path string) error {
 	fs.root[path] = &MockFile{nil, fs, false, true}
 	return nil
 }
 
 // MkdirAll creates a mocking dir path.
-func (fs *MockFilesystem) MkdirAll(path string, perm os.FileMode) error {
+func (fs *MockFilesystem) MkdirAll(path string) error {
 	fs.root[path] = &MockFile{nil, fs, false, true}
 	return nil
 }

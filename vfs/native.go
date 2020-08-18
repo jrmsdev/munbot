@@ -21,11 +21,11 @@ func (fs *NativeFilesystem) Stat(name string) (os.FileInfo, error) {
 }
 
 // Mkdir calls os.Mkdir.
-func (fs *NativeFilesystem) Mkdir(path string, perm os.FileMode) error {
-	return os.Mkdir(path, perm)
+func (fs *NativeFilesystem) Mkdir(path string) error {
+	return os.Mkdir(path, dirPerm)
 }
 
 // MkdirAll calls os.MkdirAll.
-func (fs *NativeFilesystem) MkdirAll(path string, perm os.FileMode) error {
-	return os.MkdirAll(path, perm)
+func (fs *NativeFilesystem) MkdirAll(path string) error {
+	return os.MkdirAll(path, dirPerm)
 }

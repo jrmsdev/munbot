@@ -13,6 +13,9 @@ import (
 	"os"
 )
 
+var dirPerm os.FileMode = 0770
+var filePerm os.FileMode = 0660
+
 // File handler interface.
 type File interface {
 	io.ReadWriteCloser
@@ -23,8 +26,8 @@ type File interface {
 type Filesystem interface {
 	OpenFile(string, int, os.FileMode) (File, error)
 	Stat(string) (os.FileInfo, error)
-	Mkdir(string, os.FileMode) error
-	MkdirAll(string, os.FileMode) error
+	Mkdir(string) error
+	MkdirAll(string) error
 }
 
 var fs Filesystem
@@ -80,13 +83,13 @@ func hash(s string) string {
 }
 
 // Mkdir creates a new directory on current filesystem.
-func Mkdir(path string, perm os.FileMode) error {
-	return fs.Mkdir(path, perm)
+func Mkdir(path string) error {
+	return fs.Mkdir(path)
 }
 
 // MkdirAll creates a new directory on current filesystem.
-func MkdirAll(path string, perm os.FileMode) error {
-	return fs.MkdirAll(path, perm)
+func MkdirAll(path string) error {
+	return fs.MkdirAll(path)
 }
 
 // Open opens the named file as read only.
