@@ -73,6 +73,10 @@ func (m *Robot) Stop() error {
 
 // munbot interface
 
+func (m *Robot) Uptime() time.Duration {
+	return time.Since(m.born)
+}
+
 func (m *Robot) CurrentState(s string) {
 	m.state = s
 }

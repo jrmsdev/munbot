@@ -90,7 +90,7 @@ func (k *Core) Start() error {
 	if err := k.state.Run(); err != nil {
 		return err
 	}
-	log.Debug("bye")
+	log.Debug("bye!")
 	return nil
 }
 

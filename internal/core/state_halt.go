@@ -40,6 +40,7 @@ func (s *SHalt) Stop() error {
 
 func (s *SHalt) Halt() error {
 	log.Print("Halt...")
+	log.Infof("Uptime %s", s.rt.Master.Uptime())
 	log.Info("Bye!")
 	return nil
 }

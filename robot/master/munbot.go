@@ -5,6 +5,7 @@ package master
 
 import (
 	"net/http"
+	"time"
 
 	"github.com/munbot/master/internal/api/wapp"
 )
@@ -17,4 +18,5 @@ type Munbot interface {
 	ServeHTTP(http.ResponseWriter, *http.Request)
 	CurrentState(string)
 	ExitNotify(chan<- bool)
+	Uptime() time.Duration
 }

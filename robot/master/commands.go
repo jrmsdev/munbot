@@ -36,7 +36,7 @@ func (m *Robot) newStatus() *Status {
 	}
 	return &Status{
 		Born:   m.born.String(),
-		Uptime: time.Since(m.born).String(),
+		Uptime: m.Uptime().String(),
 		State:  m.state,
 		Status: status,
 		Error:  err,
