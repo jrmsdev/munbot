@@ -66,3 +66,8 @@ func (p *Profile) GetRundir() string {
 func (p *Profile) GetRundirPath(name string) string {
 	return filepath.Join(p.GetRundir(), name)
 }
+
+// Setup checks runtime setup requirements.
+func (p *Profile) Setup() error {
+	return nil
+}

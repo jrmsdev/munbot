@@ -28,12 +28,15 @@ func newInit(m Machine, rt *Mem) State {
 func (s *SInit) Init() error {
 	log.Print("Init config profile...")
 	cfg := s.m.Config()
-	//~ cfl := s.m.ConfigFlags()
 	cfg.SetDefaults(config.Defaults)
 	if err := cfg.Load(); err != nil {
 		return log.Error(err)
 	}
+	cfl := s.m.ConfigFlags()
 	log.Print("Init profile setup...")
+	if err := cfl.Profile.Setup(); err != nil {
+		return log.Error(err)
+	}
 	if s.rt.Master == nil {
 		log.Print("Init auth manager...")
 		s.rt.Auth = auth.New()
