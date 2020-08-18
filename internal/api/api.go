@@ -96,7 +96,7 @@ func (a *Api) Stop() error {
 			}
 		}
 	} else {
-		log.Debug("avoid stop... enable:%v ln:%v", a.enable, a.ln == nil)
+		log.Debugf("avoid stop... enable:%v ln:%v", a.enable, a.ln == nil)
 	}
 	return nil
 }

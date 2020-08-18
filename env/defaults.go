@@ -35,7 +35,7 @@ var Init map[string]string = map[string]string{
 	// these will be set at init() time based on os user env
 	"MB_HOME":   "",
 	"MB_CONFIG": "",
-	"MB_RUN": "",
+	"MB_RUN":    "",
 
 	"MBAPI":       "true",
 	"MBAPI_DEBUG": "false",
