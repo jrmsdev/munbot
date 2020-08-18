@@ -33,11 +33,22 @@ type Server interface {
 }
 
 type Addr struct {
-	uri *url.URL
+	net.Addr
+	addr string
+	net  string
+	uri  *url.URL
+}
+
+func newAddr(net, addr string) *Addr {
+	return &Addr{addr: addr, net: net, uri: &url.URL{Scheme: "ssh", Host: addr}}
 }
 
 func (a *Addr) String() string {
-	return a.uri.String()
+	return a.addr
+}
+
+func (a *Addr) Network() string {
+	return a.net
 }
 
 func (a *Addr) Hostname() string {
@@ -97,11 +108,11 @@ func (s *Console) wgwait() {
 }
 
 func (s *Console) Addr() *Addr {
+	addr := ""
 	if s.ln != nil {
-		uri, _ := url.Parse(fmt.Sprintf("ssh://%s", s.ln.Addr().String()))
-		return &Addr{uri: uri}
+		addr = s.ln.Addr().String()
 	}
-	return &Addr{uri: &url.URL{Scheme: "ssh"}}
+	return newAddr("tcp", addr)
 }
 
 func (s *Console) Configure(cfg *Config) error {

@@ -78,11 +78,12 @@ func (s *sshCmdSuite) SetupSuite() {
 	}(s.T(), s.cons)
 	time.Sleep(50 * time.Millisecond)
 	s.addr = s.cons.Addr().String()
+	s.T().Logf("console addr %q", s.addr)
 	if s.addr == "ssh:" {
 		s.T().Fatal("could not get console server address")
 	}
 	s.port = s.cons.Addr().Port()
-	s.T().Logf("setup server: %s", s.addr)
+	s.T().Logf("console port: %q", s.port)
 	s.ident = filepath.Join(s.tmpdir, "id_ed25519")
 	cmd := exec.Command("ssh-keygen", "-q", "-f", s.ident,
 		"-t", "ed25519", "-N", "")
