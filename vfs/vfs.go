@@ -79,6 +79,16 @@ func hash(s string) string {
 	return fmt.Sprintf("%x", h)
 }
 
+// Mkdir creates a new directory on current filesystem.
+func Mkdir(path string, perm os.FileMode) error {
+	return fs.Mkdir(path, perm)
+}
+
+// MkdirAll creates a new directory on current filesystem.
+func MkdirAll(path string, perm os.FileMode) error {
+	return fs.MkdirAll(path, perm)
+}
+
 // Open opens the named file as read only.
 func Open(name string) (File, error) {
 	return fs.OpenFile(name, os.O_RDONLY, 0)
