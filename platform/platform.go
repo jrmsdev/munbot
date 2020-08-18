@@ -7,22 +7,8 @@ package platform
 import (
 	"gobot.io/x/gobot"
 
-	"github.com/munbot/master/platform/adaptor"
-	"github.com/munbot/master/platform/driver"
 	"github.com/munbot/master/robot/worker"
 )
-
-type Adaptor adaptor.Adaptor
-
-func NewAdaptor() Adaptor {
-	return adaptor.New()
-}
-
-type Driver driver.Driver
-
-func NewDriver(a Adaptor) Driver {
-	return driver.New(a)
-}
 
 func NewRobot() *gobot.Robot {
 	return worker.New().Gobot()
