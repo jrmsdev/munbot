@@ -39,16 +39,24 @@ func (a *Auth) Configure(cadir string) error {
 // ServerConfig creates a new instance of ssh.ServerConfig based on our settings.
 func (a *Auth) ServerConfig() *ssh.ServerConfig {
 	cfg := &ssh.ServerConfig{}
+	cfg.ServerVersion = "SSH-2.0-Munbot"
+	cfg.MaxAuthTries = 3
 	if a.id == nil {
-		log.Warn("ssh authentication is disabled!")
 		return cfg
 	}
 	cfg.AddHostKey(a.id)
-	cfg.MaxAuthTries = 3
-	cfg.ServerVersion = "SSH-2.0-Munbot"
-	cfg.PublicKeyCallback = a.publicKeyCallback
-	cfg.BannerCallback = a.bannerCallback
+	if a.enable {
+		cfg.BannerCallback = a.bannerCallback
+		cfg.PublicKeyCallback = a.publicKeyCallback
+	} else {
+		log.Warn("ssh authentication is disabled!")
+		cfg.PublicKeyCallback = a.publicKeyDisabled
+	}
 	return cfg
+}
+
+func (a *Auth) publicKeyDisabled(c ssh.ConnMetadata, k ssh.PublicKey) (*ssh.Permissions, error) {
+	return nil, fmt.Errorf("ssh auth disabled")
 }
 
 func (a *Auth) bannerCallback(conn ssh.ConnMetadata) string {

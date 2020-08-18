@@ -21,6 +21,7 @@ var ErrCADir error = errors.New("auth: invalid CA dir")
 
 // Auth implemenst the console auth manager.
 type Auth struct {
+	enable   bool
 	name     string
 	dir      string
 	priv     string
@@ -34,9 +35,10 @@ type Auth struct {
 // New creates a new Auth instance.
 func New() *Auth {
 	return &Auth{
-		name: "master",
-		auth: map[string]bool{},
-		rw:   new(sync.RWMutex),
+		enable: env.GetBool("MBAUTH"),
+		name:   "master",
+		auth:   map[string]bool{},
+		rw:     new(sync.RWMutex),
 	}
 }
 
