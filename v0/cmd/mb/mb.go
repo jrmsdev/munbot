@@ -32,8 +32,8 @@ func (c *Cmd) Command(cf *config.Flags) cmd.Command {
 }
 
 type Main struct {
-	fl  *master.Flags
-	cf  *config.Flags
+	fl *master.Flags
+	cf *config.Flags
 }
 
 func newMain(fl *master.Flags, cf *config.Flags) *Main {
@@ -44,8 +44,8 @@ func newMain(fl *master.Flags, cf *config.Flags) *Main {
 	log.SetColors(env.Get("MB_LOG_COLORS"))
 	log.SetPrefix(env.Get("MUNBOT"))
 	return &Main{
-		fl:  fl,
-		cf:  cf,
+		fl: fl,
+		cf: cf,
 	}
 }
 
