@@ -16,6 +16,7 @@ type MockFile struct {
 	*bytes.Buffer
 	fs     *MockFilesystem
 	closed bool
+	isdir  bool
 }
 
 // Close sets the file as closed so it will raise an error if future read/write
@@ -90,6 +91,18 @@ func NewMockFilesystem(files ...string) *MockFilesystem {
 	return fs
 }
 
+// Mkdir creates a mocking dir path.
+func (fs *MockFilesystem) Mkdir(path string, perm os.FileMode) error {
+	fs.root[path] = &MockFile{nil, fs, false, true}
+	return nil
+}
+
+// MkdirAll creates a mocking dir path.
+func (fs *MockFilesystem) MkdirAll(path string, perm os.FileMode) error {
+	fs.root[path] = &MockFile{nil, fs, false, true}
+	return nil
+}
+
 // Add adds a new file to the root tree (if it already exists it is silently
 // overriden). It returns the new file handler.
 func (fs *MockFilesystem) Add(filename string) *MockFile {
@@ -97,7 +110,7 @@ func (fs *MockFilesystem) Add(filename string) *MockFile {
 	if found {
 		fs.root[filename] = nil
 	}
-	fs.root[filename] = &MockFile{new(bytes.Buffer), fs, false}
+	fs.root[filename] = &MockFile{new(bytes.Buffer), fs, false, false}
 	return fs.root[filename].(*MockFile)
 }
 

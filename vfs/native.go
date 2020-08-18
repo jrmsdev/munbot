@@ -19,3 +19,13 @@ func (fs *NativeFilesystem) OpenFile(name string, flag int, perm os.FileMode) (F
 func (fs *NativeFilesystem) Stat(name string) (os.FileInfo, error) {
 	return os.Stat(name)
 }
+
+// Mkdir calls os.Mkdir.
+func (fs *NativeFilesystem) Mkdir(path string, perm os.FileMode) error {
+	return os.Mkdir(path, perm)
+}
+
+// MkdirAll calls os.MkdirAll.
+func (fs *NativeFilesystem) MkdirAll(path string, perm os.FileMode) error {
+	return os.MkdirAll(path, perm)
+}

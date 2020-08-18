@@ -23,6 +23,8 @@ type File interface {
 type Filesystem interface {
 	OpenFile(string, int, os.FileMode) (File, error)
 	Stat(string) (os.FileInfo, error)
+	Mkdir(string, os.FileMode) error
+	MkdirAll(string, os.FileMode) error
 }
 
 var fs Filesystem
