@@ -253,7 +253,10 @@ func (s *Console) dispatch(ctx context.Context, nc net.Conn, sid string) {
 	}(reqs)
 	// serve
 	fp := conn.Permissions.Extensions["pubkey-fp"]
-	log.Infof("Auth login %s %s", fp, sid)
+	if err := s.auth.Login(fp, sid); err != nil {
+		log.Debugf("%s auth login error: %v", sid, err)
+		return
+	}
 LOOP:
 	for nc := range chans {
 		select {
@@ -265,5 +268,7 @@ LOOP:
 		}
 		s.serve(ctx, nc, sid)
 	}
-	log.Infof("Auth logout %s %s", sid, s.ctxSessionElapsed(ctx))
+	if err := s.auth.Logout(sid); err != nil {
+		log.Debugf("%s auth logout error: %v", sid, err)
+	}
 }

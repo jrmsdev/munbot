@@ -111,6 +111,8 @@ LOOP:
 	}
 	term.SetPrompt("")
 	if err := resp.PrintfLine("%s%s", ps1, "logout"); err != nil {
-		log.Errorf("Console %s: %v", sid, err)
+		if err != io.EOF {
+			log.Errorf("Console %s: %v", sid, err)
+		}
 	}
 }
