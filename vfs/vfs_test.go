@@ -74,13 +74,13 @@ func (s *Suite) TestOpenError() {
 
 func (s *Suite) TestOpenFile() {
 	require := require.New(s.T())
-	_, err := OpenFile("stat.txt", os.O_RDONLY, 0)
+	_, err := OpenFile("stat.txt", os.O_RDONLY)
 	require.NoError(err, "open error")
 }
 
 func (s *Suite) TestOpenFileError() {
 	require := require.New(s.T())
-	_, err := OpenFile("stat.err", os.O_RDONLY, 0)
+	_, err := OpenFile("stat.err", os.O_RDONLY)
 	require.Error(err, "open error")
 }
 
@@ -92,7 +92,7 @@ func TestNativeOpenFile(t *testing.T) {
 	require := require.New(t)
 	fs := new(NativeFilesystem)
 	fn := filepath.FromSlash("./testdata/native.test")
-	fh, err := fs.OpenFile(fn, os.O_RDONLY, 0)
+	fh, err := fs.OpenFile(fn, os.O_RDONLY)
 	require.NoError(err, "open file")
 	require.Implements((*File)(nil), fh, "file interface")
 }
@@ -101,7 +101,7 @@ func TestNativeOpenFileError(t *testing.T) {
 	require := require.New(t)
 	fs := new(NativeFilesystem)
 	fn := filepath.FromSlash("./testdata/nofile.test")
-	_, err := fs.OpenFile(fn, os.O_RDONLY, 0)
+	_, err := fs.OpenFile(fn, os.O_RDONLY)
 	require.Error(err, "open file error")
 	require.True(os.IsNotExist(err), "open file not found error type")
 }

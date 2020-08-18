@@ -11,7 +11,11 @@ import (
 type NativeFilesystem struct{}
 
 // OpenFile calls os.OpenFile.
-func (fs *NativeFilesystem) OpenFile(name string, flag int, perm os.FileMode) (File, error) {
+func (fs *NativeFilesystem) OpenFile(name string, flag int) (File, error) {
+	perm := filePerm
+	if flag == os.O_RDONLY {
+		perm = 0
+	}
 	return os.OpenFile(name, flag, perm)
 }
 

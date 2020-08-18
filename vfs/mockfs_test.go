@@ -124,12 +124,12 @@ func (s *MockSuite) TestAddTwice() {
 
 func (s *MockSuite) TestOpenFile() {
 	s.fs.Add("testing.txt")
-	_, err := s.fs.OpenFile("testing.txt", 0, 0)
+	_, err := s.fs.OpenFile("testing.txt", 0)
 	s.require.NoError(err, "open file")
 }
 
 func (s *MockSuite) TestOpenFileNotFound() {
-	_, err := s.fs.OpenFile("testing.txt", 0, 0)
+	_, err := s.fs.OpenFile("testing.txt", 0)
 	s.require.Error(err, "open file not found")
 	s.require.True(os.IsNotExist(err), "open file not found error type")
 }
@@ -137,7 +137,7 @@ func (s *MockSuite) TestOpenFileNotFound() {
 func (s *MockSuite) TestOpenFileWithError() {
 	s.fs.WithOpenError = true
 	s.fs.Add("testing.txt")
-	_, err := s.fs.OpenFile("testing.txt", 0, 0)
+	_, err := s.fs.OpenFile("testing.txt", 0)
 	s.require.EqualError(err, "mock open error", "open file error")
 }
 

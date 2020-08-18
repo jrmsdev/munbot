@@ -118,7 +118,7 @@ func (fs *MockFilesystem) Add(filename string) *MockFile {
 // Otherwise a proper "file not found" mocked *os.PathError is returned.
 // If WithOpenError is set a mock error is returned, even if the filename is not
 // in the root tree.
-func (fs *MockFilesystem) OpenFile(name string, flag int, perm os.FileMode) (File, error) {
+func (fs *MockFilesystem) OpenFile(name string, flag int) (File, error) {
 	if fs.WithOpenError {
 		return nil, errors.New("mock open error")
 	}

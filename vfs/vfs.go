@@ -24,10 +24,10 @@ type File interface {
 
 // Filesystem handler interface.
 type Filesystem interface {
-	OpenFile(string, int, os.FileMode) (File, error)
-	Stat(string) (os.FileInfo, error)
-	Mkdir(string) error
-	MkdirAll(string) error
+	OpenFile(filename string, flag int) (File, error)
+	Stat(filename string) (os.FileInfo, error)
+	Mkdir(path string) error
+	MkdirAll(path string) error
 }
 
 var fs Filesystem
@@ -47,8 +47,8 @@ func SetFilesystem(newfs Filesystem) {
 }
 
 // OpenFile calls current fs manager OpenFile method.
-func OpenFile(name string, flag int, perm os.FileMode) (File, error) {
-	return fs.OpenFile(name, flag, perm)
+func OpenFile(name string, flag int) (File, error) {
+	return fs.OpenFile(name, flag)
 }
 
 // Stat calls current fs manager Stat method.
@@ -94,14 +94,14 @@ func MkdirAll(path string) error {
 
 // Open opens the named file as read only.
 func Open(name string) (File, error) {
-	return fs.OpenFile(name, os.O_RDONLY, 0)
+	return fs.OpenFile(name, os.O_RDONLY)
 }
 
 // Create opens the named file with read and write access, creates it if it does
 // not exists already and truncates its content if it exists. Permissions before
 // umask are set as 0660.
 func Create(name string) (File, error) {
-	return fs.OpenFile(name, os.O_RDWR|os.O_CREATE|os.O_TRUNC, 0660)
+	return fs.OpenFile(name, os.O_RDWR|os.O_CREATE|os.O_TRUNC)
 }
 
 // Exist checks if the named file exists on current filesystem.
