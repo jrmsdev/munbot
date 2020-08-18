@@ -7,12 +7,14 @@ package api
 import (
 	"context"
 	"fmt"
+	"net"
 	"net/http"
 	"path"
 	"time"
 
 	"github.com/gorilla/mux"
 
+	"github.com/munbot/master/config/profile"
 	"github.com/munbot/master/env"
 	"github.com/munbot/master/log"
 )
@@ -31,9 +33,11 @@ func newHTTPServer(h http.Handler) *http.Server {
 var _ Server = &Api{}
 
 type Api struct {
-	enable bool
 	mux    *mux.Router
 	server *http.Server
+	ln     net.Listener
+	enable bool
+	net    string
 }
 
 func New() Server {
@@ -43,21 +47,35 @@ func New() Server {
 }
 
 func (a *Api) Configure(c *ServerConfig) error {
-	a.enable = c.Enable
+	prof := profile.New()
 	if c.Net == "" {
 		c.Net = env.Get("MBAPI_NET")
 	}
 	if c.Addr == "" {
 		c.Net = env.Get("MBAPI_ADDR")
 	}
-	a.server.Addr = fmt.Sprintf("%s:%d", c.Addr, c.Port)
+	a.enable = c.Enable
+	a.net = c.Net
+	if a.net == "tcp" || a.net == "tcp4" || a.net == "tcp6" {
+		a.server.Addr = fmt.Sprintf("%s:%d", c.Addr, c.Port)
+	} else if a.net == "unix" {
+		a.server.Addr = prof.GetRundirPath("api.socket")
+	} else {
+		return fmt.Errorf("api: invalid network %q", a.net)
+	}
 	return nil
 }
 
 func (a *Api) Start() error {
 	if a.enable {
-		log.Printf("Api server http://%s/", a.server.Addr)
-		if err := a.server.ListenAndServe(); err != http.ErrServerClosed {
+		var err error
+		a.ln, err = net.Listen(a.net, a.server.Addr)
+		if err != nil {
+			log.Debugf("listen error: %v", err)
+			return err
+		}
+		log.Printf("Api server http://%s", a.server.Addr)
+		if err := a.server.Serve(a.ln); err != http.ErrServerClosed {
 			return err
 		}
 	} else {
@@ -67,13 +85,18 @@ func (a *Api) Start() error {
 }
 
 func (a *Api) Stop() error {
-	if a.enable {
+	if a.enable && a.ln != nil {
 		log.Debugf("server shutdown... timeout in %s", stopTimeout)
 		ctx, cancel := context.WithTimeout(context.Background(), stopTimeout)
 		defer cancel()
-		if err := a.server.Shutdown(ctx); err != http.ErrServerClosed {
-			return err
+		if err := a.server.Shutdown(ctx); err != nil {
+			if err != http.ErrServerClosed {
+				log.Debugf("shutdown error: %v", err)
+				return err
+			}
 		}
+	} else {
+		log.Debug("avoid stop... enable:%v ln:%v", a.enable, a.ln == nil)
 	}
 	return nil
 }
