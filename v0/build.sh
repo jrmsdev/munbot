@@ -35,8 +35,8 @@ for cmd in ${build_cmds}; do
 	if ${STATIC}; then
 		dst=${cmd}-static.bin
 	fi
-	go build -v -mod vendor -i -o ./_build/cmd/${dst} ${PKGDIR} $@ \
+	go build -v -mod vendor -i -o ./_build/cmd/main/${dst} ${PKGDIR} $@ \
 		-tags "${TAGS}" -ldflags "${BUILD_DATE} ${BUILD_INFO}" \
-		./cmd/${cmd} || exit 1
+		./cmd/main/${cmd} || exit 1
 done
 exit 0
