@@ -19,6 +19,7 @@ type Manager interface {
 	ServerConfig() *ssh.ServerConfig
 	Login(fp, sid string) error
 	Logout(sid string) error
+	Session(sid string) (error, error)
 }
 
 // Configure sets up the CA directory.
@@ -65,4 +66,9 @@ func (a *Auth) Login(fp, sid string) error {
 func (a *Auth) Logout(sid string) error {
 	log.Infof("Auth logout %s", sid)
 	return nil
+}
+
+func (a *Auth) Session(sid string) (error, error) {
+	log.Debugf("%s new session", sid)
+	return nil, nil
 }

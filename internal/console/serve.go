@@ -83,6 +83,11 @@ func (s *Console) serve(ctx context.Context, nc ssh.NewChannel, sid string) {
 func (s *Console) serveShell(ctx context.Context, ch ssh.Channel, sid string) {
 	log.Debugf("%s serve shell", sid)
 	defer ch.Close()
+	_, err := s.auth.Session(sid)
+	if err != nil {
+		log.Debugf("%s auth session error: %v", sid, err)
+		return
+	}
 	ps1 := fmt.Sprintf("%s> ", env.Get("MUNBOT"))
 	term := terminal.NewTerminal(ch, ps1)
 	resp := textproto.NewWriter(bufio.NewWriter(term))
