@@ -10,7 +10,6 @@ import (
 	"golang.org/x/crypto/ssh"
 
 	"github.com/munbot/master/log"
-	"github.com/munbot/master/version"
 )
 
 var _ Manager = &Auth{}
@@ -46,7 +45,6 @@ func (a *Auth) ServerConfig() *ssh.ServerConfig {
 	}
 	cfg.AddHostKey(a.id)
 	if a.enable {
-		cfg.BannerCallback = a.bannerCallback
 		cfg.PublicKeyCallback = a.publicKeyCallback
 	} else {
 		log.Warn("ssh authentication is disabled!")
@@ -57,10 +55,6 @@ func (a *Auth) ServerConfig() *ssh.ServerConfig {
 
 func (a *Auth) publicKeyDisabled(c ssh.ConnMetadata, k ssh.PublicKey) (*ssh.Permissions, error) {
 	return nil, fmt.Errorf("ssh auth disabled")
-}
-
-func (a *Auth) bannerCallback(conn ssh.ConnMetadata) string {
-	return fmt.Sprintf("Munbot %s %s\n", a.name, version.String())
 }
 
 func (a *Auth) Login(fp, sid string) error {

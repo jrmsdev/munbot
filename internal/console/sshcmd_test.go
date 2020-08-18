@@ -210,7 +210,6 @@ func (s *sshCmdSuite) TestSSHCopyIDError() {
 	s.Error(err)
 	st := cmd.ProcessState
 	s.Equal(1, st.ExitCode())
-	s.Contains(buf.String(), "ERROR: Munbot master")
 	s.Contains(buf.String(), "ERROR: exec request failed on channel 0")
 }
 
