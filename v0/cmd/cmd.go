@@ -59,6 +59,9 @@ func (m *Main) Main(args []string) {
 	if len(args) >= 1 {
 		action = args[0]
 	}
+	if action == "" {
+		action = "__NOACTION__"
+	}
 	if b, ok := m.subcmd[action]; ok {
 		build = b
 		cmdargs = args[1:]
@@ -74,11 +77,9 @@ func (m *Main) Main(args []string) {
 	flags := config.NewFlags(fs)
 	build.FlagSet(fs)
 	fs.Parse(cmdargs)
-	if err := flags.Parse(); err != nil {
-		osExit(1)
-	}
+	flags.Parse()
 	if showVersion {
-		m.showVersion(progname)
+		version.Print(progname)
 		osExit(0)
 	}
 	cmd := build.Command(flags)
@@ -87,8 +88,4 @@ func (m *Main) Main(args []string) {
 	}
 	rc := cmd.Run(fs.Args())
 	osExit(rc)
-}
-
-func (m *Main) showVersion(progname string) {
-	version.Print(progname)
 }
