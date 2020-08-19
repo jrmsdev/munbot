@@ -1,25 +1,21 @@
 // Copyright (c) Jeremías Casteglione <jrmsdev@gmail.com>
 // See LICENSE file.
 
-// Package master.
+// Package master implements the master robot.
 package master
 
 import (
-	"github.com/munbot/master/v0/version"
+	"gobot.io/x/gobot"
 )
 
 // Robot works around a gobot.Master.
 type Robot struct {
+	*gobot.Master
 }
 
 // New creates a new master robot.
 func New() *Robot {
-	return &Robot{}
-}
-
-// Version returns version information.
-func (m *Robot) Version() *version.Info {
-	return new(version.Info)
+	return &Robot{Master: gobot.NewMaster()}
 }
 
 // Run runs the robot's main loop.
