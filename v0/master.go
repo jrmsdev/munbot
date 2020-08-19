@@ -8,6 +8,7 @@ import (
 	"gobot.io/x/gobot"
 
 	"github.com/munbot/master/v0/log"
+	"github.com/munbot/master/v0/robot"
 )
 
 // Robot works around a gobot.Master.
@@ -29,11 +30,19 @@ func (m *Robot) Start() error {
 
 // Stop stops the gobot master robot and then the core runtime.
 func (m *Robot) Stop() error {
+	log.Print("Stop master robot.")
 	return m.Master.Stop()
 }
 
 // Run runs the robot's main loop.
+//
+// Add core munbot robot.
+// Start.
+// Watch for failures and abort if any.
 func (m *Robot) Run() error {
+	log.Debug("run...")
 	defer m.Stop()
+	log.Debug("add core munbot")
+	m.AddRobot(robot.New().Gobot())
 	return m.Start()
 }

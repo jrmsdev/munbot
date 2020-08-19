@@ -24,5 +24,10 @@ func New() *Munbot {
 	return r
 }
 
+// Gobot returns the internal gobot reference, to be added to a master gobot.
+func (r *Munbot) Gobot() *gobot.Robot {
+	return r.Robot
+}
+
 func (r *Munbot) Work() {
 }

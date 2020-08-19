@@ -50,7 +50,7 @@ func (m *Main) Run(args []string) int {
 		return 11
 	}
 	m.fl.Parse()
-	log.Infof("Munbot version %s", version.String())
+	log.Infof("Munbot version %s.", version.String())
 	if err := profile.New().Setup(); err != nil {
 		return 12
 	}
