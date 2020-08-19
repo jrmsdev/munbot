@@ -11,8 +11,8 @@ import (
 	"github.com/munbot/master/v0"
 	"github.com/munbot/master/v0/cmd"
 	"github.com/munbot/master/v0/config"
-	"github.com/munbot/master/v0/env"
 	"github.com/munbot/master/v0/log"
+	"github.com/munbot/master/v0/version"
 )
 
 type Cmd struct {
@@ -37,12 +37,6 @@ type Main struct {
 }
 
 func newMain(fl *master.Flags, cf *config.Flags) *Main {
-	if cf.Debug {
-		log.DebugFlags(env.Get("MB_LOG_DEBUG"))
-	}
-	log.SetMode(env.Get("MB_LOG"))
-	log.SetColors(env.Get("MB_LOG_COLORS"))
-	log.SetPrefix(env.Get("MUNBOT"))
 	return &Main{
 		fl: fl,
 		cf: cf,
@@ -55,5 +49,7 @@ func (m *Main) Run(args []string) int {
 		return 9
 	}
 	m.fl.Parse()
+	log.Infof("Munbot version %s", version.String())
+	log.Info("Bye!")
 	return 0
 }

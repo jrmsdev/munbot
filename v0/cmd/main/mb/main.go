@@ -12,6 +12,5 @@ import (
 )
 
 func main() {
-	m := cmd.New("mb", mb.New())
-	m.Main(os.Args[1:])
+	cmd.New("mb", mb.New()).Main(os.Args[1:])
 }

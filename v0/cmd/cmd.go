@@ -7,9 +7,9 @@ import (
 	"flag"
 	"os"
 
-	_ "github.com/munbot/master/v0/env"
-
 	"github.com/munbot/master/v0/config"
+	"github.com/munbot/master/v0/env"
+	"github.com/munbot/master/v0/log"
 	"github.com/munbot/master/v0/version"
 )
 
@@ -82,6 +82,12 @@ func (m *Main) Main(args []string) {
 		version.Print(progname)
 		osExit(0)
 	}
+	if flags.Debug {
+		log.DebugFlags(env.Get("MB_LOG_DEBUG"))
+	}
+	log.SetMode(env.Get("MB_LOG"))
+	log.SetColors(env.Get("MB_LOG_COLORS"))
+	log.SetPrefix(env.Get("MUNBOT"))
 	cmd := build.Command(flags)
 	if cmd == nil {
 		osExit(9)
