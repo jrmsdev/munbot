@@ -25,6 +25,8 @@ github.com/stretchr/testify/assert
 github.com/stretchr/testify/mock
 github.com/stretchr/testify/require
 github.com/stretchr/testify/suite
+# github.com/subchen/go-trylock/v2 v2.0.0
+github.com/subchen/go-trylock/v2
 # gobot.io/x/gobot v1.14.0
 gobot.io/x/gobot
 # gopkg.in/yaml.v3 v3.0.0-20200313102051-9f266ea9e77c
