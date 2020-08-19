@@ -11,6 +11,7 @@ import (
 	"github.com/munbot/master/v0"
 	"github.com/munbot/master/v0/cmd"
 	"github.com/munbot/master/v0/config"
+	"github.com/munbot/master/v0/config/profile"
 	"github.com/munbot/master/v0/log"
 	"github.com/munbot/master/v0/version"
 )
@@ -34,12 +35,14 @@ func (c *Cmd) Command(cf *config.Flags) cmd.Command {
 type Main struct {
 	fl *master.Flags
 	cf *config.Flags
+	pf *profile.Profile
 }
 
 func newMain(fl *master.Flags, cf *config.Flags) *Main {
 	return &Main{
 		fl: fl,
 		cf: cf,
+		pf: profile.New(),
 	}
 }
 
@@ -49,7 +52,11 @@ func (m *Main) Run(args []string) int {
 		return 9
 	}
 	m.fl.Parse()
+	rc := 0
 	log.Infof("Munbot version %s", version.String())
+	if err := m.pf.Setup(); err != nil {
+		return 11
+	}
 	log.Info("Bye!")
-	return 0
+	return rc
 }

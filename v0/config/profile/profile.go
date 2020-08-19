@@ -80,7 +80,7 @@ func (p *Profile) Setup() error {
 	for _, dir := range mkdirs {
 		log.Debugf("setup mkdir %q", dir)
 		if err := vfs.MkdirAll(dir); err != nil {
-			return err
+			return log.Error(err)
 		}
 	}
 	return nil
