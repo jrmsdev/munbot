@@ -35,28 +35,28 @@ func (c *Cmd) Command(cf *config.Flags) cmd.Command {
 type Main struct {
 	fl *master.Flags
 	cf *config.Flags
-	pf *profile.Profile
 }
 
 func newMain(fl *master.Flags, cf *config.Flags) *Main {
 	return &Main{
 		fl: fl,
 		cf: cf,
-		pf: profile.New(),
 	}
 }
 
 func (m *Main) Run(args []string) int {
 	if len(args) > 0 {
-		log.Errorf("invalid args: %v; check %s -help", args, os.Args[0])
-		return 9
-	}
-	m.fl.Parse()
-	rc := 0
-	log.Infof("Munbot version %s", version.String())
-	if err := m.pf.Setup(); err != nil {
+		log.Errorf("invalid args: %v\ncheck %s -help", args, os.Args[0])
 		return 11
 	}
+	m.fl.Parse()
+	log.Infof("Munbot version %s", version.String())
+	if err := profile.New().Setup(); err != nil {
+		return 12
+	}
+	if err := master.New().Run(); err != nil {
+		return 13
+	}
 	log.Info("Bye!")
-	return rc
+	return 0
 }
