@@ -72,13 +72,12 @@ func (p *Profile) GetRundirPath(name string) string {
 // Setup checks runtime setup requirements.
 func (p *Profile) Setup() error {
 	log.Debug("setup...")
-	mkdirs := []string{
-		filepath.Join(p.Home, p.Name),
-		filepath.Join(p.Config, p.Name),
-		filepath.Join(p.Run, p.Name),
+	mkdirs := map[string]string{
+		"config": filepath.Join(p.Config, p.Name),
+		"run": filepath.Join(p.Run, p.Name),
 	}
-	for _, dir := range mkdirs {
-		log.Debugf("setup mkdir %q", dir)
+	for name, dir := range mkdirs {
+		log.Debugf("setup %s dir %q", name, dir)
 		if err := vfs.MkdirAll(dir); err != nil {
 			return log.Error(err)
 		}
