@@ -7,6 +7,8 @@ import (
 	"path/filepath"
 	"testing"
 
+	"github.com/gobuffalo/envy"
+
 	"github.com/munbot/master/v0/env"
 	"github.com/munbot/master/v0/testing/assert"
 )
@@ -16,9 +18,6 @@ func TestEnvFile(t *testing.T) {
 
 	cfgdir, err := filepath.Abs(filepath.FromSlash("."))
 	check.NoError(err)
-
-	check.Equal("life", env.MBENV, "env.MBENV")
-	check.Equal("", env.MBENV_CONFIG, "env.MBENV_CONFIG")
 
 	check.Equal("test", env.Get("MBENV"), "MBENV")
 	check.Equal(cfgdir, env.Get("MBENV_CONFIG"), "MBENV_CONFIG")
@@ -38,4 +37,18 @@ func TestEnvFile(t *testing.T) {
 
 	check.Equal("true", env.Get("MBCONSOLE"), "MBCONSOLE")
 	check.Equal("127.0.0.1", env.Get("MBCONSOLE_ADDR"), "MBCONSOLE_ADDR")
+}
+
+func TestDevelEnvFile(t *testing.T) {
+	check := assert.New(t)
+
+	cfgdir, err := filepath.Abs(filepath.FromSlash("."))
+	check.NoError(err)
+	check.Equal(cfgdir, env.Get("MBENV_CONFIG"), "MBENV_CONFIG")
+
+	err = envy.Load(filepath.Join(cfgdir, "devel.env"))
+	check.NoError(err)
+
+	check.Equal("devel", env.Get("MBENV"), "MBENV")
+	check.Equal("longfile", env.Get("MB_LOG_DEBUG"), "MB_LOG_DEBUG")
 }

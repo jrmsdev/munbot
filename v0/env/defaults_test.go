@@ -12,6 +12,10 @@ import (
 
 func TestDefaults(t *testing.T) {
 	check := assert.New(t)
+
+	check.Equal("life", env.MBENV, "env.MBENV")
+	check.Equal("", env.MBENV_CONFIG, "env.MBENV_CONFIG")
+
 	check.Equal("master", env.Defaults["MUNBOT"], "MUNBOT")
 
 	check.Equal("false", env.Defaults["MB_DEBUG"], "MB_DEBUG")
