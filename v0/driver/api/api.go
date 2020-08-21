@@ -14,7 +14,7 @@ import (
 type Driver struct {
 	gobot.Driver
 	name string
-	conn gobot.Connection
+	conn adaptor.Adaptor
 }
 
 func NewDriver(a adaptor.Adaptor) gobot.Driver {
@@ -39,11 +39,11 @@ func (a *Driver) Connection() gobot.Connection {
 }
 
 func (a *Driver) Start() error {
-	log.Debug("start")
+	log.Printf("Start %s driver.", a.name)
 	return nil
 }
 
 func (a *Driver) Halt() error {
-	log.Debug("halt")
+	log.Printf("Halt %s driver.", a.name)
 	return nil
 }

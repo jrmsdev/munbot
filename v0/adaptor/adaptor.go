@@ -13,6 +13,8 @@ import (
 	"github.com/munbot/master/v0/log"
 )
 
+var _ gobot.Connection = &Munbot{}
+
 type Adaptor interface {
 	gobot.Adaptor
 	Interval() time.Duration
@@ -42,14 +44,14 @@ func (m *Munbot) SetName(name string) {
 }
 
 func (m *Munbot) Connect() error {
-	log.Debug("connect...")
+	log.Printf("Connect %s platform.", m.name)
 	log.Debug("lock core runtime")
 	core.Lock()
 	return nil
 }
 
 func (m *Munbot) Finalize() error {
-	log.Debug("finalize...")
+	log.Printf("Finalize %s platform.", m.name)
 	log.Debug("unlock core runtime")
 	core.Unlock()
 	return nil

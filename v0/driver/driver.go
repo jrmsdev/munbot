@@ -47,12 +47,12 @@ func (m *Munbot) Connection() gobot.Connection {
 }
 
 func (m *Munbot) Start() error {
-	log.Debug("start")
+	log.Printf("Start %s driver.", m.name)
 	return nil
 }
 
 func (m *Munbot) Halt() error {
-	log.Debug("halt")
+	log.Printf("Halt %s driver.", m.name)
 	return nil
 }
 
