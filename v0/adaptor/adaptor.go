@@ -26,7 +26,7 @@ type Munbot struct {
 func New() *Munbot {
 	return &Munbot{
 		name:     "munbot",
-		interval: 500 * time.Millisecond,
+		interval: 300 * time.Millisecond,
 	}
 }
 
