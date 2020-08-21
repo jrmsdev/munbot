@@ -74,7 +74,7 @@ func (p *Profile) Setup() error {
 	log.Debug("setup...")
 	mkdirs := map[string]string{
 		"config": filepath.Join(p.Config, p.Name),
-		"run": filepath.Join(p.Run, p.Name),
+		"run":    filepath.Join(p.Run, p.Name),
 	}
 	for name, dir := range mkdirs {
 		log.Debugf("setup %s dir %q", name, dir)
