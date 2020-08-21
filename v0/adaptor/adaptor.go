@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"gobot.io/x/gobot"
+	"gobot.io/x/gobot/api"
 
 	"github.com/munbot/master/v0/internal/core"
 	"github.com/munbot/master/v0/log"
@@ -19,6 +20,7 @@ type Adaptor interface {
 	gobot.Adaptor
 	Interval() time.Duration
 	SetInterval(time.Duration)
+	GobotApi() *api.API
 }
 
 type Munbot struct {
@@ -65,4 +67,8 @@ func (m *Munbot) Interval() time.Duration {
 
 func (m *Munbot) SetInterval(d time.Duration) {
 	m.interval = d
+}
+
+func (m *Munbot) GobotApi() *api.API {
+	return &api.API{}
 }
