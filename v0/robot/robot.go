@@ -18,9 +18,8 @@ type Munbot struct {
 	*gobot.Robot
 }
 
-func New() *Munbot {
+func New(conn adaptor.Adaptor) *Munbot {
 	r := &Munbot{}
-	conn := adaptor.New()
 	r.Robot = gobot.NewRobot(
 		"munbot",
 		[]gobot.Connection{conn},

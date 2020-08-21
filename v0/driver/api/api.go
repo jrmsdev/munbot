@@ -7,8 +7,8 @@ package api
 import (
 	"gobot.io/x/gobot"
 
-	"github.com/munbot/master/v0/log"
 	"github.com/munbot/master/v0/adaptor"
+	"github.com/munbot/master/v0/log"
 )
 
 type Driver struct {
@@ -19,8 +19,8 @@ type Driver struct {
 
 func NewDriver(a adaptor.Adaptor) gobot.Driver {
 	return &Driver{
-		name:   "munbot.api",
-		conn:   a,
+		name: "munbot.api",
+		conn: a,
 	}
 }
 

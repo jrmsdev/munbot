@@ -9,8 +9,8 @@ import (
 
 	"gobot.io/x/gobot"
 
-	"github.com/munbot/master/v0/log"
 	"github.com/munbot/master/v0/adaptor"
+	"github.com/munbot/master/v0/log"
 )
 
 var _ Driver = &Munbot{}
@@ -27,8 +27,8 @@ type Munbot struct {
 
 func New(a adaptor.Adaptor) *Munbot {
 	return &Munbot{
-		name:   "munbot",
-		conn:   a,
+		name: "munbot",
+		conn: a,
 	}
 }
 

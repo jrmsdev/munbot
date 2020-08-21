@@ -7,6 +7,7 @@ package master
 import (
 	"gobot.io/x/gobot"
 
+	"github.com/munbot/master/v0/adaptor"
 	"github.com/munbot/master/v0/log"
 	"github.com/munbot/master/v0/robot"
 )
@@ -42,6 +43,6 @@ func (m *Robot) Stop() error {
 func (m *Robot) Run() error {
 	log.Debug("run...")
 	log.Debug("add core munbot")
-	m.AddRobot(robot.New().Gobot())
+	m.AddRobot(robot.New(adaptor.New()).Gobot())
 	return m.Start()
 }
