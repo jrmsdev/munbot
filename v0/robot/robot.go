@@ -8,6 +8,7 @@ import (
 	"gobot.io/x/gobot"
 
 	"github.com/munbot/master/v0/adaptor"
+	"github.com/munbot/master/v0/driver"
 	"github.com/munbot/master/v0/log"
 )
 
@@ -18,10 +19,11 @@ type Munbot struct {
 
 func New() *Munbot {
 	r := &Munbot{}
+	conn := adaptor.New()
 	r.Robot = gobot.NewRobot(
 		"munbot",
-		[]gobot.Connection{adaptor.New()},
-		[]gobot.Device{},
+		[]gobot.Connection{conn},
+		[]gobot.Device{driver.New(conn)},
 		r.Work,
 	)
 	return r

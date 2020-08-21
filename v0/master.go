@@ -47,6 +47,5 @@ func (m *Robot) Run() error {
 	defer core.Unlock()
 	log.Debug("add core munbot")
 	m.AddRobot(robot.New().Gobot())
-	defer m.Stop()
 	return m.Start()
 }
