@@ -9,6 +9,7 @@ import (
 
 	"gobot.io/x/gobot"
 
+	"github.com/munbot/master/v0/internal/core"
 	"github.com/munbot/master/v0/log"
 )
 
@@ -42,11 +43,15 @@ func (m *Munbot) SetName(name string) {
 
 func (m *Munbot) Connect() error {
 	log.Debug("connect...")
+	log.Debug("lock core runtime")
+	core.Lock()
 	return nil
 }
 
 func (m *Munbot) Finalize() error {
 	log.Debug("finalize...")
+	log.Debug("unlock core runtime")
+	core.Unlock()
 	return nil
 }
 
