@@ -7,6 +7,7 @@ package master
 import (
 	"gobot.io/x/gobot"
 
+	"github.com/munbot/master/v0/internal/core"
 	"github.com/munbot/master/v0/log"
 	"github.com/munbot/master/v0/robot"
 )
@@ -41,8 +42,11 @@ func (m *Robot) Stop() error {
 // Watch for failures and abort if any.
 func (m *Robot) Run() error {
 	log.Debug("run...")
-	defer m.Stop()
+	log.Debug("lock core runtime")
+	core.Lock()
+	defer core.Unlock()
 	log.Debug("add core munbot")
 	m.AddRobot(robot.New().Gobot())
+	defer m.Stop()
 	return m.Start()
 }

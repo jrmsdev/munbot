@@ -7,11 +7,10 @@ package core
 import (
 	"errors"
 
-	"github.com/munbot/master/v0/log"
 	"github.com/munbot/master/v0/utils/lock"
 )
 
-var ErrLock error = errors.New("core: lock failed")
+var LockPanic error = errors.New("core: lock failed")
 var UnlockPanic error = errors.New("core: unlock failed")
 
 var k *lock.Locker
@@ -20,28 +19,22 @@ func init() {
 	k = lock.New()
 }
 
-func Lock() error {
+func Lock() {
 	if !k.TryLock(nil) {
-		return log.Error(ErrLock)
+		panic(LockPanic)
 	}
-	return nil
 }
 
 func Unlock() {
-	var err error
 	defer func() {
 		if r := recover(); r != nil {
 			msg, ok := r.(string)
-			if !ok {
+			if ok && msg == "Unlock() failed" {
+				panic(UnlockPanic)
+			} else {
 				panic(r)
-			}
-			if msg == "Unlock() failed" {
-				err = UnlockPanic
 			}
 		}
 	}()
 	k.Unlock()
-	if err != nil {
-		panic(err)
-	}
 }
