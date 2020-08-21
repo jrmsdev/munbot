@@ -8,6 +8,8 @@ import (
 	"time"
 
 	"gobot.io/x/gobot"
+
+	"github.com/munbot/master/v0/log"
 )
 
 type Adaptor interface {
@@ -39,10 +41,12 @@ func (m *Munbot) SetName(name string) {
 }
 
 func (m *Munbot) Connect() error {
+	log.Debug("connect...")
 	return nil
 }
 
 func (m *Munbot) Finalize() error {
+	log.Debug("finalize...")
 	return nil
 }
 

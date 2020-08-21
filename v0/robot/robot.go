@@ -7,6 +7,7 @@ package robot
 import (
 	"gobot.io/x/gobot"
 
+	"github.com/munbot/master/v0/adaptor"
 	"github.com/munbot/master/v0/log"
 )
 
@@ -19,7 +20,7 @@ func New() *Munbot {
 	r := &Munbot{}
 	r.Robot = gobot.NewRobot(
 		"munbot",
-		[]gobot.Connection{},
+		[]gobot.Connection{adaptor.New()},
 		[]gobot.Device{},
 		r.Work,
 	)
