@@ -15,14 +15,14 @@ import (
 // MBENV is the default env name.
 var MBENV string = "life"
 
-// MBENV_CONFIG if set, should be a dir path where to look for ${MBENV}.env file.
-// If it's set as "" (empty string) no extra files will be loaded (besides .env).
-// By default it's set at init() time to ${HOME}/env if we can get user's home dir.
+// MBENV_CONFIG if set, should be a dir path where to look for ${MBENV}.env
+// file. By default it's set as "" (empty string), so no extra files will be
+// loaded, besides ${PWD}.env if exists.
 var MBENV_CONFIG string = ""
 
-// Init contains the initial settings. They are copied at init(), so direct
+// Defaults contains the initial settings. They are copied at init(), so direct
 // modifications to this map doesn't have any effect.
-var Init map[string]string = map[string]string{
+var Defaults map[string]string = map[string]string{
 	"MUNBOT": "master",
 
 	"MB_DEBUG":   "false",
@@ -77,7 +77,7 @@ func initDefaults() {
 	defrw.Lock()
 	defer defrw.Unlock()
 	defvals = make(map[string]string)
-	for k, v := range Init {
+	for k, v := range Defaults {
 		defvals[k] = v
 	}
 }
@@ -108,7 +108,6 @@ func userDefaults() {
 	}
 	configDir = filepath.Clean(envy.Get("MB_CONFIG", configDir))
 	defvals["MB_CONFIG"] = configDir
-	MBENV_CONFIG = filepath.Join(homeDir, "env")
 	// run dir
 	runDir := filepath.Clean(envy.Get("XDG_RUNTIME_DIR",
 		filepath.Join(homeDir, ".local", "share")))

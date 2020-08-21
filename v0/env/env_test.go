@@ -13,9 +13,14 @@ import (
 
 func TestEnvFile(t *testing.T) {
 	check := assert.New(t)
-	check.Equal("test", env.Get("MBENV"), "MBENV")
+
 	cfgdir, err := filepath.Abs(filepath.FromSlash("."))
 	check.NoError(err)
+
+	check.Equal("life", env.MBENV, "env.MBENV")
+	check.Equal("", env.MBENV_CONFIG, "env.MBENV_CONFIG")
+
+	check.Equal("test", env.Get("MBENV"), "MBENV")
 	check.Equal(cfgdir, env.Get("MBENV_CONFIG"), "MBENV_CONFIG")
 	check.Equal("test.env", env.Get("MBTEST_ENVFILE"), "MBTEST_ENVFILE")
 
