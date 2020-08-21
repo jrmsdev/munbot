@@ -9,6 +9,7 @@ import (
 
 	"github.com/munbot/master/v0/adaptor"
 	"github.com/munbot/master/v0/driver"
+	"github.com/munbot/master/v0/driver/api"
 	"github.com/munbot/master/v0/log"
 )
 
@@ -23,7 +24,10 @@ func New() *Munbot {
 	r.Robot = gobot.NewRobot(
 		"munbot",
 		[]gobot.Connection{conn},
-		[]gobot.Device{driver.New(conn)},
+		[]gobot.Device{
+			driver.New(conn),
+			api.NewDriver(conn),
+		},
 		r.Work,
 	)
 	return r
