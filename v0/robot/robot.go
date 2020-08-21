@@ -6,6 +6,8 @@ package robot
 
 import (
 	"gobot.io/x/gobot"
+
+	"github.com/munbot/master/v0/log"
 )
 
 // Munbot implements the core worker robot.
@@ -16,7 +18,7 @@ type Munbot struct {
 func New() *Munbot {
 	r := &Munbot{}
 	r.Robot = gobot.NewRobot(
-		"Munbot",
+		"munbot",
 		[]gobot.Connection{},
 		[]gobot.Device{},
 		r.Work,
@@ -30,4 +32,5 @@ func (r *Munbot) Gobot() *gobot.Robot {
 }
 
 func (r *Munbot) Work() {
+	log.Debug("start work...")
 }
