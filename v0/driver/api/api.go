@@ -10,6 +10,7 @@ import (
 	"gobot.io/x/gobot"
 
 	"github.com/munbot/master/v0/adaptor"
+	"github.com/munbot/master/v0/env"
 	"github.com/munbot/master/v0/internal/core"
 	"github.com/munbot/master/v0/internal/event"
 	"github.com/munbot/master/v0/log"
@@ -48,10 +49,17 @@ func (a *Driver) Connection() gobot.Connection {
 
 func (a *Driver) Start() error {
 	log.Printf("Start %s driver.", a.name)
-	a.conn.GobotApi()
 	a.srv = core.NewApiServer()
 	if err := a.srv.Configure(); err != nil {
 		return log.Errorf("Api server configure: %v", err)
+	}
+	if env.GetBool("MBAPI") {
+		ga := a.conn.GobotApi()
+		if env.GetBool("MBAPI_DEBUG") {
+			ga.Debug()
+		}
+		ga.AddRobeauxRoutes()
+		a.srv.Mount(env.Get("MBAPI_PATH"), ga)
 	}
 	a.wg.Add(1)
 	if err := a.Once(event.ApiStart, func(data interface{}) {
