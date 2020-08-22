@@ -24,12 +24,15 @@ type Adaptor interface {
 }
 
 type Munbot struct {
+	Adaptor
+	master   *gobot.Master
 	name     string
 	interval time.Duration
 }
 
-func New() *Munbot {
+func New(m *gobot.Master) *Munbot {
 	return &Munbot{
+		master:   m,
 		name:     "munbot",
 		interval: 300 * time.Millisecond,
 	}
