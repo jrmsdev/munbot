@@ -43,8 +43,11 @@ func (m *Robot) Stop() error {
 // Watch for failures and abort if any.
 func (m *Robot) Run() error {
 	log.Debug("run...")
+	m.AutoRun = true
 	log.Debug("add core munbot")
-	m.AddRobot(robot.New(adaptor.New(m.Master)).Gobot())
+	bot := robot.New(adaptor.New(m.Master))
+	bot.AutoRun = false
+	m.AddRobot(bot.Gobot())
 	if err := m.Start(); err != nil {
 		m.Stop()
 		return err
