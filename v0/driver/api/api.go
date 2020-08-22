@@ -29,7 +29,7 @@ func NewDriver(a adaptor.Adaptor) gobot.Driver {
 		conn: a,
 		name: "munbot.api",
 		wg:   new(sync.WaitGroup),
-		Eventer: gobot.NewEventer(),
+		Eventer: a.Eventer(),
 	}
 }
 
