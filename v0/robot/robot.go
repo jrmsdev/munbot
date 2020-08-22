@@ -20,10 +20,11 @@ import (
 type Munbot struct {
 	*gobot.Robot
 	conn adaptor.Adaptor
+	AutoRun bool
 }
 
 func New(conn adaptor.Adaptor) *Munbot {
-	r := &Munbot{conn: conn}
+	r := &Munbot{conn: conn, AutoRun: true}
 	r.Robot = gobot.NewRobot(
 		"munbot",
 		[]gobot.Connection{r.conn},
@@ -38,6 +39,7 @@ func New(conn adaptor.Adaptor) *Munbot {
 
 // Gobot returns the internal gobot reference, to be added to a master gobot.
 func (r *Munbot) Gobot() *gobot.Robot {
+	r.Robot.AutoRun = r.AutoRun
 	return r.Robot
 }
 

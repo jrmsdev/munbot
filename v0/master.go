@@ -15,17 +15,18 @@ import (
 // Robot works around a gobot.Master.
 type Robot struct {
 	*gobot.Master
+	AutoRun bool
 }
 
 // New creates a new master robot.
 func New() *Robot {
-	return &Robot{Master: gobot.NewMaster()}
+	return &Robot{Master: gobot.NewMaster(), AutoRun: true}
 }
 
 // Start starts the core runtime and then the gobot master robot.
 func (m *Robot) Start() error {
 	log.Print("Start master robot.")
-	m.Master.AutoRun = true
+	m.Master.AutoRun = m.AutoRun
 	return m.Master.Start()
 }
 
