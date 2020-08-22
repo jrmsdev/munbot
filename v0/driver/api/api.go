@@ -5,6 +5,8 @@
 package api
 
 import (
+	"sync"
+
 	"gobot.io/x/gobot"
 
 	"github.com/munbot/master/v0/adaptor"
@@ -17,6 +19,7 @@ type Driver struct {
 	conn adaptor.Adaptor
 	name string
 	srv  core.ApiServer
+	wg   *sync.WaitGroup
 	gobot.Eventer
 }
 
@@ -24,6 +27,7 @@ func NewDriver(a adaptor.Adaptor) gobot.Driver {
 	return &Driver{
 		conn: a,
 		name: "munbot.api",
+		wg:   new(sync.WaitGroup),
 		Eventer: gobot.NewEventer(),
 	}
 }
@@ -49,17 +53,30 @@ func (a *Driver) Start() error {
 	if err := a.srv.Configure(); err != nil {
 		return log.Errorf("Api server configure: %v", err)
 	}
-	a.On(event.ApiStart, func(data interface{}) {
+	a.wg.Add(1)
+	if err := a.Once(event.ApiStart, func(data interface{}) {
 		log.Print("Start api server.")
-	})
-	a.On(event.ApiStop, func(data interface{}) {
+		defer a.wg.Done()
+		a.srv.Start()
+	}); err != nil {
+		return log.Error(err)
+	}
+	a.wg.Add(1)
+	if err := a.Once(event.ApiStop, func(data interface{}) {
 		log.Print("Stop api server.")
-	})
+		defer a.wg.Done()
+		a.srv.Stop()
+	}); err != nil {
+		return log.Error(err)
+	}
+	a.Publish(event.ApiStart, nil)
 	return nil
 }
 
 func (a *Driver) Halt() error {
 	log.Printf("Halt %s driver.", a.name)
+	a.Publish(event.ApiStop, nil)
+	a.wg.Wait()
 	a.srv = nil
 	return nil
 }
