@@ -11,6 +11,7 @@ import (
 	"gobot.io/x/gobot/api"
 
 	"github.com/munbot/master/v0/internal/core"
+	"github.com/munbot/master/v0/internal/event"
 	"github.com/munbot/master/v0/log"
 )
 
@@ -21,6 +22,7 @@ type Adaptor interface {
 	Interval() time.Duration
 	SetInterval(time.Duration)
 	GobotApi() *api.API
+	Eventer() gobot.Eventer
 }
 
 type Munbot struct {
@@ -28,6 +30,7 @@ type Munbot struct {
 	master   *gobot.Master
 	name     string
 	interval time.Duration
+	evtr     event.Manager
 }
 
 func New(m *gobot.Master) *Munbot {
@@ -35,6 +38,7 @@ func New(m *gobot.Master) *Munbot {
 		master:   m,
 		name:     "munbot",
 		interval: 300 * time.Millisecond,
+		evtr:     event.NewManager(),
 	}
 }
 
@@ -57,6 +61,8 @@ func (m *Munbot) Connect() error {
 
 func (m *Munbot) Finalize() error {
 	log.Printf("Finalize %s platform.", m.name)
+	log.Debug("wait eventer to finish...")
+	m.evtr.Wait()
 	log.Debug("unlock core runtime")
 	core.Unlock()
 	return nil
@@ -74,4 +80,8 @@ func (m *Munbot) SetInterval(d time.Duration) {
 
 func (m *Munbot) GobotApi() *api.API {
 	return api.NewAPI(m.master)
+}
+
+func (m *Munbot) Eventer() gobot.Eventer {
+	return m.evtr
 }
