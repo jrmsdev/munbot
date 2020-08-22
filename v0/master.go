@@ -44,5 +44,9 @@ func (m *Robot) Run() error {
 	log.Debug("run...")
 	log.Debug("add core munbot")
 	m.AddRobot(robot.New(adaptor.New(m.Master)).Gobot())
-	return m.Start()
+	if err := m.Start(); err != nil {
+		m.Stop()
+		return err
+	}
+	return nil
 }
