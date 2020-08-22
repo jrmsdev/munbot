@@ -73,5 +73,5 @@ func (m *Munbot) SetInterval(d time.Duration) {
 }
 
 func (m *Munbot) GobotApi() *api.API {
-	return &api.API{}
+	return api.NewAPI(m.master)
 }
