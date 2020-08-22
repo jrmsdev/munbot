@@ -37,3 +37,21 @@ func NewManager() Manager {
 func (m *evtr) Wait() {
 	m.wg.Wait()
 }
+
+func (m *evtr) On(name string, f func(d interface{})) error {
+	m.wg.Add(1)
+	wrapper := func(d interface{}) {
+		defer m.wg.Done()
+		f(d)
+	}
+	return m.Eventer.On(name, wrapper)
+}
+
+func (m *evtr) Once(name string, f func(d interface{})) error {
+	m.wg.Add(1)
+	wrapper := func(d interface{}) {
+		defer m.wg.Done()
+		f(d)
+	}
+	return m.Eventer.On(name, wrapper)
+}
