@@ -16,16 +16,17 @@ import (
 // Munbot implements the core worker robot.
 type Munbot struct {
 	*gobot.Robot
+	conn adaptor.Adaptor
 }
 
 func New(conn adaptor.Adaptor) *Munbot {
-	r := &Munbot{}
+	r := &Munbot{conn: conn}
 	r.Robot = gobot.NewRobot(
 		"munbot",
-		[]gobot.Connection{conn},
+		[]gobot.Connection{r.conn},
 		[]gobot.Device{
-			driver.New(conn),
-			api.NewDriver(conn),
+			driver.New(r.conn),
+			api.NewDriver(r.conn),
 		},
 		r.Work,
 	)
