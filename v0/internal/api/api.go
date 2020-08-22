@@ -30,8 +30,6 @@ func newHTTPServer(h http.Handler) *http.Server {
 	}
 }
 
-var _ Server = &Api{}
-
 type Api struct {
 	mux    *mux.Router
 	server *http.Server
@@ -40,7 +38,7 @@ type Api struct {
 	net    string
 }
 
-func New() Server {
+func NewServer() Server {
 	a := &Api{mux: mux.NewRouter()}
 	a.server = newHTTPServer(a.mux)
 	return a
@@ -57,7 +55,7 @@ func (a *Api) Configure() error {
 		prof := profile.New()
 		a.server.Addr = prof.GetRundirPath("api.socket")
 	} else {
-		return fmt.Errorf("api: invalid network %q", a.net)
+		return fmt.Errorf("invalid network %q", a.net)
 	}
 	return nil
 }

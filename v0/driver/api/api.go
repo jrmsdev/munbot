@@ -16,6 +16,7 @@ type Driver struct {
 	gobot.Driver
 	conn adaptor.Adaptor
 	name string
+	srv  core.ApiServer
 }
 
 func NewDriver(a adaptor.Adaptor) gobot.Driver {
@@ -39,11 +40,15 @@ func (a *Driver) Connection() gobot.Connection {
 func (a *Driver) Start() error {
 	log.Printf("Start %s driver.", a.name)
 	a.conn.GobotApi()
-	core.NewApiServer()
+	a.srv = core.NewApiServer()
+	if err := a.srv.Configure(); err != nil {
+		return log.Errorf("Api server configure: %v", err)
+	}
 	return nil
 }
 
 func (a *Driver) Halt() error {
 	log.Printf("Halt %s driver.", a.name)
+	a.srv = nil
 	return nil
 }

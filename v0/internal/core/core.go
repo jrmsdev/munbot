@@ -7,6 +7,7 @@ package core
 import (
 	"errors"
 
+	"github.com/munbot/master/v0/internal/api"
 	"github.com/munbot/master/v0/log"
 	"github.com/munbot/master/v0/utils/lock"
 )
@@ -51,7 +52,10 @@ func checkLock() {
 	}
 }
 
-func NewApiServer() {
+type ApiServer api.Server
+
+func NewApiServer() ApiServer {
 	log.Debug("new api server")
 	checkLock()
+	return api.NewServer()
 }
