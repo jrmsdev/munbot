@@ -9,18 +9,23 @@ import (
 
 	"github.com/munbot/master/v0/adaptor"
 	"github.com/munbot/master/v0/internal/core"
+	"github.com/munbot/master/v0/internal/event"
 	"github.com/munbot/master/v0/log"
 )
 
 type Driver struct {
-	gobot.Driver
 	conn adaptor.Adaptor
 	name string
 	srv  core.ApiServer
+	gobot.Eventer
 }
 
 func NewDriver(a adaptor.Adaptor) gobot.Driver {
-	return &Driver{conn: a, name: "munbot.api"}
+	return &Driver{
+		conn: a,
+		name: "munbot.api",
+		Eventer: gobot.NewEventer(),
+	}
 }
 
 // gobot interface
@@ -44,6 +49,12 @@ func (a *Driver) Start() error {
 	if err := a.srv.Configure(); err != nil {
 		return log.Errorf("Api server configure: %v", err)
 	}
+	a.On(event.ApiStart, func(data interface{}) {
+		log.Print("Start api server.")
+	})
+	a.On(event.ApiStop, func(data interface{}) {
+		log.Print("Stop api server.")
+	})
 	return nil
 }
 
