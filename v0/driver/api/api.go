@@ -8,20 +8,18 @@ import (
 	"gobot.io/x/gobot"
 
 	"github.com/munbot/master/v0/adaptor"
+	"github.com/munbot/master/v0/internal/core"
 	"github.com/munbot/master/v0/log"
 )
 
 type Driver struct {
 	gobot.Driver
-	name string
 	conn adaptor.Adaptor
+	name string
 }
 
 func NewDriver(a adaptor.Adaptor) gobot.Driver {
-	return &Driver{
-		name: "munbot.api",
-		conn: a,
-	}
+	return &Driver{conn: a, name: "munbot.api"}
 }
 
 // gobot interface
@@ -40,6 +38,8 @@ func (a *Driver) Connection() gobot.Connection {
 
 func (a *Driver) Start() error {
 	log.Printf("Start %s driver.", a.name)
+	a.conn.GobotApi()
+	core.NewApiServer()
 	return nil
 }
 

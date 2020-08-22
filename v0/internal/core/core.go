@@ -7,13 +7,16 @@ package core
 import (
 	"errors"
 
+	"github.com/munbot/master/v0/log"
 	"github.com/munbot/master/v0/utils/lock"
 )
 
 var LockPanic error = errors.New("core: lock failed")
 var UnlockPanic error = errors.New("core: unlock failed")
+var NotLockedPanic error = errors.New("core: not locked")
 
 var k *lock.Locker
+var locked bool
 
 func init() {
 	k = lock.New()
@@ -23,6 +26,7 @@ func Lock() {
 	if !k.TryLock(nil) {
 		panic(LockPanic)
 	}
+	locked = true
 }
 
 func Unlock() {
@@ -37,4 +41,17 @@ func Unlock() {
 		}
 	}()
 	k.Unlock()
+	locked = false
+}
+
+func checkLock() {
+	log.Debug("check lock")
+	if !locked {
+		panic(NotLockedPanic)
+	}
+}
+
+func NewApiServer() {
+	log.Debug("new api server")
+	checkLock()
 }
