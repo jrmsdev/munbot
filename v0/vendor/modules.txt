@@ -8,6 +8,8 @@ github.com/gobuffalo/envy
 github.com/gobuffalo/uuid
 # github.com/gofrs/uuid v3.2.0+incompatible
 github.com/gofrs/uuid
+# github.com/gorilla/mux v1.7.4
+github.com/gorilla/mux
 # github.com/hashicorp/errwrap v1.0.0
 github.com/hashicorp/errwrap
 # github.com/hashicorp/go-multierror v1.0.0
