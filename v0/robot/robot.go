@@ -5,6 +5,9 @@
 package robot
 
 import (
+	"os"
+	"os/signal"
+
 	"gobot.io/x/gobot"
 
 	"github.com/munbot/master/v0/adaptor"
@@ -40,4 +43,8 @@ func (r *Munbot) Gobot() *gobot.Robot {
 
 func (r *Munbot) Work() {
 	log.Debug("start work...")
+	c := make(chan os.Signal, 0)
+	signal.Notify(c, os.Interrupt)
+	<-c
+	log.Info("os interrupt...")
 }
