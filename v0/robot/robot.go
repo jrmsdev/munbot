@@ -20,7 +20,7 @@ import (
 // Munbot implements the core worker robot.
 type Munbot struct {
 	*gobot.Robot
-	conn adaptor.Adaptor
+	conn    adaptor.Adaptor
 	AutoRun bool
 	gobot.Eventer
 }
@@ -52,9 +52,18 @@ func (r *Munbot) Gobot() *gobot.Robot {
 
 func (r *Munbot) Work() {
 	log.Debug("start work...")
+	r.AddEvent(event.Fail)
+	if err := r.Once(event.Fail, func(data interface{}) {
+		if data != nil {
+			log.Info("Failure!")
+		}
+	}); err != nil {
+		log.Panic(err)
+	}
 	r.Publish(event.ApiStart, nil)
 	c := make(chan os.Signal, 0)
 	signal.Notify(c, os.Interrupt)
 	<-c
-	log.Info("os interrupt...")
+	log.Info("OS interrupt!")
+	r.Publish(event.Fail, nil)
 }

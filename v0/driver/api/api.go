@@ -26,9 +26,9 @@ type Driver struct {
 
 func NewDriver(a adaptor.Adaptor) gobot.Driver {
 	return &Driver{
-		conn: a,
-		name: "munbot.api",
-		wg:   new(sync.WaitGroup),
+		conn:    a,
+		name:    "munbot.api",
+		wg:      new(sync.WaitGroup),
 		Eventer: a.Eventer(),
 	}
 }
@@ -62,6 +62,7 @@ func (a *Driver) Start() error {
 		a.srv.Mount(env.Get("MBAPI_PATH"), ga)
 	}
 	a.wg.Add(1)
+	a.AddEvent(event.ApiStart)
 	if err := a.Once(event.ApiStart, func(data interface{}) {
 		log.Print("Start api server.")
 		defer a.wg.Done()
@@ -70,6 +71,7 @@ func (a *Driver) Start() error {
 		return log.Error(err)
 	}
 	a.wg.Add(1)
+	a.AddEvent(event.ApiStop)
 	if err := a.Once(event.ApiStop, func(data interface{}) {
 		log.Print("Stop api server.")
 		defer a.wg.Done()

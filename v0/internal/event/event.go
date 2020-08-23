@@ -8,13 +8,13 @@ import (
 	"sync"
 
 	"gobot.io/x/gobot"
-
 	//~ "github.com/munbot/master/v0/log"
 )
 
 const (
-	ApiStart string = "api.start"
-	ApiStop = "api.stop"
+	Fail     string = "fail"
+	ApiStart        = "api.start"
+	ApiStop         = "api.stop"
 )
 
 type Manager interface {
