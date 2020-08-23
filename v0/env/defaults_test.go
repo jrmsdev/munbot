@@ -38,7 +38,7 @@ func TestDefaults(t *testing.T) {
 
 	check.Equal("true", env.Defaults["MBAUTH"], "MBAUTH")
 
-	check.Equal("true", env.Defaults["MBCONSOLE"], "MBCONSOLE")
-	check.Equal("0.0.0.0", env.Defaults["MBCONSOLE_ADDR"], "MBCONSOLE_ADDR")
-	check.Equal("6492", env.Defaults["MBCONSOLE_PORT"], "MBCONSOLE_PORT")
+	check.Equal("true", env.Defaults["MBSSHD"], "MBSSHD")
+	check.Equal("0.0.0.0", env.Defaults["MBSSHD_ADDR"], "MBSSHD_ADDR")
+	check.Equal("6492", env.Defaults["MBSSHD_PORT"], "MBSSHD_PORT")
 }

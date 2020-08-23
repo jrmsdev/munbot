@@ -29,6 +29,6 @@ func TestFlagsDefaults(t *testing.T) {
 	f.Parse()
 	assert.Equal("", f.apiAddr, "default api.addr")
 	assert.Equal(uint(0), f.apiPort, "default api.port")
-	assert.Equal("", f.consoleAddr, "default console.addr")
-	assert.Equal(uint(0), f.consolePort, "default console.port")
+	assert.Equal("", f.sshdAddr, "default sshd.addr")
+	assert.Equal(uint(0), f.sshdPort, "default sshd.port")
 }

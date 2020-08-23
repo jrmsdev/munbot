@@ -11,14 +11,14 @@ import (
 
 // Flags holds main flags settings.
 type Flags struct {
-	apiDisable     bool
-	apiDebug       bool
-	apiAddr        string
-	apiPort        uint
-	authDisable    bool
-	consoleDisable bool
-	consoleAddr    string
-	consolePort    uint
+	apiDisable  bool
+	apiDebug    bool
+	apiAddr     string
+	apiPort     uint
+	authDisable bool
+	sshdDisable bool
+	sshdAddr    string
+	sshdPort    uint
 }
 
 func NewFlags() *Flags {
@@ -32,9 +32,9 @@ func (f *Flags) Set(fs *flag.FlagSet) {
 	fs.StringVar(&f.apiAddr, "api.addr", "", "api tcp network `address`")
 	fs.UintVar(&f.apiPort, "api.port", 0, "api tcp port `number`")
 	fs.BoolVar(&f.authDisable, "auth.disable", false, "disable auth")
-	fs.BoolVar(&f.consoleDisable, "console.disable", false, "disable console server")
-	fs.StringVar(&f.consoleAddr, "console.addr", "", "console tcp network `address`")
-	fs.UintVar(&f.consolePort, "console.port", 0, "console tcp port `number`")
+	fs.BoolVar(&f.sshdDisable, "sshd.disable", false, "disable sshd server")
+	fs.StringVar(&f.sshdAddr, "sshd.addr", "", "sshd tcp network `address`")
+	fs.UintVar(&f.sshdPort, "sshd.port", 0, "sshd tcp port `number`")
 }
 
 // Parse parses the flags that were not set via the flags handler (cmd args
@@ -42,7 +42,7 @@ func (f *Flags) Set(fs *flag.FlagSet) {
 func (f *Flags) Parse() {
 	f.parseApi()
 	f.parseAuth()
-	f.parseConsole()
+	f.parseSSHD()
 }
 
 func (f *Flags) parseApi() {
@@ -66,14 +66,14 @@ func (f *Flags) parseAuth() {
 	}
 }
 
-func (f *Flags) parseConsole() {
-	if f.consoleDisable {
-		env.Set("MBCONSOLE", "false")
+func (f *Flags) parseSSHD() {
+	if f.sshdDisable {
+		env.Set("MBSSHD", "false")
 	}
-	if f.consoleAddr != "" {
-		env.Set("MBCONSOLE_ADDR", f.consoleAddr)
+	if f.sshdAddr != "" {
+		env.Set("MBSSHD_ADDR", f.sshdAddr)
 	}
-	if f.consolePort != 0 {
-		env.SetUint("MBCONSOLE_PORT", f.consolePort)
+	if f.sshdPort != 0 {
+		env.SetUint("MBSSHD_PORT", f.sshdPort)
 	}
 }

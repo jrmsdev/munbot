@@ -46,9 +46,9 @@ var Defaults map[string]string = map[string]string{
 
 	"MBAUTH": "true",
 
-	"MBCONSOLE":      "true",
-	"MBCONSOLE_ADDR": "0.0.0.0",
-	"MBCONSOLE_PORT": "6492",
+	"MBSSHD":      "true",
+	"MBSSHD_ADDR": "0.0.0.0",
+	"MBSSHD_PORT": "6492",
 }
 var defvals map[string]string
 var defrw *sync.RWMutex

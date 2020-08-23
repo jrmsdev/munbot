@@ -35,8 +35,8 @@ func TestEnvFile(t *testing.T) {
 
 	check.Equal("true", env.Get("MBAUTH"), "MBAUTH")
 
-	check.Equal("true", env.Get("MBCONSOLE"), "MBCONSOLE")
-	check.Equal("127.0.0.1", env.Get("MBCONSOLE_ADDR"), "MBCONSOLE_ADDR")
+	check.Equal("true", env.Get("MBSSHD"), "MBSSHD")
+	check.Equal("127.0.0.1", env.Get("MBSSHD_ADDR"), "MBSSHD_ADDR")
 }
 
 func TestDevelEnvFile(t *testing.T) {
