@@ -6,11 +6,9 @@ package ssh
 import (
 	"fmt"
 	"io/ioutil"
-	"errors"
 	"os"
 	"os/exec"
 	"path/filepath"
-	"sync"
 
 	"golang.org/x/crypto/ssh"
 
@@ -18,8 +16,6 @@ import (
 	"github.com/munbot/master/v0/log"
 	"github.com/munbot/master/v0/vfs"
 )
-
-var ErrConfigDir error = errors.New("auth: config dir not found")
 
 var _ AuthManager = &ServerAuth{}
 
@@ -36,12 +32,10 @@ type AuthManager interface {
 type ServerAuth struct {
 	enable   bool
 	name     string
-	dir      string
-	priv     string
-	keys     string
+	dir      string // config dir file path
+	priv     string // ssh priv key file path
+	keys     string // authorized_keys file path
 	id       ssh.Signer
-	auth     map[string]bool
-	rw       *sync.RWMutex
 	lastHash string
 }
 
@@ -50,8 +44,6 @@ func NewServerAuth() *ServerAuth {
 	return &ServerAuth{
 		enable: env.GetBool("MBAUTH"),
 		name:   "master",
-		auth:   map[string]bool{},
-		rw:     new(sync.RWMutex),
 	}
 }
 
@@ -71,59 +63,21 @@ func (a *ServerAuth) setup() error {
 	if vfs.Exist(a.priv) {
 		a.id, err = a.sshLoadKeys(a.priv)
 	} else {
+		log.Warnf("%s: file not found.", a.priv)
 		a.id, err = a.sshNewKeys(a.priv)
 	}
 	if err != nil {
 		return err
 	}
-	if a.id != nil {
-		log.Printf("Auth %s %s", a.name, a.keyfp(a.id.PublicKey()))
-		if err := a.parseAuthKeys(); err != nil {
-			return err
-		}
-	}
+	log.Printf("Auth %s %s", a.name, a.keyfp(a.id.PublicKey()))
 	return nil
 }
 
-func (a *ServerAuth) parseAuthKeys() error {
+func (a *ServerAuth) parseAuthKeys(kfp string) error {
 	log.Debug("parse authorized keys")
-	hash, herr := vfs.StatHash(a.keys)
-	if herr != nil {
-		if os.IsNotExist(herr) {
-			if a.lastHash == "" || a.lastHash == "__notfound__" {
-				if a.lastHash == "" {
-					// warn only once...
-					log.Warn(herr)
-					a.lastHash = "__notfound__"
-				}
-				return nil
-			} else {
-				log.Warnf("%s: file was removed", a.keys)
-				log.Debug("delete loaded keys")
-				a.rw.Lock()
-				for fp := range a.auth {
-					delete(a.auth, fp)
-				}
-				a.lastHash = ""
-				a.rw.Unlock()
-				return nil
-			}
-		}
-		return log.Error(herr)
-	}
-	if hash == a.lastHash {
-		return nil
-	}
-	log.Print("Auth load keys...")
 	blob, err := vfs.ReadFile(a.keys)
 	if err != nil {
 		return log.Error(err)
-	}
-	a.rw.Lock()
-	defer a.rw.Unlock()
-	a.lastHash = hash
-	for fp := range a.auth {
-		delete(a.auth, fp)
 	}
 	for len(blob) > 0 {
 		key, _, _, rest, err := ssh.ParseAuthorizedKey(blob)
@@ -131,34 +85,27 @@ func (a *ServerAuth) parseAuthKeys() error {
 			return log.Error(err)
 		}
 		blob = rest
-		fp := a.keyfp(key)
-		a.auth[fp] = true
-		log.Printf("Auth key %s", fp)
+		if kfp == a.keyfp(key) {
+			log.Printf("Auth key %s", kfp)
+			return nil
+		}
 	}
-	return nil
+	return log.Errorf("Auth key %s", kfp)
 }
 
 func (a *ServerAuth) publicKeyCallback(c ssh.ConnMetadata, k ssh.PublicKey) (*ssh.Permissions, error) {
-	if err := a.parseAuthKeys(); err != nil {
+	fp := a.keyfp(k)
+	if err := a.parseAuthKeys(fp); err != nil {
 		return nil, err
 	}
-	a.rw.RLock()
-	defer a.rw.RUnlock()
-	fp := a.keyfp(k)
-	if a.auth[fp] {
-		log.Debugf("valid key %q", fp)
-		return &ssh.Permissions{Extensions: map[string]string{"pubkey-fp": fp}}, nil
-	}
-	return nil, log.Errorf("Auth key %s", fp)
+	log.Debugf("valid key %q", fp)
+	return &ssh.Permissions{Extensions: map[string]string{"pubkey-fp": fp}}, nil
 }
 
 // Configure sets up the auth directory.
 func (a *ServerAuth) Configure(dir string) error {
 	var err error
 	a.dir, err = filepath.Abs(dir)
-	if a.dir == "." {
-		return ErrConfigDir
-	}
 	if err != nil {
 		return err
 	}
@@ -232,14 +179,10 @@ func (a *ServerAuth) sshKeygen(filename string) error {
 }
 
 func (a *ServerAuth) sshNewKeys(fn string) (ssh.Signer, error) {
+	log.Print("SSH server generate new keys.")
 	log.Debugf("new keys: %s", fn)
 	if err := a.sshKeygen(fn); err != nil {
-		if err == exec.ErrNotFound {
-			log.Warn(err)
-			return nil, nil
-		} else {
-			return nil, log.Error(err)
-		}
+		return nil, log.Error(err)
 	}
 	return a.sshLoadKeys(fn)
 }
