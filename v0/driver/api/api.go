@@ -17,15 +17,18 @@ import (
 )
 
 type Driver struct {
+	*sync.Mutex
 	conn adaptor.Adaptor
 	name string
 	srv  core.ApiServer
 	wg   *sync.WaitGroup
+	err  error
 	gobot.Eventer
 }
 
 func NewDriver(a adaptor.Adaptor) gobot.Driver {
 	return &Driver{
+		Mutex:   new(sync.Mutex),
 		conn:    a,
 		name:    "munbot.api",
 		wg:      new(sync.WaitGroup),
@@ -40,6 +43,8 @@ func (a *Driver) Name() string {
 }
 
 func (a *Driver) SetName(name string) {
+	a.Lock()
+	defer a.Unlock()
 	a.name = name
 }
 
@@ -49,8 +54,14 @@ func (a *Driver) Connection() gobot.Connection {
 
 func (a *Driver) Start() error {
 	log.Printf("Start %s driver.", a.name)
-	// configure
+	a.Lock()
+	defer a.Unlock()
+	if a.srv != nil {
+		return log.Error("Api server alread started.")
+	}
+	a.err = nil
 	a.srv = core.NewApiServer()
+	// configure
 	if err := a.srv.Configure(); err != nil {
 		return log.Errorf("Api server configure: %v", err)
 	}
@@ -66,9 +77,13 @@ func (a *Driver) Start() error {
 	a.wg.Add(1)
 	a.AddEvent(event.ApiStop)
 	if err := a.Once(event.ApiStop, func(data interface{}) {
-		log.Print("Stop api server.")
 		defer a.wg.Done()
-		a.srv.Stop()
+		log.Print("Stop api server.")
+		a.Lock()
+		defer a.Unlock()
+		if err := a.srv.Stop(); err != nil {
+			a.err = log.Error(err)
+		}
 	}); err != nil {
 		return log.Error(err)
 	}
@@ -76,8 +91,8 @@ func (a *Driver) Start() error {
 	a.wg.Add(1)
 	a.AddEvent(event.ApiStart)
 	if err := a.Once(event.ApiStart, func(data interface{}) {
-		log.Print("Start api server.")
 		defer a.wg.Done()
+		log.Print("Start api server.")
 		if err := a.srv.Start(); err != nil {
 			log.Error(err)
 			a.Publish(event.Fail, event.Error{event.ApiStart, err})
@@ -92,6 +107,8 @@ func (a *Driver) Halt() error {
 	log.Printf("Halt %s driver.", a.name)
 	a.Publish(event.ApiStop, nil)
 	a.wg.Wait()
+	a.Lock()
+	defer a.Unlock()
 	a.srv = nil
-	return nil
+	return a.err
 }
