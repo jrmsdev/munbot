@@ -5,6 +5,8 @@
 package robot
 
 import (
+	"time"
+
 	"gobot.io/x/gobot"
 
 	"github.com/munbot/master/v0/adaptor"
@@ -65,4 +67,6 @@ func (r *Munbot) Work() {
 
 	// start core runtime
 	r.Publish(event.ApiStart, nil)
+	time.Sleep(r.conn.Interval())
+	r.Publish(event.SSHDStart, nil)
 }

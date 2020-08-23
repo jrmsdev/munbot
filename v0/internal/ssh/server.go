@@ -117,14 +117,14 @@ func (s *SSHD) Start() error {
 			log.Debugf("listen error: %v", err)
 			return err
 		}
-		log.Printf("SSHD server ssh://%s", s.addr)
+		log.Infof("SSH server ssh://%s", s.addr)
 		// accept connections
 		ctx, cancel := context.WithCancel(context.Background())
 		defer cancel()
 		defer s.ln.Close()
 		return s.accept(ctx)
 	} else {
-		log.Warn("SSHD server is disabled")
+		log.Warn("SSH server is disabled")
 	}
 	return nil
 }
@@ -148,7 +148,7 @@ LOOP:
 		nc, err = s.ln.Accept()
 		if err != nil {
 			if !s.closed {
-				log.Errorf("SSHD accept: %v", err)
+				log.Errorf("SSH server accept: %v", err)
 			}
 			continue
 		}

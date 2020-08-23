@@ -68,7 +68,7 @@ func (a *Api) Start() error {
 			log.Debugf("listen error: %v", err)
 			return err
 		}
-		log.Printf("Api server http://%s", a.server.Addr)
+		log.Infof("Api server http://%s", a.server.Addr)
 		if err := a.server.Serve(a.ln); err != http.ErrServerClosed {
 			return err
 		}
