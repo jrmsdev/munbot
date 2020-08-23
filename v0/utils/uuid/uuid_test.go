@@ -1,0 +1,15 @@
+// Copyright (c) Jeremías Casteglione <jrmsdev@gmail.com>
+// See LICENSE file.
+
+package uuid
+
+import (
+	"testing"
+
+	"github.com/munbot/master/v0/testing/assert"
+)
+
+func TestRand(t *testing.T) {
+	assert := assert.New(t)
+	assert.Regexp("^([[:xdigit:]]*)-([[:xdigit:]]*)-([[:xdigit:]]*)-([[:xdigit:]]*)-([[:xdigit:]]*)$", Rand())
+}
