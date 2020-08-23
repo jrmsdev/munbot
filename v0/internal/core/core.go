@@ -59,3 +59,5 @@ func NewApiServer() ApiServer {
 	checkLock()
 	return api.NewServer()
 }
+
+type SSHServer error
