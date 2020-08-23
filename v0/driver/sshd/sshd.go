@@ -17,6 +17,7 @@ import (
 )
 
 type Driver struct {
+	*sync.Mutex
 	conn adaptor.Adaptor
 	name string
 	srv  core.SSHServer
@@ -26,6 +27,7 @@ type Driver struct {
 
 func NewDriver(a adaptor.Adaptor) gobot.Driver {
 	return &Driver{
+		Mutex:   new(sync.Mutex),
 		conn:    a,
 		name:    "munbot.sshd",
 		wg:      new(sync.WaitGroup),
@@ -35,27 +37,39 @@ func NewDriver(a adaptor.Adaptor) gobot.Driver {
 
 // gobot interface
 
-func (a *Driver) Name() string {
-	return a.name
+func (s *Driver) Name() string {
+	return s.name
 }
 
-func (a *Driver) SetName(name string) {
-	a.name = name
+func (s *Driver) SetName(name string) {
+	s.Lock()
+	defer s.Unlock()
+	s.name = name
 }
 
-func (a *Driver) Connection() gobot.Connection {
-	return a.conn
+func (s *Driver) Connection() gobot.Connection {
+	return s.conn
 }
 
-func (a *Driver) Start() error {
-	log.Printf("Start %s driver.", a.name)
+func (s *Driver) Start() error {
+	log.Printf("Start %s driver.", s.name)
+	s.Lock()
+	defer s.Unlock()
+	if s.srv != nil {
+		return log.Error("SSH server already started")
+	}
+	s.srv = core.NewSSHServer()
 	// configure
+	log.Printf("Configure ssh server.")
+	if err := s.srv.Configure(); err != nil {
+		return log.Error(err)
+	}
 	// stop handler
 	// start handler
 	return nil
 }
 
-func (a *Driver) Halt() error {
-	log.Printf("Halt %s driver.", a.name)
+func (s *Driver) Halt() error {
+	log.Printf("Halt %s driver.", s.name)
 	return nil
 }

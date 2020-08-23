@@ -62,6 +62,7 @@ func (a *Driver) Start() error {
 	a.err = nil
 	a.srv = core.NewApiServer()
 	// configure
+	log.Print("Configure api server.")
 	if err := a.srv.Configure(); err != nil {
 		return log.Errorf("Api server configure: %v", err)
 	}

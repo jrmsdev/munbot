@@ -8,6 +8,7 @@ import (
 	"errors"
 
 	"github.com/munbot/master/v0/internal/api"
+	"github.com/munbot/master/v0/internal/ssh"
 	"github.com/munbot/master/v0/log"
 	"github.com/munbot/master/v0/utils/lock"
 )
@@ -60,4 +61,10 @@ func NewApiServer() ApiServer {
 	return api.NewServer()
 }
 
-type SSHServer error
+type SSHServer ssh.Server
+
+func NewSSHServer() SSHServer {
+	log.Debug("new ssh server")
+	checkLock()
+	return ssh.NewServer()
+}

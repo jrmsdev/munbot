@@ -10,6 +10,7 @@ import (
 	"github.com/munbot/master/v0/adaptor"
 	"github.com/munbot/master/v0/driver"
 	"github.com/munbot/master/v0/driver/api"
+	"github.com/munbot/master/v0/driver/sshd"
 	"github.com/munbot/master/v0/internal/event"
 	"github.com/munbot/master/v0/log"
 )
@@ -34,6 +35,7 @@ func New(conn adaptor.Adaptor) *Munbot {
 		[]gobot.Device{
 			driver.New(r.conn),
 			api.NewDriver(r.conn),
+			sshd.NewDriver(r.conn),
 		},
 		r.Work,
 	)
