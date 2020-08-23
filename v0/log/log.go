@@ -35,6 +35,14 @@ func init() {
 func DebugFlags(s string) {
 	l.Lock()
 	defer l.Unlock()
+	switch s {
+	case "std":
+		debugFlags = stdFlags
+		return
+	case "all":
+		debugFlags = stdFlags | log.Llongfile
+		return
+	}
 	var flags int
 	for _, f := range strings.Fields(s) {
 		switch f {
@@ -53,7 +61,7 @@ func DebugFlags(s string) {
 		}
 	}
 	if flags == 0 {
-		flags = stdFlags | log.Llongfile
+		flags = log.Llongfile
 	}
 	debugFlags = flags
 }

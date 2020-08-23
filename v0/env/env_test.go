@@ -50,5 +50,5 @@ func TestDevelEnvFile(t *testing.T) {
 	check.NoError(err)
 
 	check.Equal("devel", env.Get("MBENV"), "MBENV")
-	check.Equal("longfile", env.Get("MB_LOG_DEBUG"), "MB_LOG_DEBUG")
+	check.Equal("", env.Get("MB_LOG_DEBUG"), "MB_LOG_DEBUG")
 }

@@ -33,7 +33,7 @@ func NewFlags(fs *flag.FlagSet) *Flags {
 	fs.BoolVar(&f.Info, "info",
 		false, "info mode: errors plus info")
 	fs.BoolVar(&f.Verbose, "verbose",
-		true, "verbose mode: all but debug messages")
+		false, "verbose mode: all but debug messages")
 	// profile
 	fs.StringVar(&f.Name, "name", "", "master `robot` name")
 	fs.StringVar(&f.Profile.Name, "profile", "", "config profile `name`")
@@ -44,6 +44,8 @@ func NewFlags(fs *flag.FlagSet) *Flags {
 // Parse parses the flags.
 func (f *Flags) Parse() error {
 	// log
+	log.DebugFlags(env.Get("MB_LOG_DEBUG"))
+	log.SetColors(env.Get("MB_LOG_COLORS"))
 	if f.Verbose {
 		env.Set("MB_LOG", "verbose")
 	}
@@ -64,6 +66,7 @@ func (f *Flags) Parse() error {
 	} else {
 		env.Set("MUNBOT", f.Name)
 	}
+	log.SetPrefix(env.Get("MUNBOT"))
 	if f.Profile.Name == "" {
 		f.Profile.Name = env.Get("MB_PROFILE")
 	} else {
