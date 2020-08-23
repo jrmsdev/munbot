@@ -49,6 +49,7 @@ func (a *Driver) Connection() gobot.Connection {
 
 func (a *Driver) Start() error {
 	log.Printf("Start %s driver.", a.name)
+	// configure
 	a.srv = core.NewApiServer()
 	if err := a.srv.Configure(); err != nil {
 		return log.Errorf("Api server configure: %v", err)
@@ -61,6 +62,17 @@ func (a *Driver) Start() error {
 		ga.AddRobeauxRoutes()
 		a.srv.Mount(env.Get("MBAPI_PATH"), ga)
 	}
+	// stop handler
+	a.wg.Add(1)
+	a.AddEvent(event.ApiStop)
+	if err := a.Once(event.ApiStop, func(data interface{}) {
+		log.Print("Stop api server.")
+		defer a.wg.Done()
+		a.srv.Stop()
+	}); err != nil {
+		return log.Error(err)
+	}
+	// start handler
 	a.wg.Add(1)
 	a.AddEvent(event.ApiStart)
 	if err := a.Once(event.ApiStart, func(data interface{}) {
@@ -70,15 +82,6 @@ func (a *Driver) Start() error {
 			log.Error(err)
 			a.Publish(event.Fail, event.Error{event.ApiStart, err})
 		}
-	}); err != nil {
-		return log.Error(err)
-	}
-	a.wg.Add(1)
-	a.AddEvent(event.ApiStop)
-	if err := a.Once(event.ApiStop, func(data interface{}) {
-		log.Print("Stop api server.")
-		defer a.wg.Done()
-		a.srv.Stop()
 	}); err != nil {
 		return log.Error(err)
 	}

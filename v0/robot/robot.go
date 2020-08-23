@@ -52,10 +52,12 @@ func (r *Munbot) Gobot() *gobot.Robot {
 
 func (r *Munbot) Work() {
 	log.Debug("start work...")
-	r.AddEvent(event.Fail)
+
 	if err := r.Once(event.Fail, func(data interface{}) {
 		if data != nil {
+			err := data.(event.Error)
 			log.Info("Failure!")
+			log.Panicf("event %q failure: %v", err.Type, err.Err)
 		}
 	}); err != nil {
 		log.Panic(err)
