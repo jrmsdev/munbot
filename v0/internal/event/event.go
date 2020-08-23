@@ -11,6 +11,11 @@ import (
 	//~ "github.com/munbot/master/v0/log"
 )
 
+type Error struct {
+	Type string
+	Err  error
+}
+
 const (
 	Fail     string = "fail"
 	ApiStart        = "api.start"

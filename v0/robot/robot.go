@@ -60,7 +60,9 @@ func (r *Munbot) Work() {
 	}); err != nil {
 		log.Panic(err)
 	}
+
 	r.Publish(event.ApiStart, nil)
+
 	c := make(chan os.Signal, 0)
 	signal.Notify(c, os.Interrupt)
 	<-c

@@ -66,7 +66,10 @@ func (a *Driver) Start() error {
 	if err := a.Once(event.ApiStart, func(data interface{}) {
 		log.Print("Start api server.")
 		defer a.wg.Done()
-		a.srv.Start()
+		if err := a.srv.Start(); err != nil {
+			log.Error(err)
+			a.Publish(event.Fail, event.Error{event.ApiStart, err})
+		}
 	}); err != nil {
 		return log.Error(err)
 	}
