@@ -13,6 +13,7 @@ import (
 	"github.com/munbot/master/v0/adaptor"
 	"github.com/munbot/master/v0/driver"
 	"github.com/munbot/master/v0/driver/api"
+	"github.com/munbot/master/v0/internal/event"
 	"github.com/munbot/master/v0/log"
 )
 
@@ -21,10 +22,15 @@ type Munbot struct {
 	*gobot.Robot
 	conn adaptor.Adaptor
 	AutoRun bool
+	gobot.Eventer
 }
 
 func New(conn adaptor.Adaptor) *Munbot {
-	r := &Munbot{conn: conn, AutoRun: true}
+	r := &Munbot{
+		conn:    conn,
+		AutoRun: true,
+		Eventer: conn.Eventer(),
+	}
 	r.Robot = gobot.NewRobot(
 		"munbot",
 		[]gobot.Connection{r.conn},
@@ -34,6 +40,7 @@ func New(conn adaptor.Adaptor) *Munbot {
 		},
 		r.Work,
 	)
+	r.Robot.Eventer = r.Eventer
 	return r
 }
 
@@ -45,6 +52,7 @@ func (r *Munbot) Gobot() *gobot.Robot {
 
 func (r *Munbot) Work() {
 	log.Debug("start work...")
+	r.Publish(event.ApiStart, nil)
 	c := make(chan os.Signal, 0)
 	signal.Notify(c, os.Interrupt)
 	<-c

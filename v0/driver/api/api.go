@@ -77,7 +77,6 @@ func (a *Driver) Start() error {
 	}); err != nil {
 		return log.Error(err)
 	}
-	a.Publish(event.ApiStart, nil)
 	return nil
 }
 
