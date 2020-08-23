@@ -22,7 +22,7 @@ const (
 	ApiStop         = "api.stop"
 )
 
-type Manager interface {
+type Eventer interface {
 	gobot.Eventer
 	Wait()
 }
@@ -32,7 +32,7 @@ type evtr struct {
 	gobot.Eventer
 }
 
-func NewManager() Manager {
+func NewEventer() Eventer {
 	return &evtr{
 		wg:      new(sync.WaitGroup),
 		Eventer: gobot.NewEventer(),

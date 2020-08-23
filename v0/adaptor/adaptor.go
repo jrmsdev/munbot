@@ -30,7 +30,7 @@ type Munbot struct {
 	master   *gobot.Master
 	name     string
 	interval time.Duration
-	evtr     event.Manager
+	evtr     event.Eventer
 }
 
 func New(m *gobot.Master) *Munbot {
@@ -38,7 +38,7 @@ func New(m *gobot.Master) *Munbot {
 		master:   m,
 		name:     "munbot",
 		interval: 300 * time.Millisecond,
-		evtr:     event.NewManager(),
+		evtr:     event.NewEventer(),
 	}
 }
 
