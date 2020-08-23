@@ -61,6 +61,7 @@ func (m *Munbot) Connect() error {
 
 func (m *Munbot) Finalize() error {
 	log.Printf("Finalize %s platform.", m.name)
+	m.evtr.Publish(event.Fail, nil)
 	log.Debug("wait eventer to finish...")
 	m.evtr.Wait()
 	log.Debug("unlock core runtime")

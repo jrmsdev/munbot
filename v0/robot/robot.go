@@ -5,9 +5,6 @@
 package robot
 
 import (
-	"os"
-	"os/signal"
-
 	"gobot.io/x/gobot"
 
 	"github.com/munbot/master/v0/adaptor"
@@ -53,6 +50,7 @@ func (r *Munbot) Gobot() *gobot.Robot {
 func (r *Munbot) Work() {
 	log.Debug("start work...")
 
+	// failure handler
 	if err := r.Once(event.Fail, func(data interface{}) {
 		if data != nil {
 			err := data.(event.Error)
@@ -63,11 +61,6 @@ func (r *Munbot) Work() {
 		log.Panic(err)
 	}
 
+	// start core runtime
 	r.Publish(event.ApiStart, nil)
-
-	c := make(chan os.Signal, 0)
-	signal.Notify(c, os.Interrupt)
-	<-c
-	log.Info("OS interrupt!")
-	r.Publish(event.Fail, nil)
 }
