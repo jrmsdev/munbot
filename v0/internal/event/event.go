@@ -60,5 +60,5 @@ func (m *evtr) Once(name string, f func(d interface{})) error {
 		defer m.wg.Done()
 		f(d)
 	}
-	return m.Eventer.On(name, wrapper)
+	return m.Eventer.Once(name, wrapper)
 }
