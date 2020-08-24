@@ -1,0 +1,21 @@
+#!/bin/sh
+set -eu
+CMD='commands events robots
+robots/munbot
+robots/munbot/commands
+robots/munbot/events
+robots/munbot/devices
+robots/munbot/connections
+robots/munbot/connections/munbot
+
+robots/munbot/devices/munbot.api
+robots/munbot/devices/munbot.api/commands
+robots/munbot/devices/munbot.api/events
+'
+for cmd in $(echo ${CMD}); do
+	echo "*** /api/${cmd}"
+	curl http://localhost:6490/api/${cmd}
+	echo
+	echo
+done
+exit 0
