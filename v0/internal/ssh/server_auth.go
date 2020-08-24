@@ -6,6 +6,7 @@ package ssh
 import (
 	"fmt"
 	"io/ioutil"
+	"net/mail"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -74,36 +75,43 @@ func (a *ServerAuth) setup() error {
 	return nil
 }
 
-func (a *ServerAuth) parseAuthKeys(fp string) error {
+func (a *ServerAuth) parseAuthKeys(fp string) (*mail.Address, error) {
 	log.Debug("parse authorized keys")
 	blob, err := vfs.ReadFile(a.keys)
 	if err != nil {
-		return log.Error(err)
+		return nil, log.Error(err)
 	}
 	for len(blob) > 0 {
 		key, info, _, rest, err := ssh.ParseAuthorizedKey(blob)
 		if err != nil {
-			return log.Error(err)
+			return nil, log.Error(err)
 		}
 		if fp == a.keyfp(key) {
 			log.Debugf("valid key %s", fp)
 			info = strings.TrimSpace(info)
 			if info == "" {
-				return log.Error("no user info")
+				return nil, log.Error("no user info")
 			}
-			return nil
+			addr, err := mail.ParseAddress(info)
+			if err != nil {
+				log.Error(err)
+			}
+			return addr, err
 		}
 		blob = rest
 	}
-	return log.Errorf("Auth key %s", fp)
+	return nil, log.Errorf("Auth key %s", fp)
 }
 
 func (a *ServerAuth) publicKeyCallback(c ssh.ConnMetadata, k ssh.PublicKey) (*ssh.Permissions, error) {
 	fp := a.keyfp(k)
-	if err := a.parseAuthKeys(fp); err != nil {
+	_, err := a.parseAuthKeys(fp)
+	if err != nil {
 		return nil, err
 	}
-	return &ssh.Permissions{Extensions: map[string]string{"pubkey-fp": fp}}, nil
+	return &ssh.Permissions{Extensions: map[string]string{
+		"pubkey-fp": fp,
+	}}, nil
 }
 
 // Configure sets up the auth directory.
