@@ -86,7 +86,7 @@ func (a *ServerAuth) parseAuthKeys(kfp string) error {
 		}
 		blob = rest
 		if kfp == a.keyfp(key) {
-			log.Printf("Auth key %s", kfp)
+			log.Debugf("valid key %s", kfp)
 			return nil
 		}
 	}
@@ -98,7 +98,6 @@ func (a *ServerAuth) publicKeyCallback(c ssh.ConnMetadata, k ssh.PublicKey) (*ss
 	if err := a.parseAuthKeys(fp); err != nil {
 		return nil, err
 	}
-	log.Debugf("valid key %q", fp)
 	return &ssh.Permissions{Extensions: map[string]string{"pubkey-fp": fp}}, nil
 }
 
