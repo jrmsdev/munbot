@@ -1,7 +1,7 @@
 FROM munbot/master:base
 
 LABEL maintainer="Jeremías Casteglione <jrmsdev@gmail.com>"
-LABEL version="2020.07.10"
+LABEL version="2020.08.23"
 
 USER munbot:munbot
 WORKDIR /munbot/src/master

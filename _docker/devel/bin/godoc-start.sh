@@ -1,9 +1,11 @@
 #!/bin/sh
 set -eu
-cd ${GOPATH}/src/master
-
-echo "--- godoc: http://localhost:6060/"
-godoc -http=:6060 &>/tmp/godoc.log &
-echo $! >/tmp/godoc.pid
-
+port=6060
+for srcd in "v0"; do
+	cd ${GOPATH}/src/master/${srcd}
+	echo "--- godoc ${srcd}: http://localhost:${port}/"
+	godoc -http=:${port} &>/tmp/godoc-${srcd}.log &
+	echo $! >/tmp/godoc-${srcd}.pid
+	port=$(expr ${port} + 1)
+done
 exit 0

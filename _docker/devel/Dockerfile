@@ -1,7 +1,7 @@
 FROM munbot/master:base
 
 LABEL maintainer="Jeremías Casteglione <jrmsdev@gmail.com>"
-LABEL version="2020.08.08"
+LABEL version="2020.08.23"
 
 USER root:root
 WORKDIR /root
@@ -22,8 +22,6 @@ RUN apk add --no-cache git \
 	&& apk del --no-cache --purge git \
 	&& rm -rf ${GOPATH} /root/.cache
 
-LABEL version="2020.08.16"
-
 RUN apk add -U --no-cache openssh-client openssh-keygen
 
 RUN printf '\n%%munbot ALL=(ALL) NOPASSWD: ALL\n' >>/etc/sudoers
@@ -42,12 +40,11 @@ ENV GOENV /munbot/src/master/go.env
 
 RUN go env && go version
 
-ADD --chown=munbot tmp/go.env .
-ADD --chown=munbot tmp/go.mod .
-ADD --chown=munbot tmp/go.sum .
-ADD --chown=munbot tmp/vendor/ ./vendor/
-RUN go mod download \
-	&& (rm -rf ./vendor $(go env GOCACHE); rm -vf go.mod go.sum go.env)
+ADD --chown=munbot tmp/go.env ./go.env
+ADD --chown=munbot tmp/v0/ ./v0/
+RUN (cd ./v0 && go mod download) \
+	&& rm -rf ./v0 $(go env GOCACHE) \
+	&& rm -vf ./go.env
 
 EXPOSE 6060
 EXPOSE 6490
