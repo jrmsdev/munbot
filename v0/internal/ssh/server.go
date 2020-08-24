@@ -92,6 +92,7 @@ func (s *SSHD) Configure() error {
 func (s *SSHD) Stop() error {
 	log.Debug("stop")
 	if s.enable {
+		log.Print("Stop ssh server.")
 		defer close(s.done)
 		s.closed = true
 		s.done <- true
@@ -103,7 +104,6 @@ func (s *SSHD) Stop() error {
 		s.wgwait()
 		return err
 	}
-	log.Debug("ssh server is disabled")
 	return nil
 }
 
