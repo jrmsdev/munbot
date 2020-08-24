@@ -80,6 +80,7 @@ func (a *Api) Start() error {
 
 func (a *Api) Stop() error {
 	if a.enable && a.ln != nil {
+		log.Print("Stop api server.")
 		log.Debugf("server shutdown... timeout in %s", stopTimeout)
 		ctx, cancel := context.WithTimeout(context.Background(), stopTimeout)
 		defer cancel()

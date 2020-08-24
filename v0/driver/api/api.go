@@ -79,9 +79,9 @@ func (a *Driver) Start() error {
 	a.AddEvent(event.ApiStop)
 	if err := a.Once(event.ApiStop, func(data interface{}) {
 		defer a.wg.Done()
-		log.Print("Stop api server.")
 		a.Lock()
 		defer a.Unlock()
+		log.Debug("stop api server")
 		if err := a.srv.Stop(); err != nil {
 			a.err = log.Error(err)
 		}
@@ -93,7 +93,7 @@ func (a *Driver) Start() error {
 	a.AddEvent(event.ApiStart)
 	if err := a.Once(event.ApiStart, func(data interface{}) {
 		defer a.wg.Done()
-		log.Print("Start api server.")
+		log.Debug("start api server")
 		if err := a.srv.Start(); err != nil {
 			log.Error(err)
 			a.Publish(event.Fail, event.Error{event.ApiStart, err})
