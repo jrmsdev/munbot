@@ -10,5 +10,5 @@ import (
 )
 
 func Sum(s string) string {
-	return fmt.Sprintf("%s", sha256.Sum256([]byte(s)))
+	return fmt.Sprintf("%x", sha256.Sum256([]byte(s)))
 }
