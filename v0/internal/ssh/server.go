@@ -35,11 +35,12 @@ type SSHD struct {
 
 func NewServer() *SSHD {
 	return &SSHD{
-		done: make(chan bool, 1),
-		wg:   &sync.WaitGroup{},
-		lock: new(sync.Mutex),
-		q:    make(map[string]net.Conn),
-		wgc:  make(map[string]int),
+		done:   make(chan bool, 1),
+		wg:     &sync.WaitGroup{},
+		lock:   new(sync.Mutex),
+		q:      make(map[string]net.Conn),
+		closed: true,
+		wgc:    make(map[string]int),
 	}
 }
 
@@ -58,9 +59,7 @@ func (s *SSHD) wgdone(n string) {
 }
 
 func (s *SSHD) wgwait() {
-	s.lock.Lock()
 	log.Debugf("wgwait %v", s.wgc)
-	s.lock.Unlock()
 	s.wg.Wait()
 }
 
@@ -91,7 +90,7 @@ func (s *SSHD) Configure() error {
 
 func (s *SSHD) Stop() error {
 	log.Debug("stop")
-	if s.enable {
+	if s.enable && !s.closed {
 		log.Print("Stop ssh server.")
 		defer close(s.done)
 		s.closed = true
@@ -118,6 +117,7 @@ func (s *SSHD) Start() error {
 			return err
 		}
 		log.Infof("SSH server ssh://%s", s.addr)
+		s.closed = false
 		// accept connections
 		ctx, cancel := context.WithCancel(context.Background())
 		defer cancel()

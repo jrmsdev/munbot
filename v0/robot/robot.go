@@ -56,7 +56,13 @@ func (r *Munbot) Work() {
 
 	// failure handler
 	if err := r.Once(event.Fail, func(data interface{}) {
-		if data != nil {
+		if data == nil {
+			// called from adaptor.Finalize (ideally)
+			r.Publish(event.ApiStart, nil)
+			r.Publish(event.ApiStop, nil)
+			r.Publish(event.SSHDStart, nil)
+			r.Publish(event.SSHDStop, nil)
+		} else {
 			err := data.(event.Error)
 			log.Info("Failure!")
 			log.Panicf("event %q failure: %v", err.Type, err.Err)
@@ -66,7 +72,7 @@ func (r *Munbot) Work() {
 	}
 
 	// start core runtime
-	r.Publish(event.ApiStart, nil)
+	r.Publish(event.ApiStart, true)
 	time.Sleep(r.conn.Interval())
-	r.Publish(event.SSHDStart, nil)
+	r.Publish(event.SSHDStart, true)
 }

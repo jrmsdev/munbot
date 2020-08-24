@@ -70,6 +70,9 @@ func (s *Driver) Start() error {
 	s.AddEvent(event.SSHDStop)
 	if err := s.Once(event.SSHDStop, func(data interface{}) {
 		defer s.wg.Done()
+		if run := data.(bool); !run {
+			return
+		}
 		s.Lock()
 		defer s.Unlock()
 		log.Debug("stop ssh server")
@@ -84,6 +87,9 @@ func (s *Driver) Start() error {
 	s.AddEvent(event.SSHDStart)
 	if err := s.Once(event.SSHDStart, func(data interface{}) {
 		defer s.wg.Done()
+		if run := data.(bool); !run {
+			return
+		}
 		log.Debug("start ssh server")
 		if err := s.srv.Start(); err != nil {
 			log.Error(err)
@@ -97,7 +103,7 @@ func (s *Driver) Start() error {
 
 func (s *Driver) Halt() error {
 	log.Printf("Halt %s driver.", s.name)
-	s.Publish(event.SSHDStop, nil)
+	s.Publish(event.SSHDStop, true)
 	s.wg.Wait()
 	s.Lock()
 	defer s.Unlock()
