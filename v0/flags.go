@@ -13,6 +13,7 @@ import (
 type Flags struct {
 	apiDisable  bool
 	apiDebug    bool
+	apiNet      string
 	apiAddr     string
 	apiPort     uint
 	authDisable bool
@@ -29,12 +30,13 @@ func NewFlags() *Flags {
 func (f *Flags) Set(fs *flag.FlagSet) {
 	fs.BoolVar(&f.apiDisable, "api.disable", false, "disable api server")
 	fs.BoolVar(&f.apiDebug, "api.debug", false, "debug api")
-	fs.StringVar(&f.apiAddr, "api.addr", "", "api tcp network `address`")
+	fs.StringVar(&f.apiNet, "api.net", "", "api network `name`")
+	fs.StringVar(&f.apiAddr, "api.addr", "", "api network `address`")
 	fs.UintVar(&f.apiPort, "api.port", 0, "api tcp port `number`")
 	fs.BoolVar(&f.authDisable, "auth.disable", false, "disable auth")
-	fs.BoolVar(&f.sshdDisable, "sshd.disable", false, "disable sshd server")
-	fs.StringVar(&f.sshdAddr, "sshd.addr", "", "sshd tcp network `address`")
-	fs.UintVar(&f.sshdPort, "sshd.port", 0, "sshd tcp port `number`")
+	fs.BoolVar(&f.sshdDisable, "sshd.disable", false, "disable ssh server")
+	fs.StringVar(&f.sshdAddr, "sshd.addr", "", "ssh server tcp network `address`")
+	fs.UintVar(&f.sshdPort, "sshd.port", 0, "ssh server tcp port `number`")
 }
 
 // Parse parses the flags that were not set via the flags handler (cmd args
@@ -51,6 +53,9 @@ func (f *Flags) parseApi() {
 	}
 	if f.apiDebug {
 		env.Set("MBAPI_DEBUG", "true")
+	}
+	if f.apiNet != "" {
+		env.Set("MBAPI_NET", f.apiNet)
 	}
 	if f.apiAddr != "" {
 		env.Set("MBAPI_ADDR", f.apiAddr)
