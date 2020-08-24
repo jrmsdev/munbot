@@ -49,7 +49,19 @@ func (m *Robot) Run() error {
 	bot.AutoRun = false
 	m.AddRobot(bot.Gobot())
 	if err := m.Start(); err != nil {
-		m.Stop()
+		log.Debug("start error")
+		stop := func(r *gobot.Robot) {
+			if r.Running() {
+				log.Debugf("stop %s robot", r.Name)
+				r.Stop()
+			}
+		}
+		m.Robots().Each(stop)
+		if m.Running() {
+			log.Debug("stop master robot")
+			m.Stop()
+		}
+		log.Error("Abort start!")
 		return err
 	}
 	return nil
