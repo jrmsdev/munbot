@@ -17,6 +17,7 @@ import (
 	"github.com/munbot/master/v0/env"
 	"github.com/munbot/master/v0/internal/session"
 	"github.com/munbot/master/v0/log"
+	"github.com/munbot/master/v0/utils/hash"
 	"github.com/munbot/master/v0/vfs"
 )
 
@@ -92,11 +93,16 @@ func (a *ServerAuth) parseAuthKeys(fp string) (*mail.Address, error) {
 			if info == "" {
 				return nil, log.Error("no user info")
 			}
-			addr, err := mail.ParseAddress(info)
+			user, err := mail.ParseAddress(info)
 			if err != nil {
 				log.Error(err)
 			}
-			return addr, err
+			user.Name = strings.TrimSpace(user.Name)
+			user.Address = strings.TrimSpace(user.Address)
+			if user.Address == "" {
+				return nil, log.Error("invalid credentials")
+			}
+			return user, err
 		}
 		blob = rest
 	}
@@ -105,12 +111,15 @@ func (a *ServerAuth) parseAuthKeys(fp string) (*mail.Address, error) {
 
 func (a *ServerAuth) publicKeyCallback(c ssh.ConnMetadata, k ssh.PublicKey) (*ssh.Permissions, error) {
 	fp := a.keyfp(k)
-	_, err := a.parseAuthKeys(fp)
+	user, err := a.parseAuthKeys(fp)
 	if err != nil {
 		return nil, err
 	}
+	uid := hash.Sum(user.Address)
+	log.Debugf("allow uid: %s", uid)
 	return &ssh.Permissions{Extensions: map[string]string{
-		"pubkey-fp": fp,
+		"pubkey-fp":     fp,
+		"x-munbot-user": uid,
 	}}, nil
 }
 
