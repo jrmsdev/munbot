@@ -26,3 +26,7 @@ func FromString(input string) (UUID, error) {
 	}
 	return u, nil
 }
+
+func ToString(input UUID) string {
+	return uuid.UUID(input).String()
+}
