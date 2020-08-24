@@ -13,6 +13,7 @@ import (
 	"golang.org/x/crypto/ssh"
 
 	"github.com/munbot/master/v0/env"
+	"github.com/munbot/master/v0/internal/session"
 	"github.com/munbot/master/v0/log"
 	"github.com/munbot/master/v0/vfs"
 )
@@ -23,9 +24,8 @@ var _ AuthManager = &ServerAuth{}
 type AuthManager interface {
 	Configure(dir string) error
 	ServerConfig() *ssh.ServerConfig
-	Login(fp, sid string) error
-	Logout(sid string) error
-	Session(sid string) (error, error)
+	Login(fp, sid string) (session.Token, error)
+	Logout(session.Token) error
 }
 
 // ServerAuth implemenst the ssh server auth manager.
@@ -134,21 +134,6 @@ func (a *ServerAuth) publicKeyDisabled(c ssh.ConnMetadata, k ssh.PublicKey) (*ss
 	return nil, fmt.Errorf("ssh auth disabled")
 }
 
-func (a *ServerAuth) Login(fp, sid string) error {
-	log.Infof("Auth login %s %s", fp, sid)
-	return nil
-}
-
-func (a *ServerAuth) Logout(sid string) error {
-	log.Infof("Auth logout %s", sid)
-	return nil
-}
-
-func (a *ServerAuth) Session(sid string) (error, error) {
-	log.Debugf("%s new session", sid)
-	return nil, nil
-}
-
 func (a *ServerAuth) sshLoadKeys(fn string) (ssh.Signer, error) {
 	log.Debugf("load keys: %s", fn)
 	var pk ssh.Signer
@@ -184,4 +169,14 @@ func (a *ServerAuth) sshNewKeys(fn string) (ssh.Signer, error) {
 		return nil, log.Error(err)
 	}
 	return a.sshLoadKeys(fn)
+}
+
+func (a *ServerAuth) Login(fp, sid string) (session.Token, error) {
+	log.Infof("Auth login %s %s", fp, sid)
+	return session.New(sid)
+}
+
+func (a *ServerAuth) Logout(s session.Token) error {
+	log.Infof("Auth logout %s", s.String())
+	return nil
 }

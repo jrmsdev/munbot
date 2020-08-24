@@ -13,6 +13,7 @@ import (
 
 	"github.com/munbot/master/v0/config/profile"
 	"github.com/munbot/master/v0/env"
+	"github.com/munbot/master/v0/internal/session"
 	"github.com/munbot/master/v0/log"
 )
 
@@ -208,8 +209,9 @@ func (s *SSHD) dispatch(ctx context.Context, nc net.Conn, sid string) {
 		ssh.DiscardRequests(reqs)
 	}(reqs)
 	// serve
+	var sess session.Token
 	fp := conn.Permissions.Extensions["pubkey-fp"]
-	if err := s.auth.Login(fp, sid); err != nil {
+	if sess, err = s.auth.Login(fp, sid); err != nil {
 		log.Debugf("%s auth login error: %v", sid, err)
 		return
 	}
@@ -224,7 +226,7 @@ LOOP:
 		}
 		s.serve(ctx, nc, sid)
 	}
-	if err := s.auth.Logout(sid); err != nil {
+	if err := s.auth.Logout(sess); err != nil {
 		log.Debugf("%s auth logout error: %v", sid, err)
 	}
 }
