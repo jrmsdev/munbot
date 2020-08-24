@@ -9,6 +9,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"strings"
 
 	"golang.org/x/crypto/ssh"
 
@@ -73,24 +74,28 @@ func (a *ServerAuth) setup() error {
 	return nil
 }
 
-func (a *ServerAuth) parseAuthKeys(kfp string) error {
+func (a *ServerAuth) parseAuthKeys(fp string) error {
 	log.Debug("parse authorized keys")
 	blob, err := vfs.ReadFile(a.keys)
 	if err != nil {
 		return log.Error(err)
 	}
 	for len(blob) > 0 {
-		key, _, _, rest, err := ssh.ParseAuthorizedKey(blob)
+		key, info, _, rest, err := ssh.ParseAuthorizedKey(blob)
 		if err != nil {
 			return log.Error(err)
 		}
-		blob = rest
-		if kfp == a.keyfp(key) {
-			log.Debugf("valid key %s", kfp)
+		if fp == a.keyfp(key) {
+			log.Debugf("valid key %s", fp)
+			info = strings.TrimSpace(info)
+			if info == "" {
+				return log.Error("no user info")
+			}
 			return nil
 		}
+		blob = rest
 	}
-	return log.Errorf("Auth key %s", kfp)
+	return log.Errorf("Auth key %s", fp)
 }
 
 func (a *ServerAuth) publicKeyCallback(c ssh.ConnMetadata, k ssh.PublicKey) (*ssh.Permissions, error) {
