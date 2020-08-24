@@ -5,7 +5,7 @@
 package uuid
 
 import (
-	"github.com/gobuffalo/uuid"
+	"github.com/gofrs/uuid"
 )
 
 type UUID uuid.UUID
