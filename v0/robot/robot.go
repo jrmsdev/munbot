@@ -58,10 +58,10 @@ func (r *Munbot) Work() {
 	if err := r.Once(event.Fail, func(data interface{}) {
 		if data == nil {
 			// called from adaptor.Finalize (ideally)
-			r.Publish(event.ApiStart, nil)
-			r.Publish(event.ApiStop, nil)
-			r.Publish(event.SSHDStart, nil)
-			r.Publish(event.SSHDStop, nil)
+			r.Publish(event.ApiStart, false)
+			r.Publish(event.ApiStop, false)
+			r.Publish(event.SSHDStart, false)
+			r.Publish(event.SSHDStop, false)
 		} else {
 			err := data.(event.Error)
 			log.Info("Failure!")

@@ -74,16 +74,16 @@ func (a *ServerAuth) setup() error {
 	return nil
 }
 
-func (a *ServerAuth) parseAuthKeys(fp string) (*user.User, error) {
+func (a *ServerAuth) parseAuthKeys(fp string) (user.ID, error) {
 	log.Debug("parse authorized keys")
 	blob, err := vfs.ReadFile(a.keys)
 	if err != nil {
-		return nil, log.Error(err)
+		return user.Nil, log.Error(err)
 	}
 	for len(blob) > 0 {
 		key, info, _, rest, err := ssh.ParseAuthorizedKey(blob)
 		if err != nil {
-			return nil, log.Error(err)
+			return user.Nil, log.Error(err)
 		}
 		if fp == a.keyfp(key) {
 			log.Debugf("valid key %s", fp)
@@ -91,19 +91,19 @@ func (a *ServerAuth) parseAuthKeys(fp string) (*user.User, error) {
 		}
 		blob = rest
 	}
-	return nil, log.Errorf("Auth key %s", fp)
+	return user.Nil, log.Errorf("Auth key %s", fp)
 }
 
 func (a *ServerAuth) publicKeyCallback(c ssh.ConnMetadata, k ssh.PublicKey) (*ssh.Permissions, error) {
 	fp := a.keyfp(k)
-	u, err := a.parseAuthKeys(fp)
+	uid, err := a.parseAuthKeys(fp)
 	if err != nil {
 		return nil, err
 	}
-	log.Debugf("allow uid: %s", u.ID())
+	log.Debugf("allow uid: %s", uid)
 	return &ssh.Permissions{Extensions: map[string]string{
 		"pubkey-fp":     fp,
-		"x-munbot-user": u.ID(),
+		"x-munbot-user": uid.String(),
 	}}, nil
 }
 

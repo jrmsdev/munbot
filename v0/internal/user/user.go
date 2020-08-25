@@ -12,29 +12,37 @@ import (
 	"github.com/munbot/master/v0/utils/hash"
 )
 
-type User struct {
-	e  *mail.Address
-	id string
+type ID string
+
+var Nil ID = ID("")
+
+func (i ID) String() string {
+	return string(i)
 }
 
-func Parse(emailAddr string) (*User, error) {
+func Parse(emailAddr string) (ID, error) {
 	emailAddr = strings.TrimSpace(emailAddr)
 	if emailAddr == "" {
-		return nil, log.Error("no user info")
+		return Nil, log.Error("user: no info")
 	}
 	e, err := mail.ParseAddress(emailAddr)
 	if err != nil {
-		return nil, log.Error(err)
+		return Nil, log.Error(err)
 	}
 	e.Name = strings.TrimSpace(e.Name)
 	e.Address = strings.TrimSpace(e.Address)
 	if e.Address == "" {
-		return nil, log.Error("invalid credentials")
+		return Nil, log.Error("user: invalid credentials")
 	}
 	if e.Name == "" {
 		e.Name = strings.Split(e.Address, "@")[0]
 	}
-	return &User{e: e, id: hash.Sum(e.Address)}, nil
+	return ID(hash.Sum(e.Address)), nil
+}
+
+type User struct {
+	e  *mail.Address
+	id ID
 }
 
 func (u *User) Name() string {
@@ -42,9 +50,9 @@ func (u *User) Name() string {
 }
 
 func (u *User) ID() string {
-	return u.id
+	return u.id.String()
 }
 
 func (u *User) String() string {
-	return u.id
+	return u.id.String()
 }
