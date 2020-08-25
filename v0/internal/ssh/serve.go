@@ -68,13 +68,17 @@ func (s *SSHD) serve(ctx context.Context, nc ssh.NewChannel, sid string) {
 			switch req.Type {
 			case "shell":
 				wait = false
-				ch.Close() // FIXME
+				if err := ch.Close(); err != nil {
+					log.Errorf("%s ssh channel close: %v", sid, err)
+				}
 				//~ s.serveShell(ctx, ch, sid)
 			default:
 				if !req.Serve {
 					log.Errorf("%s ssh invalid request: %s", sid, req.Type)
 					wait = false
-					ch.Close()
+					if err := ch.Close(); err != nil {
+						log.Errorf("%s ssh channel close: %v", sid, err)
+					}
 				}
 			}
 		}
