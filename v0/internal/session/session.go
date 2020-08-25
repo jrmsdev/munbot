@@ -5,6 +5,7 @@
 package session
 
 import (
+	"github.com/munbot/master/v0/log"
 	"github.com/munbot/master/v0/utils/uuid"
 )
 
@@ -16,12 +17,13 @@ func (t Token) String() string {
 	return uuid.ToString(uuid.UUID(t))
 }
 
-func New(sid string) (Token, error) {
+func New(uid, sid string) (Token, error) {
 	var t Token
 	if u, err := uuid.FromString(sid); err != nil {
 		return Nil, err
 	} else {
 		t = Token(u)
 	}
+	log.Printf("User %s %s", uid, t)
 	return t, nil
 }

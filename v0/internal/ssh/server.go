@@ -209,9 +209,14 @@ func (s *SSHD) dispatch(ctx context.Context, nc net.Conn, sid string) {
 		ssh.DiscardRequests(reqs)
 	}(reqs)
 	// serve
-	var sess session.Token
 	fp := conn.Permissions.Extensions["pubkey-fp"]
-	if sess, err = s.auth.Login(fp, sid); err != nil {
+	uid := conn.Permissions.Extensions["x-munbot-user"]
+	if fp == "" || uid == "" {
+		log.Errorf("Auth invalid credentials %s.", sid)
+		return
+	}
+	var sess session.Token
+	if sess, err = s.auth.Login(fp, uid, sid); err != nil {
 		log.Debugf("%s auth login error: %v", sid, err)
 		return
 	}

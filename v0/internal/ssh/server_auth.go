@@ -25,7 +25,7 @@ var _ AuthManager = &ServerAuth{}
 type AuthManager interface {
 	Configure(dir string) error
 	ServerConfig() *ssh.ServerConfig
-	Login(fp, sid string) (session.Token, error)
+	Login(fp, uid, sid string) (session.Token, error)
 	Logout(session.Token) error
 }
 
@@ -177,9 +177,9 @@ func (a *ServerAuth) sshNewKeys(fn string) (ssh.Signer, error) {
 	return a.sshLoadKeys(fn)
 }
 
-func (a *ServerAuth) Login(fp, sid string) (session.Token, error) {
+func (a *ServerAuth) Login(fp, uid, sid string) (session.Token, error) {
 	log.Infof("Auth login %s %s", fp, sid)
-	return session.New(sid)
+	return session.New(uid, sid)
 }
 
 func (a *ServerAuth) Logout(s session.Token) error {
