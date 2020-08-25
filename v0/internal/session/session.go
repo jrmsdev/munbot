@@ -16,18 +16,18 @@ var Nil Token = Token{}
 func FromString(sid string) (Token, error) {
 	var t Token
 	if u, err := uuid.FromString(sid); err != nil {
-		return Nil, err
+		return Nil, log.Errorf("Session %s: %v", sid, err)
 	} else {
 		t = Token(u)
 	}
 	return t, nil
 }
 
-func New(uid, sid string) (Token, error) {
-	log.Debug("new")
-	return FromString(sid)
-}
-
 func (t Token) String() string {
 	return uuid.ToString(uuid.UUID(t))
+}
+
+func Close(sid Token) error {
+	log.Debugf("%s close", sid)
+	return nil
 }

@@ -179,7 +179,7 @@ func (a *ServerAuth) sshNewKeys(fn string) (ssh.Signer, error) {
 
 func (a *ServerAuth) Login(fp, uid, sid string) (session.Token, error) {
 	log.Infof("Auth login %s %s", fp, sid)
-	return session.New(uid, sid)
+	return session.FromString(sid)
 }
 
 func (a *ServerAuth) Logout(s session.Token) error {

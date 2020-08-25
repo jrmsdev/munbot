@@ -14,6 +14,7 @@ import (
 	"github.com/munbot/master/v0/config/profile"
 	"github.com/munbot/master/v0/env"
 	"github.com/munbot/master/v0/internal/session"
+	"github.com/munbot/master/v0/internal/user"
 	"github.com/munbot/master/v0/log"
 )
 
@@ -216,8 +217,8 @@ func (s *SSHD) dispatch(ctx context.Context, nc net.Conn, sid string) {
 		return
 	}
 	var sess session.Token
-	if sess, err = s.auth.Login(fp, uid, sid); err != nil {
-		log.Debugf("%s auth login error: %v", sid, err)
+	if sess, err = session.FromString(sid); err != nil {
+		log.Debugf("%s dispatch session error: %v", sid, err)
 		return
 	}
 LOOP:
@@ -229,9 +230,9 @@ LOOP:
 			break LOOP
 		default:
 		}
-		s.serve(ctx, nc, sess)
+		s.serve(ctx, nc, sess, user.ID(uid), fp)
 	}
-	if err := s.auth.Logout(sess); err != nil {
-		log.Debugf("%s auth logout error: %v", sid, err)
+	if err := session.Close(sess); err != nil {
+		log.Debugf("%s dispatch close session error: %v", sid, err)
 	}
 }

@@ -4,17 +4,12 @@
 package ssh
 
 import (
-	//~ "bufio"
 	"context"
-	//~ "fmt"
-	//~ "io"
-	//~ "net/textproto"
 
 	"golang.org/x/crypto/ssh"
-	//~ "golang.org/x/crypto/ssh/terminal"
 
-	//~ "github.com/munbot/master/v0/env"
 	"github.com/munbot/master/v0/internal/session"
+	"github.com/munbot/master/v0/internal/user"
 	"github.com/munbot/master/v0/log"
 )
 
@@ -23,7 +18,7 @@ type request struct {
 	Serve bool
 }
 
-func (s *SSHD) serve(ctx context.Context, nc ssh.NewChannel, sid session.Token) {
+func (s *SSHD) serve(ctx context.Context, nc ssh.NewChannel, sid session.Token, uid user.ID, fp string) {
 	log.Debugf("session %s", sid)
 	t := nc.ChannelType()
 	log.Debugf("%s channel type %s", sid, t)
