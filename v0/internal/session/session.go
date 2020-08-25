@@ -13,17 +13,21 @@ type Token uuid.UUID
 
 var Nil Token = Token{}
 
-func (t Token) String() string {
-	return uuid.ToString(uuid.UUID(t))
-}
-
-func New(uid, sid string) (Token, error) {
+func FromString(sid string) (Token, error) {
 	var t Token
 	if u, err := uuid.FromString(sid); err != nil {
 		return Nil, err
 	} else {
 		t = Token(u)
 	}
-	log.Printf("User %s %s", uid, t)
 	return t, nil
+}
+
+func New(uid, sid string) (Token, error) {
+	log.Debug("new")
+	return FromString(sid)
+}
+
+func (t Token) String() string {
+	return uuid.ToString(uuid.UUID(t))
 }
