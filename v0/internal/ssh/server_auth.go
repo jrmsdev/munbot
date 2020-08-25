@@ -6,18 +6,16 @@ package ssh
 import (
 	"fmt"
 	"io/ioutil"
-	"net/mail"
 	"os"
 	"os/exec"
 	"path/filepath"
-	"strings"
 
 	"golang.org/x/crypto/ssh"
 
 	"github.com/munbot/master/v0/env"
 	"github.com/munbot/master/v0/internal/session"
+	"github.com/munbot/master/v0/internal/user"
 	"github.com/munbot/master/v0/log"
-	"github.com/munbot/master/v0/utils/hash"
 	"github.com/munbot/master/v0/vfs"
 )
 
@@ -76,7 +74,7 @@ func (a *ServerAuth) setup() error {
 	return nil
 }
 
-func (a *ServerAuth) parseAuthKeys(fp string) (*mail.Address, error) {
+func (a *ServerAuth) parseAuthKeys(fp string) (*user.User, error) {
 	log.Debug("parse authorized keys")
 	blob, err := vfs.ReadFile(a.keys)
 	if err != nil {
@@ -89,20 +87,7 @@ func (a *ServerAuth) parseAuthKeys(fp string) (*mail.Address, error) {
 		}
 		if fp == a.keyfp(key) {
 			log.Debugf("valid key %s", fp)
-			info = strings.TrimSpace(info)
-			if info == "" {
-				return nil, log.Error("no user info")
-			}
-			user, err := mail.ParseAddress(info)
-			if err != nil {
-				log.Error(err)
-			}
-			user.Name = strings.TrimSpace(user.Name)
-			user.Address = strings.TrimSpace(user.Address)
-			if user.Address == "" {
-				return nil, log.Error("invalid credentials")
-			}
-			return user, err
+			return user.Parse(info)
 		}
 		blob = rest
 	}
@@ -111,15 +96,14 @@ func (a *ServerAuth) parseAuthKeys(fp string) (*mail.Address, error) {
 
 func (a *ServerAuth) publicKeyCallback(c ssh.ConnMetadata, k ssh.PublicKey) (*ssh.Permissions, error) {
 	fp := a.keyfp(k)
-	user, err := a.parseAuthKeys(fp)
+	u, err := a.parseAuthKeys(fp)
 	if err != nil {
 		return nil, err
 	}
-	uid := hash.Sum(user.Address)
-	log.Debugf("allow uid: %s", uid)
+	log.Debugf("allow uid: %s", u.ID())
 	return &ssh.Permissions{Extensions: map[string]string{
 		"pubkey-fp":     fp,
-		"x-munbot-user": uid,
+		"x-munbot-user": u.ID(),
 	}}, nil
 }
 
