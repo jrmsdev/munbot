@@ -229,7 +229,7 @@ LOOP:
 			break LOOP
 		default:
 		}
-		s.serve(ctx, nc, sid)
+		s.serve(ctx, nc, sess)
 	}
 	if err := s.auth.Logout(sess); err != nil {
 		log.Debugf("%s auth logout error: %v", sid, err)

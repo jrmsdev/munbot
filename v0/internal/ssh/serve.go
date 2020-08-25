@@ -14,6 +14,7 @@ import (
 	//~ "golang.org/x/crypto/ssh/terminal"
 
 	//~ "github.com/munbot/master/v0/env"
+	"github.com/munbot/master/v0/internal/session"
 	"github.com/munbot/master/v0/log"
 )
 
@@ -22,7 +23,7 @@ type request struct {
 	Serve bool
 }
 
-func (s *SSHD) serve(ctx context.Context, nc ssh.NewChannel, sid string) {
+func (s *SSHD) serve(ctx context.Context, nc ssh.NewChannel, sid session.Token) {
 	log.Debugf("session %s", sid)
 	t := nc.ChannelType()
 	log.Debugf("%s channel type %s", sid, t)
