@@ -44,26 +44,26 @@ func New(m *gobot.Master) *Munbot {
 
 // gobot interface
 
-func (m *Munbot) Name() string {
-	return m.name
+func (a *Munbot) Name() string {
+	return a.name
 }
 
-func (m *Munbot) SetName(name string) {
-	m.name = name
+func (a *Munbot) SetName(name string) {
+	a.name = name
 }
 
-func (m *Munbot) Connect() error {
-	log.Printf("Connect %s platform.", m.name)
+func (a *Munbot) Connect() error {
+	log.Printf("Connect %s platform.", a.name)
 	log.Debug("lock core runtime")
 	core.Lock()
 	return nil
 }
 
-func (m *Munbot) Finalize() error {
-	log.Printf("Finalize %s platform.", m.name)
-	m.evtr.Publish(event.Fail, nil)
+func (a *Munbot) Finalize() error {
+	log.Printf("Finalize %s platform.", a.name)
+	a.evtr.Publish(event.Fail, nil)
 	log.Debug("wait eventer to finish...")
-	m.evtr.Wait()
+	a.evtr.Wait()
 	log.Debug("unlock core runtime")
 	core.Unlock()
 	return nil
@@ -71,18 +71,18 @@ func (m *Munbot) Finalize() error {
 
 // munbot interface
 
-func (m *Munbot) Interval() time.Duration {
-	return m.interval
+func (a *Munbot) Interval() time.Duration {
+	return a.interval
 }
 
-func (m *Munbot) SetInterval(d time.Duration) {
-	m.interval = d
+func (a *Munbot) SetInterval(d time.Duration) {
+	a.interval = d
 }
 
-func (m *Munbot) GobotApi() *api.API {
-	return api.NewAPI(m.master)
+func (a *Munbot) GobotApi() *api.API {
+	return api.NewAPI(a.master)
 }
 
-func (m *Munbot) Eventer() gobot.Eventer {
-	return m.evtr
+func (a *Munbot) Eventer() gobot.Eventer {
+	return a.evtr
 }

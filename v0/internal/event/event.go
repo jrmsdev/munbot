@@ -17,13 +17,13 @@ type Error struct {
 }
 
 const (
-	Fail      string = "fail"
-	ApiStart         = "api.start"
-	ApiStop          = "api.stop"
-	SSHDStart        = "sshd.start"
-	SSHDStop         = "sshd.stop"
-	UserLogin        = "user.login"
-	UserLogout       = "user.logout"
+	Fail       string = "fail"
+	ApiStart          = "api.start"
+	ApiStop           = "api.stop"
+	SSHDStart         = "sshd.start"
+	SSHDStop          = "sshd.stop"
+	UserLogin         = "user.login"
+	UserLogout        = "user.logout"
 )
 
 type Eventer interface {
