@@ -35,8 +35,9 @@ type SSHD struct {
 	wgc    map[string]int
 }
 
-func NewServer() *SSHD {
+func NewServer(auth AuthManager) *SSHD {
 	return &SSHD{
+		auth:   auth,
 		done:   make(chan bool, 1),
 		wg:     &sync.WaitGroup{},
 		lock:   new(sync.Mutex),
@@ -76,9 +77,6 @@ func (s *SSHD) Addr() *Addr {
 func (s *SSHD) Configure() error {
 	s.enable = env.GetBool("MBSSHD")
 	if s.enable {
-		if s.auth == nil {
-			s.auth = NewServerAuth()
-		}
 		p := profile.New()
 		if err := s.auth.Configure(p.GetPath("auth")); err != nil {
 			log.Debugf("auth manager configure error: %v", err)

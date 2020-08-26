@@ -13,6 +13,7 @@ import (
 	"golang.org/x/crypto/ssh"
 
 	"github.com/munbot/master/v0/env"
+	"github.com/munbot/master/v0/internal/event"
 	"github.com/munbot/master/v0/internal/session"
 	"github.com/munbot/master/v0/internal/user"
 	"github.com/munbot/master/v0/log"
@@ -31,6 +32,7 @@ type AuthManager interface {
 
 // ServerAuth implemenst the ssh server auth manager.
 type ServerAuth struct {
+	evtr     event.Eventer
 	enable   bool
 	name     string
 	dir      string // config dir file path
@@ -41,10 +43,11 @@ type ServerAuth struct {
 }
 
 // NewServerAuth creates a new ServerAuth instance.
-func NewServerAuth() *ServerAuth {
+func NewServerAuth(evtr event.Eventer) *ServerAuth {
 	return &ServerAuth{
+		evtr:   evtr,
 		enable: env.GetBool("MBAUTH"),
-		name:   "master",
+		name:   env.Get("MUNBOT"),
 	}
 }
 
@@ -54,7 +57,6 @@ func (a *ServerAuth) keyfp(pk ssh.PublicKey) string {
 
 func (a *ServerAuth) setup() error {
 	log.Debug("setup")
-	a.name = env.Get("MUNBOT")
 	var err error
 	if err = vfs.MkdirAll(a.dir); err != nil {
 		return log.Error(err)
@@ -109,6 +111,12 @@ func (a *ServerAuth) publicKeyCallback(c ssh.ConnMetadata, k ssh.PublicKey) (*ss
 
 // Configure sets up the auth directory.
 func (a *ServerAuth) Configure(dir string) error {
+	a.enable = env.GetBool("MBAUTH")
+	a.name = env.Get("MUNBOT")
+	if !a.enable {
+		log.Warn("Auth disabled!")
+		return nil
+	}
 	var err error
 	a.dir, err = filepath.Abs(dir)
 	if err != nil {
@@ -183,6 +191,9 @@ func (a *ServerAuth) Login(sid session.Token, uid user.ID, fp string) error {
 }
 
 func (a *ServerAuth) Logout(sid session.Token) error {
+	if err := session.Logout(sid); err != nil {
+		return err
+	}
 	log.Infof("Auth logout %s", sid)
-	return session.Logout(sid)
+	return nil
 }

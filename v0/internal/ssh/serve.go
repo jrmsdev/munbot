@@ -129,8 +129,15 @@ LOOP:
 		}
 	}
 	term.SetPrompt("")
-	if err := shellWrite(resp, ps1, "logout"); err != nil {
-		log.Errorf("SSHD terminal %s: %v", sid, err)
+	if err := s.auth.Logout(sid); err != nil {
+		log.Debugf("%s auth logout error: %v", sid, err)
+		if err := shellWrite(resp, ps1, "logout error"); err != nil {
+			log.Errorf("SSHD terminal %s: %v", sid, err)
+		}
+	} else {
+		if err := shellWrite(resp, ps1, "logout"); err != nil {
+			log.Errorf("SSHD terminal %s: %v", sid, err)
+		}
 	}
 }
 

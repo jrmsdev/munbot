@@ -16,6 +16,7 @@ import (
 	"time"
 
 	"github.com/munbot/master/v0/env"
+	"github.com/munbot/master/v0/internal/event"
 	"github.com/munbot/master/v0/internal/ssh"
 	"github.com/munbot/master/v0/log"
 	"github.com/munbot/master/v0/testing/suite"
@@ -23,7 +24,7 @@ import (
 
 func TestSSHCmdSuite(t *testing.T) {
 	log.SetMode(env.Get("MB_LOG"))
-	suite.Run(t, &sshCmdSuite{Suite: suite.New(), cons: ssh.NewServer()})
+	suite.Run(t, &sshCmdSuite{Suite: suite.New(), cons: ssh.NewServer(ssh.NewServerAuth(event.NewEventer()))})
 }
 
 type sshCmdSuite struct {
