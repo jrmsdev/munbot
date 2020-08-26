@@ -5,11 +5,12 @@
 package driver
 
 import (
-	"time"
+	"fmt"
 
 	"gobot.io/x/gobot"
 
 	"github.com/munbot/master/v0/adaptor"
+	"github.com/munbot/master/v0/internal/event"
 	"github.com/munbot/master/v0/log"
 )
 
@@ -23,45 +24,56 @@ type Munbot struct {
 	gobot.Driver
 	name string
 	conn gobot.Connection
+	gobot.Eventer
 }
 
 func New(a adaptor.Adaptor) *Munbot {
 	return &Munbot{
-		name: "munbot",
-		conn: a,
+		name:    "munbot",
+		conn:    a,
+		Eventer: a.Eventer(),
 	}
 }
 
 // gobot interface
 
-func (m *Munbot) Name() string {
-	return m.name
+func (d *Munbot) Name() string {
+	return d.name
 }
 
-func (m *Munbot) SetName(name string) {
-	m.name = name
+func (d *Munbot) SetName(name string) {
+	d.name = name
 }
 
-func (m *Munbot) Connection() gobot.Connection {
-	return m.conn
+func (d *Munbot) Connection() gobot.Connection {
+	return d.conn
 }
 
-func (m *Munbot) Start() error {
-	log.Printf("Start %s driver.", m.name)
+func (d *Munbot) Start() error {
+	log.Printf("Start %s driver.", d.name)
+	// user login handler
+	if err := d.On(event.UserLogin, func(data interface{}) {
+		if data != nil {
+			log.Debug("user login")
+			sess := data.(event.Session)
+			ev := fmt.Sprintf("%s.%s", event.UserLogin, sess.Sid)
+			d.Publish(ev, event.Error{})
+		}
+	}); err != nil {
+		log.Panic(err)
+	}
+	// user logout handler
+	if err := d.On(event.UserLogout, func(data interface{}) {
+		if data != nil {
+			log.Print("USER LOGOUT")
+		}
+	}); err != nil {
+		log.Panic(err)
+	}
 	return nil
 }
 
-func (m *Munbot) Halt() error {
-	log.Printf("Halt %s driver.", m.name)
+func (d *Munbot) Halt() error {
+	log.Printf("Halt %s driver.", d.name)
 	return nil
-}
-
-// munbot interface
-
-func (m *Munbot) adaptor() adaptor.Adaptor {
-	return m.Connection().(adaptor.Adaptor)
-}
-
-func (m *Munbot) interval() time.Duration {
-	return m.adaptor().Interval()
 }

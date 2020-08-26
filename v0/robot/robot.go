@@ -62,29 +62,10 @@ func (r *Munbot) Work() {
 			r.Publish(event.ApiStop, false)
 			r.Publish(event.SSHDStart, false)
 			r.Publish(event.SSHDStop, false)
-			r.Publish(event.UserLogin, nil)
-			r.Publish(event.UserLogout, nil)
 		} else {
 			err := data.(event.Error)
 			log.Info("Failure!")
 			log.Panicf("event %q failure: %v", err.Type, err.Err)
-		}
-	}); err != nil {
-		log.Panic(err)
-	}
-
-	// user login handler
-	if err := r.On(event.UserLogin, func(data interface{}) {
-		if data != nil {
-			log.Print("USER LOGIN")
-		}
-	}); err != nil {
-		log.Panic(err)
-	}
-	// user logout handler
-	if err := r.On(event.UserLogout, func(data interface{}) {
-		if data != nil {
-			log.Print("USER LOGOUT")
 		}
 	}); err != nil {
 		log.Panic(err)

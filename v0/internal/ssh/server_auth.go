@@ -187,7 +187,19 @@ func (a *ServerAuth) sshNewKeys(fn string) (ssh.Signer, error) {
 
 func (a *ServerAuth) Login(sid session.Token, uid user.ID, fp string) error {
 	log.Infof("Auth login %s %s", fp, sid)
-	return session.Login(sid, uid, fp)
+	var err error
+	if err := session.Login(sid, uid, fp); err != nil {
+		return err
+	}
+	ev := fmt.Sprintf("%s.%s", event.UserLogin, sid)
+	a.evtr.Once(ev, func(data interface{}) {
+		if data != nil {
+			e := data.(event.Error)
+			err = e.Err
+		}
+	})
+	a.evtr.Publish(event.UserLogin, event.Session{sid, uid, fp})
+	return err
 }
 
 func (a *ServerAuth) Logout(sid session.Token) error {

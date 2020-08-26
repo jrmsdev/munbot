@@ -8,12 +8,19 @@ import (
 	"sync"
 
 	"gobot.io/x/gobot"
-	//~ "github.com/munbot/master/v0/log"
+	"github.com/munbot/master/v0/internal/session"
+	"github.com/munbot/master/v0/internal/user"
 )
 
 type Error struct {
 	Type string
 	Err  error
+}
+
+type Session struct {
+	Sid session.Token
+	Uid user.ID
+	Fp  string
 }
 
 const (
