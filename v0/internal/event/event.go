@@ -49,18 +49,12 @@ func (m *evtr) Wait() {
 
 func (m *evtr) On(name string, f func(d interface{})) error {
 	m.wg.Add(1)
-	wrapper := func(d interface{}) {
-		defer m.wg.Done()
-		f(d)
-	}
-	return m.Eventer.On(name, wrapper)
+	defer m.wg.Done()
+	return m.Eventer.On(name, f)
 }
 
 func (m *evtr) Once(name string, f func(d interface{})) error {
 	m.wg.Add(1)
-	wrapper := func(d interface{}) {
-		defer m.wg.Done()
-		f(d)
-	}
-	return m.Eventer.Once(name, wrapper)
+	defer m.wg.Done()
+	return m.Eventer.Once(name, f)
 }
