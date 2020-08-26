@@ -188,9 +188,6 @@ func (a *ServerAuth) sshNewKeys(fn string) (ssh.Signer, error) {
 func (a *ServerAuth) Login(sid session.Token, uid user.ID, fp string) error {
 	log.Infof("Auth login %s %s", fp, sid)
 	var err error
-	if err := session.Login(sid, uid, fp); err != nil {
-		return err
-	}
 	ev := fmt.Sprintf("%s.%s", event.UserLogin, sid)
 	a.evtr.Once(ev, func(data interface{}) {
 		if data != nil {

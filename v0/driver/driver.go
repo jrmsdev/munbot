@@ -11,6 +11,7 @@ import (
 
 	"github.com/munbot/master/v0/adaptor"
 	"github.com/munbot/master/v0/internal/event"
+	"github.com/munbot/master/v0/internal/session"
 	"github.com/munbot/master/v0/log"
 )
 
@@ -55,9 +56,14 @@ func (d *Munbot) Start() error {
 	if err := d.On(event.UserLogin, func(data interface{}) {
 		if data != nil {
 			log.Debug("user login")
-			sess := data.(event.Session)
-			ev := fmt.Sprintf("%s.%s", event.UserLogin, sess.Sid)
-			d.Publish(ev, event.Error{})
+			s := data.(event.Session)
+			ev := fmt.Sprintf("%s.%s", event.UserLogin, s.Sid)
+			if err := session.Login(s.Sid, s.Uid, s.Fp); err != nil {
+				log.Debugf("%s user login error: %v", s.Sid, err)
+				d.Publish(ev, event.Error{event.UserLogin, err})
+			} else {
+				d.Publish(ev, event.Error{event.UserLogin, nil})
+			}
 		}
 	}); err != nil {
 		log.Panic(err)
