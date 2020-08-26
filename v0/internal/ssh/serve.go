@@ -8,7 +8,6 @@ import (
 	"context"
 	"fmt"
 	"io"
-	"net/textproto"
 
 	"golang.org/x/crypto/ssh"
 	"golang.org/x/crypto/ssh/terminal"
@@ -88,22 +87,21 @@ func (s *SSHD) serveShell(ctx context.Context, ch ssh.Channel, sid session.Token
 	log.Debugf("%s serve shell", sid)
 	defer func() {
 		if err := ch.Close(); err != nil {
-			log.Errorf("%s ssh channel close: %v", sid, err)
+			log.Errorf("SSHD channel close %s: %v", sid, err)
 		}
 	}()
 	term := terminal.NewTerminal(ch, "")
-	resp := textproto.NewWriter(bufio.NewWriter(term))
+	resp := bufio.NewWriter(term)
 	if err := s.auth.Login(sid, uid, fp); err != nil {
 		log.Debugf("%s auth login error: %v", sid, err)
-		if err := resp.PrintfLine("%s%s", "", "login error"); err != nil {
-			if err != io.EOF {
-				log.Errorf("SSHD %s: %v", sid, err)
-			}
+		if err := shellWrite(resp, "login error"); err != nil {
+			log.Errorf("SSHD terminal %s: %v", sid, err)
 		}
 		return
 	}
 	ps1 := fmt.Sprintf("%s> ", env.Get("MUNBOT"))
 	term.SetPrompt(ps1)
+	shellWrite(resp, "login")
 //~ LOOP:
 	//~ for {
 		//~ select {
@@ -127,10 +125,17 @@ func (s *SSHD) serveShell(ctx context.Context, ch ssh.Channel, sid session.Token
 			//~ return
 		//~ }
 	//~ }
-	//~ term.SetPrompt("")
-	//~ if err := resp.PrintfLine("%s%s", ps1, "logout"); err != nil {
-		//~ if err != io.EOF {
-			//~ log.Errorf("SSHD %s: %v", sid, err)
-		//~ }
-	//~ }
+	term.SetPrompt("")
+	if err := shellWrite(resp, "logout"); err != nil {
+		log.Errorf("SSHD terminal %s: %v", sid, err)
+	}
+}
+
+func shellWrite(w *bufio.Writer, f string, args ...interface{}) error {
+	if _, err := w.WriteString(fmt.Sprintf(f, args...) + "\n"); err != nil {
+		if err != io.EOF {
+			return err
+		}
+	}
+	return w.Flush()
 }
