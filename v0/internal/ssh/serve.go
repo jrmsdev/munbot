@@ -87,7 +87,9 @@ func (s *SSHD) serveShell(ctx context.Context, ch ssh.Channel, sid session.Token
 	log.Debugf("%s serve shell", sid)
 	defer func() {
 		if err := ch.Close(); err != nil {
-			log.Errorf("SSHD channel close %s: %v", sid, err)
+			if err != io.EOF {
+				log.Errorf("SSHD channel close %s: %v", sid, err)
+			}
 		}
 	}()
 	term := terminal.NewTerminal(ch, "")
@@ -102,31 +104,32 @@ func (s *SSHD) serveShell(ctx context.Context, ch ssh.Channel, sid session.Token
 	shellWrite(resp, "", "login")
 	ps1 := fmt.Sprintf("%s> ", env.Get("MUNBOT"))
 	term.SetPrompt(ps1)
-//~ LOOP:
-	//~ for {
-		//~ select {
-		//~ case <-ctx.Done():
-			//~ log.Debug("shell context done!")
-			//~ break LOOP
-		//~ default:
-		//~ }
-		//~ log.Debugf("%s shell read line...", sid)
-		//~ line, err := term.ReadLine()
-		//~ if err != nil {
-			//~ if err != io.EOF {
-				//~ log.Errorf("SSHD %s: %v", sid, err)
-				//~ return
-			//~ }
-			//~ break LOOP
-		//~ }
-		//~ log.Printf("%s SHELL: %s", sid, line)
-		//~ if err := resp.PrintfLine("%q", line); err != nil {
-			//~ log.Errorf("SSHD %s: %v", sid, err)
-			//~ return
-		//~ }
-	//~ }
+LOOP:
+	for {
+		select {
+		case <-ctx.Done():
+			log.Debugf("%s shell context done!", sid)
+			break LOOP
+		default:
+		}
+		log.Debugf("%s shell read line...", sid)
+		line, err := term.ReadLine()
+		if err != nil {
+			if err != io.EOF {
+				log.Errorf("SSHD terminal %s: %v", sid, err)
+				return
+			}
+			break LOOP
+		} else {
+			log.Printf("%s SHELL: %s", sid, line)
+			if err := shellWrite(resp, ps1, "%q", line); err != nil {
+				log.Errorf("SSHD terminal %s: %v", sid, err)
+				return
+			}
+		}
+	}
 	term.SetPrompt("")
-	if err := shellWrite(resp, "", "logout"); err != nil {
+	if err := shellWrite(resp, ps1, "logout"); err != nil {
 		log.Errorf("SSHD terminal %s: %v", sid, err)
 	}
 }
@@ -137,5 +140,10 @@ func shellWrite(w *bufio.Writer, ps, f string, args ...interface{}) error {
 			return err
 		}
 	}
-	return w.Flush()
+	if err := w.Flush(); err != nil {
+		if err != io.EOF {
+			return err
+		}
+	}
+	return nil
 }
