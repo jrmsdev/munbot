@@ -22,6 +22,8 @@ const (
 	ApiStop          = "api.stop"
 	SSHDStart        = "sshd.start"
 	SSHDStop         = "sshd.stop"
+	UserLogin        = "user.login"
+	UserLogout       = "user.logout"
 )
 
 type Eventer interface {
