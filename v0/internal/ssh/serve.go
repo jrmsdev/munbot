@@ -94,14 +94,14 @@ func (s *SSHD) serveShell(ctx context.Context, ch ssh.Channel, sid session.Token
 	resp := bufio.NewWriter(term)
 	if err := s.auth.Login(sid, uid, fp); err != nil {
 		log.Debugf("%s auth login error: %v", sid, err)
-		if err := shellWrite(resp, "login error"); err != nil {
+		if err := shellWrite(resp, "", "login error"); err != nil {
 			log.Errorf("SSHD terminal %s: %v", sid, err)
 		}
 		return
 	}
+	shellWrite(resp, "", "login")
 	ps1 := fmt.Sprintf("%s> ", env.Get("MUNBOT"))
 	term.SetPrompt(ps1)
-	shellWrite(resp, "login")
 //~ LOOP:
 	//~ for {
 		//~ select {
@@ -126,13 +126,13 @@ func (s *SSHD) serveShell(ctx context.Context, ch ssh.Channel, sid session.Token
 		//~ }
 	//~ }
 	term.SetPrompt("")
-	if err := shellWrite(resp, "logout"); err != nil {
+	if err := shellWrite(resp, "", "logout"); err != nil {
 		log.Errorf("SSHD terminal %s: %v", sid, err)
 	}
 }
 
-func shellWrite(w *bufio.Writer, f string, args ...interface{}) error {
-	if _, err := w.WriteString(fmt.Sprintf(f, args...) + "\n"); err != nil {
+func shellWrite(w *bufio.Writer, ps, f string, args ...interface{}) error {
+	if _, err := w.WriteString(ps + fmt.Sprintf(f, args...) + "\n"); err != nil {
 		if err != io.EOF {
 			return err
 		}
