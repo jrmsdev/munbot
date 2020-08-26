@@ -5,6 +5,7 @@
 package session
 
 import (
+	"github.com/munbot/master/v0/internal/user"
 	"github.com/munbot/master/v0/log"
 	"github.com/munbot/master/v0/utils/uuid"
 )
@@ -27,7 +28,12 @@ func (t Token) String() string {
 	return uuid.ToString(uuid.UUID(t))
 }
 
-func Close(sid Token) error {
-	log.Debugf("%s close", sid)
+func Login(sid Token, uid user.ID, fp string) error {
+	log.Printf("User login %s %s.", uid, sid)
+	return nil
+}
+
+func Logout(sid Token) error {
+	log.Printf("User logout %s.", sid)
 	return nil
 }

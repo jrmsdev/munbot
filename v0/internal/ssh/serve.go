@@ -4,10 +4,16 @@
 package ssh
 
 import (
+	"bufio"
 	"context"
+	"fmt"
+	"io"
+	"net/textproto"
 
 	"golang.org/x/crypto/ssh"
+	"golang.org/x/crypto/ssh/terminal"
 
+	"github.com/munbot/master/v0/env"
 	"github.com/munbot/master/v0/internal/session"
 	"github.com/munbot/master/v0/internal/user"
 	"github.com/munbot/master/v0/log"
@@ -64,10 +70,7 @@ func (s *SSHD) serve(ctx context.Context, nc ssh.NewChannel, sid session.Token, 
 			switch req.Type {
 			case "shell":
 				wait = false
-				if err := ch.Close(); err != nil {
-					log.Errorf("%s ssh channel close: %v", sid, err)
-				}
-				//~ s.serveShell(ctx, ch, sid)
+				s.serveShell(ctx, ch, sid, uid, fp)
 			default:
 				if !req.Serve {
 					log.Errorf("%s ssh invalid request: %s", sid, req.Type)
@@ -81,17 +84,26 @@ func (s *SSHD) serve(ctx context.Context, nc ssh.NewChannel, sid session.Token, 
 	}(ctx, ch, reqs)
 }
 
-//~ func (s *SSHD) serveShell(ctx context.Context, ch ssh.Channel, sid string) {
-	//~ log.Debugf("%s serve shell", sid)
-	//~ defer ch.Close()
-	//~ _, err := s.auth.Session(sid)
-	//~ if err != nil {
-		//~ log.Debugf("%s auth session error: %v", sid, err)
-		//~ return
-	//~ }
-	//~ ps1 := fmt.Sprintf("%s> ", env.Get("MUNBOT"))
-	//~ term := terminal.NewTerminal(ch, ps1)
-	//~ resp := textproto.NewWriter(bufio.NewWriter(term))
+func (s *SSHD) serveShell(ctx context.Context, ch ssh.Channel, sid session.Token, uid user.ID, fp string) {
+	log.Debugf("%s serve shell", sid)
+	defer func() {
+		if err := ch.Close(); err != nil {
+			log.Errorf("%s ssh channel close: %v", sid, err)
+		}
+	}()
+	term := terminal.NewTerminal(ch, "")
+	resp := textproto.NewWriter(bufio.NewWriter(term))
+	if err := s.auth.Login(sid, uid, fp); err != nil {
+		log.Debugf("%s auth login error: %v", sid, err)
+		if err := resp.PrintfLine("%s%s", "", "login error"); err != nil {
+			if err != io.EOF {
+				log.Errorf("SSHD %s: %v", sid, err)
+			}
+		}
+		return
+	}
+	ps1 := fmt.Sprintf("%s> ", env.Get("MUNBOT"))
+	term.SetPrompt(ps1)
 //~ LOOP:
 	//~ for {
 		//~ select {
@@ -121,4 +133,4 @@ func (s *SSHD) serve(ctx context.Context, nc ssh.NewChannel, sid session.Token, 
 			//~ log.Errorf("SSHD %s: %v", sid, err)
 		//~ }
 	//~ }
-//~ }
+}

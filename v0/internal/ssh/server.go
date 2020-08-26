@@ -209,7 +209,7 @@ func (s *SSHD) dispatch(ctx context.Context, nc net.Conn, sid string) {
 		defer s.wgdone("discard-requests")
 		ssh.DiscardRequests(reqs)
 	}(reqs)
-	// serve
+	// new session
 	fp := conn.Permissions.Extensions["pubkey-fp"]
 	uid := conn.Permissions.Extensions["x-munbot-user"]
 	if fp == "" || uid == "" {
@@ -221,6 +221,7 @@ func (s *SSHD) dispatch(ctx context.Context, nc net.Conn, sid string) {
 		log.Debugf("%s dispatch session error: %v", sid, err)
 		return
 	}
+	// serve channels
 LOOP:
 	for nc := range chans {
 		select {
@@ -231,8 +232,5 @@ LOOP:
 		default:
 		}
 		s.serve(ctx, nc, sess, user.ID(uid), fp)
-	}
-	if err := session.Close(sess); err != nil {
-		log.Debugf("%s dispatch close session error: %v", sid, err)
 	}
 }
