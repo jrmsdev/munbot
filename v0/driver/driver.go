@@ -71,7 +71,15 @@ func (d *Munbot) Start() error {
 	// user logout handler
 	if err := d.On(event.UserLogout, func(data interface{}) {
 		if data != nil {
-			log.Print("USER LOGOUT")
+			log.Debug("user logout")
+			s := data.(event.Session)
+			ev := fmt.Sprintf("%s.%s", event.UserLogout, s.Sid)
+			if err := session.Logout(s.Sid); err != nil {
+				log.Debugf("%s user logout error: %v", s.Sid, err)
+				d.Publish(ev, event.Error{event.UserLogout, err})
+			} else {
+				d.Publish(ev, event.Error{event.UserLogout, nil})
+			}
 		}
 	}); err != nil {
 		log.Panic(err)

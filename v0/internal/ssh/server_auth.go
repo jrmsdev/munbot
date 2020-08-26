@@ -186,23 +186,39 @@ func (a *ServerAuth) sshNewKeys(fn string) (ssh.Signer, error) {
 }
 
 func (a *ServerAuth) Login(sid session.Token, uid user.ID, fp string) error {
-	log.Infof("Auth login %s %s", fp, sid)
 	var err error
+	done := make(chan bool, 0)
 	ev := fmt.Sprintf("%s.%s", event.UserLogin, sid)
 	a.evtr.Once(ev, func(data interface{}) {
 		if data != nil {
 			e := data.(event.Error)
 			err = e.Err
 		}
+		done <- true
 	})
 	a.evtr.Publish(event.UserLogin, event.Session{sid, uid, fp})
+	<-done
+	if err == nil {
+		log.Infof("Auth login %s %s", fp, sid)
+	}
 	return err
 }
 
 func (a *ServerAuth) Logout(sid session.Token) error {
-	if err := session.Logout(sid); err != nil {
-		return err
+	var err error
+	done := make(chan bool, 0)
+	ev := fmt.Sprintf("%s.%s", event.UserLogout, sid)
+	a.evtr.Once(ev, func(data interface{}) {
+		if data != nil {
+			e := data.(event.Error)
+			err = e.Err
+		}
+		done <- true
+	})
+	a.evtr.Publish(event.UserLogout, event.Session{Sid: sid})
+	<-done
+	if err == nil {
+		log.Infof("Auth logout %s", sid)
 	}
-	log.Infof("Auth logout %s", sid)
-	return nil
+	return err
 }
