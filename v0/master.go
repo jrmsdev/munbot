@@ -8,14 +8,17 @@ import (
 	"gobot.io/x/gobot"
 
 	"github.com/munbot/master/v0/adaptor"
+	"github.com/munbot/master/v0/driver/sshd"
 	"github.com/munbot/master/v0/log"
 	"github.com/munbot/master/v0/robot"
+	"github.com/munbot/master/v0/utils/net"
 )
 
 // Robot works around a gobot.Master.
 type Robot struct {
 	*gobot.Master
 	AutoRun bool
+	bot     *robot.Munbot
 }
 
 // New creates a new master robot.
@@ -45,9 +48,9 @@ func (m *Robot) Run() error {
 	log.Debug("run...")
 	m.AutoRun = true
 	log.Debug("add core munbot")
-	bot := robot.New(adaptor.New(m.Master))
-	bot.AutoRun = false
-	m.AddRobot(bot.Gobot())
+	m.bot = robot.New(adaptor.New(m.Master))
+	m.bot.AutoRun = false
+	m.AddRobot(m.bot.Gobot())
 	if err := m.Start(); err != nil {
 		log.Debug("start error")
 		stop := func(r *gobot.Robot) {
@@ -63,6 +66,16 @@ func (m *Robot) Run() error {
 		}
 		log.Error("Abort start!")
 		return err
+	}
+	return nil
+}
+
+func (m *Robot) Addr() *net.Addr {
+	if m.bot != nil {
+		d := m.bot.Device("munbot.sshd").(*sshd.Driver)
+		if d != nil {
+			return d.Addr()
+		}
 	}
 	return nil
 }

@@ -8,6 +8,7 @@ import (
 	"sync"
 
 	"gobot.io/x/gobot"
+
 	"github.com/munbot/master/v0/internal/session"
 	"github.com/munbot/master/v0/internal/user"
 )

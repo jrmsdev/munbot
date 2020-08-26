@@ -15,23 +15,22 @@ import (
 	"testing"
 	"time"
 
+	"github.com/munbot/master/v0"
 	"github.com/munbot/master/v0/env"
-	"github.com/munbot/master/v0/internal/event"
-	"github.com/munbot/master/v0/internal/ssh"
 	"github.com/munbot/master/v0/log"
 	"github.com/munbot/master/v0/testing/suite"
 )
 
 func TestSSHCmdSuite(t *testing.T) {
 	log.SetMode(env.Get("MB_LOG"))
-	suite.Run(t, &sshCmdSuite{Suite: suite.New(), cons: ssh.NewServer(ssh.NewServerAuth(event.NewEventer()))})
+	suite.Run(t, &sshCmdSuite{Suite: suite.New(), m: master.New()})
 }
 
 type sshCmdSuite struct {
 	*suite.Suite
+	m      *master.Robot
 	cmd    string
 	skip   string
-	cons   *ssh.SSHD
 	tmpdir string
 	addr   string
 	port   string
@@ -62,21 +61,18 @@ func (s *sshCmdSuite) SetupSuite() {
 		s.tmpdir = tmpdir
 		env.Set("MB_CONFIG", filepath.Join(s.tmpdir, "etc"))
 	}
-	if err := s.cons.Configure(); err != nil {
-		s.T().Fatal(err)
-	}
-	go func(t *testing.T, c ssh.Server) {
-		if err := c.Start(); err != nil {
+	go func(t *testing.T, m *master.Robot) {
+		if err := m.Run(); err != nil {
 			t.Fatal(err)
 		}
-	}(s.T(), s.cons)
+	}(s.T(), s.m)
 	time.Sleep(50 * time.Millisecond)
-	s.addr = s.cons.Addr().String()
+	s.addr = s.m.Addr().String()
 	s.T().Logf("sshd addr %q", s.addr)
 	if s.addr == "ssh:" {
 		s.T().Fatal("could not get sshd server address")
 	}
-	s.port = s.cons.Addr().Port()
+	s.port = s.m.Addr().Port()
 	s.T().Logf("sshd port: %q", s.port)
 	s.ident = filepath.Join(s.tmpdir, "id_ed25519")
 	cmd := exec.Command("ssh-keygen", "-q", "-f", s.ident,
@@ -99,10 +95,10 @@ func (s *sshCmdSuite) SetupSuite() {
 }
 
 func (s *sshCmdSuite) TearDownSuite() {
-	if err := s.cons.Stop(); err != nil {
+	if err := s.m.Stop(); err != nil {
 		s.T().Log(err)
 	}
-	s.cons = nil
+	s.m = nil
 	if err := os.RemoveAll(s.tmpdir); err != nil {
 		s.T().Log(err)
 	}
@@ -125,7 +121,7 @@ var allTests map[string]*sshcmdTest = map[string]*sshcmdTest{
 
 func (s *sshCmdSuite) TestAll() {
 	check := s.Require()
-	check.NotNil(s.cons)
+	check.NotNil(s.m)
 	buf := new(bytes.Buffer)
 	defer buf.Reset()
 	for tname, tcmd := range allTests {
