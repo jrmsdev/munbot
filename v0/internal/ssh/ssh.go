@@ -6,10 +6,9 @@ package ssh
 
 import (
 	"context"
-	"net"
-	"net/url"
 	"time"
 
+	"github.com/munbot/master/v0/utils/net"
 	"github.com/munbot/master/v0/utils/uuid"
 )
 
@@ -17,33 +16,7 @@ type Server interface {
 	Configure() error
 	Start() error
 	Stop() error
-}
-
-type Addr struct {
-	net.Addr
-	addr string
-	net  string
-	uri  *url.URL
-}
-
-func newAddr(net, addr string) *Addr {
-	return &Addr{addr: addr, net: net, uri: &url.URL{Scheme: "ssh", Host: addr}}
-}
-
-func (a *Addr) String() string {
-	return a.addr
-}
-
-func (a *Addr) Network() string {
-	return a.net
-}
-
-func (a *Addr) Hostname() string {
-	return a.uri.Hostname()
-}
-
-func (a *Addr) Port() string {
-	return a.uri.Port()
+	Addr() *net.Addr
 }
 
 type ctxKey int

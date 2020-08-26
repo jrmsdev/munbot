@@ -13,6 +13,7 @@ import (
 	"github.com/munbot/master/v0/internal/core"
 	"github.com/munbot/master/v0/internal/event"
 	"github.com/munbot/master/v0/log"
+	"github.com/munbot/master/v0/utils/net"
 )
 
 type Driver struct {
@@ -32,7 +33,6 @@ func NewDriver(a adaptor.Adaptor) gobot.Driver {
 		conn:    a,
 		name:    "munbot.sshd",
 		wg:      new(sync.WaitGroup),
-		evtr:    a.Eventer().(event.Eventer),
 		Eventer: a.Eventer(),
 	}
 }
@@ -61,7 +61,7 @@ func (s *Driver) Start() error {
 		return log.Error("SSH server already started")
 	}
 	s.err = nil
-	s.srv = core.NewSSHServer(s.evtr)
+	s.srv = core.NewSSHServer(s.Eventer.(event.Eventer))
 	// configure
 	log.Printf("Configure ssh server.")
 	if err := s.srv.Configure(); err != nil {
@@ -111,4 +111,10 @@ func (s *Driver) Halt() error {
 	defer s.Unlock()
 	s.srv = nil
 	return s.err
+}
+
+// munbot interface
+
+func (s *Driver) Addr() *net.Addr {
+	return s.srv.Addr()
 }

@@ -16,6 +16,8 @@ import (
 	"github.com/munbot/master/v0/internal/session"
 	"github.com/munbot/master/v0/internal/user"
 	"github.com/munbot/master/v0/log"
+
+	netutils "github.com/munbot/master/v0/utils/net"
 )
 
 var _ Server = &SSHD{}
@@ -66,12 +68,12 @@ func (s *SSHD) wgwait() {
 	s.wg.Wait()
 }
 
-func (s *SSHD) Addr() *Addr {
+func (s *SSHD) Addr() *netutils.Addr {
 	addr := ""
 	if s.ln != nil {
 		addr = s.ln.Addr().String()
 	}
-	return newAddr("tcp", addr)
+	return netutils.NewAddr("ssh", "tcp", addr)
 }
 
 func (s *SSHD) Configure() error {
