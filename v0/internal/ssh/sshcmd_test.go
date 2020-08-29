@@ -61,13 +61,15 @@ func (s *sshCmdSuite) SetupSuite() {
 		s.tmpdir = tmpdir
 		env.Set("MB_CONFIG", filepath.Join(s.tmpdir, "etc"))
 	}
+	s.T().Log("env config")
+	env.Set("MBAPI_PORT", "0")
 	s.T().Log("run master robot")
 	go func(t *testing.T, m *master.Robot) {
 		if err := m.Run(); err != nil {
 			t.Fatal(err)
 		}
 	}(s.T(), s.m)
-	time.Sleep(time.Second)
+	time.Sleep(100 * time.Millisecond)
 	s.addr = s.m.Addr().String()
 	s.T().Logf("sshd addr %q", s.addr)
 	if s.addr == "ssh:" {
