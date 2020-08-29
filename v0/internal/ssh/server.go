@@ -118,7 +118,7 @@ func (s *SSHD) Start() error {
 			log.Debugf("listen error: %v", err)
 			return err
 		}
-		log.Infof("SSH server ssh://%s", s.addr)
+		log.Infof("SSH server %s", s.Addr())
 		s.closed = false
 		// accept connections
 		ctx, cancel := context.WithCancel(context.Background())

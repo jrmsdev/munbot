@@ -21,6 +21,10 @@ func NewAddr(scheme, network, addr string) *Addr {
 }
 
 func (a *Addr) String() string {
+	return a.uri.String()
+}
+
+func (a *Addr) Address() string {
 	return a.addr
 }
 

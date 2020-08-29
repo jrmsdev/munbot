@@ -63,6 +63,7 @@ func (s *sshCmdSuite) SetupSuite() {
 	}
 	s.T().Log("env config")
 	env.Set("MBAPI_PORT", "0")
+	env.Set("MBSSHD_PORT", "0")
 	s.T().Log("run master robot")
 	go func(t *testing.T, m *master.Robot) {
 		if err := m.Run(); err != nil {
@@ -70,7 +71,7 @@ func (s *sshCmdSuite) SetupSuite() {
 		}
 	}(s.T(), s.m)
 	time.Sleep(100 * time.Millisecond)
-	s.addr = s.m.Addr().String()
+	s.addr = s.m.Addr().Address()
 	s.T().Logf("sshd addr %q", s.addr)
 	if s.addr == "ssh:" {
 		s.T().Fatal("could not get sshd server address")
