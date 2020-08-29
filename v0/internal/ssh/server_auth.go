@@ -186,6 +186,7 @@ func (a *ServerAuth) sshNewKeys(fn string) (ssh.Signer, error) {
 }
 
 func (a *ServerAuth) Login(sid session.Token, uid user.ID, fp string) error {
+	log.Debugf("%s login", sid)
 	var err error
 	done := make(chan bool, 0)
 	ev := fmt.Sprintf("%s.%s", event.UserLogin, sid)
@@ -194,9 +195,12 @@ func (a *ServerAuth) Login(sid session.Token, uid user.ID, fp string) error {
 			e := data.(event.Error)
 			err = e.Err
 		}
+		log.Debugf("got %s: %v", ev, err)
 		done <- true
 	})
+	log.Debugf("%s publish %s: %s %s", sid, event.UserLogin, uid, fp)
 	a.evtr.Publish(event.UserLogin, event.Session{sid, uid, fp})
+	log.Debugf("%s wait for %s ack", sid, event.UserLogin)
 	<-done
 	if err == nil {
 		log.Infof("Auth login %s %s", fp, sid)
@@ -213,9 +217,12 @@ func (a *ServerAuth) Logout(sid session.Token) error {
 			e := data.(event.Error)
 			err = e.Err
 		}
+		log.Debugf("got %s: %v", ev, err)
 		done <- true
 	})
+	log.Debugf("%s publish %s", sid, event.UserLogout)
 	a.evtr.Publish(event.UserLogout, event.Session{Sid: sid})
+	log.Debugf("%s wait for %s ack", sid, event.UserLogout)
 	<-done
 	if err == nil {
 		log.Infof("Auth logout %s", sid)

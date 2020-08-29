@@ -76,14 +76,12 @@ func (a *Driver) Start() error {
 	}
 	// stop handler
 	a.wg.Add(1)
-	a.AddEvent(event.ApiStop)
 	if err := a.Once(event.ApiStop, func(data interface{}) {
 		defer a.wg.Done()
+		log.Debugf("got %s: %v", event.ApiStop, data)
 		if run := data.(bool); !run {
 			return
 		}
-		a.Lock()
-		defer a.Unlock()
 		log.Debug("stop api server")
 		if err := a.srv.Stop(); err != nil {
 			a.err = log.Error(err)
@@ -93,9 +91,9 @@ func (a *Driver) Start() error {
 	}
 	// start handler
 	a.wg.Add(1)
-	a.AddEvent(event.ApiStart)
 	if err := a.Once(event.ApiStart, func(data interface{}) {
 		defer a.wg.Done()
+		log.Debugf("got %s: %v", event.ApiStart, data)
 		if run := data.(bool); !run {
 			return
 		}
@@ -107,15 +105,18 @@ func (a *Driver) Start() error {
 	}); err != nil {
 		return log.Error(err)
 	}
+	log.Debug("start done")
 	return nil
 }
 
 func (a *Driver) Halt() error {
 	log.Printf("Halt %s driver.", a.name)
-	a.Publish(event.ApiStop, true)
-	a.wg.Wait()
 	a.Lock()
 	defer a.Unlock()
+	log.Debugf("publish %s", event.ApiStop)
+	a.Publish(event.ApiStop, true)
+	log.Debug("wait...")
+	a.wg.Wait()
 	a.srv = nil
 	return a.err
 }

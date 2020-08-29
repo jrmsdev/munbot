@@ -62,6 +62,7 @@ func (d *Munbot) Start() error {
 				log.Debugf("%s user login error: %v", s.Sid, err)
 				d.Publish(ev, event.Error{event.UserLogin, err})
 			} else {
+				log.Debugf("publish %s", ev)
 				d.Publish(ev, event.Error{event.UserLogin, nil})
 			}
 		}
@@ -78,6 +79,7 @@ func (d *Munbot) Start() error {
 				log.Debugf("%s user logout error: %v", s.Sid, err)
 				d.Publish(ev, event.Error{event.UserLogout, err})
 			} else {
+				log.Debugf("publish %s", ev)
 				d.Publish(ev, event.Error{event.UserLogout, nil})
 			}
 		}
