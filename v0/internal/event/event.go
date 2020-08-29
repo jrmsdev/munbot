@@ -8,20 +8,11 @@ import (
 	"sync"
 
 	"gobot.io/x/gobot"
-
-	"github.com/munbot/master/v0/internal/session"
-	"github.com/munbot/master/v0/internal/user"
 )
 
 type Error struct {
 	Type string
 	Err  error
-}
-
-type Session struct {
-	Sid session.Token
-	Uid user.ID
-	Fp  string
 }
 
 const (
@@ -30,8 +21,6 @@ const (
 	ApiStop           = "api.stop"
 	SSHDStart         = "sshd.start"
 	SSHDStop          = "sshd.stop"
-	UserLogin         = "user.login"
-	UserLogout        = "user.logout"
 )
 
 type Eventer interface {
