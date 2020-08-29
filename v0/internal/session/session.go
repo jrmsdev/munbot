@@ -5,6 +5,7 @@
 package session
 
 import (
+	"errors"
 	"sync"
 
 	"github.com/munbot/master/v0/internal/user"
@@ -37,49 +38,51 @@ type Session struct {
 
 type sm struct {
 	*sync.Mutex
-	sess map[Token]*Session
+	sess map[string]*Session
 }
 
 var sess *sm
 
 func init() {
-	sess = &sm{new(sync.Mutex), make(map[Token]*Session)}
+	sess = &sm{new(sync.Mutex), make(map[string]*Session)}
 }
 
 func (m *sm) Add(sid Token, uid user.ID, fp string) (ok bool) {
 	m.Lock()
 	defer m.Unlock()
-	if _, found := m.sess[sid]; found {
+	s := sid.String()
+	if _, found := m.sess[s]; found {
 		return false
 	}
-	m.sess[sid] = &Session{sid, user.New(uid, fp)}
+	m.sess[s] = &Session{sid, user.New(uid, fp)}
+	log.Debugf("%s added", s)
 	return true
 }
 
 func (m *sm) Remove(sid Token) (ok bool) {
 	m.Lock()
 	defer m.Unlock()
-	if _, found := m.sess[sid]; found {
+	s := sid.String()
+	if _, found := m.sess[s]; !found {
 		return false
 	}
-	delete(m.sess, sid)
+	delete(m.sess, s)
+	log.Debugf("%s removed", s)
 	return true
 }
 
 func Login(sid Token, uid user.ID, fp string) error {
 	log.Debugf("%s login", sid)
 	if !sess.Add(sid, uid, fp) {
-		return log.Errorf("Session found %s.", sid)
+		return errors.New("session found")
 	}
-	log.Printf("User login %s %s.", uid, sid)
 	return nil
 }
 
 func Logout(sid Token) error {
 	log.Debugf("%s logout", sid)
 	if !sess.Remove(sid) {
-		return log.Errorf("Session not found %s.", sid)
+		return errors.New("session not found")
 	}
-	log.Printf("User logout %s.", sid)
 	return nil
 }

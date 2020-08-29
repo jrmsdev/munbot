@@ -183,11 +183,17 @@ func (a *ServerAuth) sshNewKeys(fn string) (ssh.Signer, error) {
 }
 
 func (a *ServerAuth) Login(sid session.Token, uid user.ID, fp string) error {
-	log.Infof("Auth login %s %s", fp, sid)
+	if err := session.Login(sid, uid, fp); err != nil {
+		return log.Errorf("Auth login %s: %v.", sid, err)
+	}
+	log.Infof("Auth login %s %s.", fp, sid)
 	return nil
 }
 
 func (a *ServerAuth) Logout(sid session.Token) error {
+	if err := session.Logout(sid); err != nil {
+		return log.Errorf("Auth logout %s: %v.", sid, err)
+	}
 	log.Infof("Auth logout %s", sid)
 	return nil
 }
