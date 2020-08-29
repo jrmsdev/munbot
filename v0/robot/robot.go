@@ -30,9 +30,10 @@ func New(conn adaptor.Adaptor) *Munbot {
 	r.Robot = gobot.NewRobot(
 		"munbot",
 		[]gobot.Connection{r.conn},
+		// add devices in "stop first" order
 		[]gobot.Device{
-			api.NewDriver(r.conn),
 			sshd.NewDriver(r.conn),
+			api.NewDriver(r.conn),
 		},
 		r.Work,
 	)
