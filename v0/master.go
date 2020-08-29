@@ -109,10 +109,6 @@ func (m *Robot) Stop() error {
 }
 
 // Run runs the robot's main loop.
-//
-// Add core munbot robot.
-// Start.
-// Watch for failures and abort if any.
 func (m *Robot) Run() error {
 	log.Debug("run...")
 	c := make(chan os.Signal, 0)
@@ -129,8 +125,6 @@ func (m *Robot) Run() error {
 			return
 		}
 	}(c)
-	defer close(c)
-	defer close(m.done)
 	log.Debug("add core munbot")
 	m.bot = robot.New(adaptor.New(m.Master))
 	m.AddRobot(m.bot.Gobot())
@@ -144,6 +138,7 @@ func (m *Robot) Run() error {
 	return nil
 }
 
+// Addr returns the ssh server network address information.
 func (m *Robot) Addr() *net.Addr {
 	if m.bot != nil {
 		d := m.bot.Device("munbot.sshd").(*sshd.Driver)
