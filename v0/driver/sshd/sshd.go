@@ -23,7 +23,6 @@ type Driver struct {
 	srv  core.SSHServer
 	wg   *sync.WaitGroup
 	err  error
-	evtr event.Eventer
 	gobot.Eventer
 }
 
@@ -61,7 +60,7 @@ func (s *Driver) Start() error {
 		return log.Error("SSH server already started")
 	}
 	s.err = nil
-	s.srv = core.NewSSHServer(s.Eventer.(event.Eventer))
+	s.srv = core.NewSSHServer()
 	// configure
 	log.Printf("Configure ssh server.")
 	if err := s.srv.Configure(); err != nil {

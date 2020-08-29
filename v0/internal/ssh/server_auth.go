@@ -13,7 +13,6 @@ import (
 	"golang.org/x/crypto/ssh"
 
 	"github.com/munbot/master/v0/env"
-	"github.com/munbot/master/v0/internal/event"
 	"github.com/munbot/master/v0/internal/session"
 	"github.com/munbot/master/v0/internal/user"
 	"github.com/munbot/master/v0/log"
@@ -32,7 +31,6 @@ type AuthManager interface {
 
 // ServerAuth implemenst the ssh server auth manager.
 type ServerAuth struct {
-	evtr     event.Eventer
 	enable   bool
 	name     string
 	dir      string // config dir file path
@@ -43,9 +41,8 @@ type ServerAuth struct {
 }
 
 // NewServerAuth creates a new ServerAuth instance.
-func NewServerAuth(evtr event.Eventer) *ServerAuth {
+func NewServerAuth() *ServerAuth {
 	return &ServerAuth{
-		evtr:   evtr,
 		enable: env.GetBool("MBAUTH"),
 		name:   env.Get("MUNBOT"),
 	}
@@ -186,46 +183,11 @@ func (a *ServerAuth) sshNewKeys(fn string) (ssh.Signer, error) {
 }
 
 func (a *ServerAuth) Login(sid session.Token, uid user.ID, fp string) error {
-	log.Debugf("%s login", sid)
-	var err error
-	done := make(chan bool, 0)
-	ev := fmt.Sprintf("%s.%s", event.UserLogin, sid)
-	a.evtr.Once(ev, func(data interface{}) {
-		if data != nil {
-			e := data.(event.Error)
-			err = e.Err
-		}
-		log.Debugf("got %s: %v", ev, err)
-		done <- true
-	})
-	log.Debugf("%s publish %s: %s %s", sid, event.UserLogin, uid, fp)
-	a.evtr.Publish(event.UserLogin, event.Session{sid, uid, fp})
-	log.Debugf("%s wait for %s ack", sid, event.UserLogin)
-	<-done
-	if err == nil {
-		log.Infof("Auth login %s %s", fp, sid)
-	}
-	return err
+	log.Infof("Auth login %s %s", fp, sid)
+	return nil
 }
 
 func (a *ServerAuth) Logout(sid session.Token) error {
-	var err error
-	done := make(chan bool, 0)
-	ev := fmt.Sprintf("%s.%s", event.UserLogout, sid)
-	a.evtr.Once(ev, func(data interface{}) {
-		if data != nil {
-			e := data.(event.Error)
-			err = e.Err
-		}
-		log.Debugf("got %s: %v", ev, err)
-		done <- true
-	})
-	log.Debugf("%s publish %s", sid, event.UserLogout)
-	a.evtr.Publish(event.UserLogout, event.Session{Sid: sid})
-	log.Debugf("%s wait for %s ack", sid, event.UserLogout)
-	<-done
-	if err == nil {
-		log.Infof("Auth logout %s", sid)
-	}
-	return err
+	log.Infof("Auth logout %s", sid)
+	return nil
 }

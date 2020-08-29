@@ -8,7 +8,6 @@ import (
 	"errors"
 
 	"github.com/munbot/master/v0/internal/api"
-	"github.com/munbot/master/v0/internal/event"
 	"github.com/munbot/master/v0/internal/ssh"
 	"github.com/munbot/master/v0/log"
 	"github.com/munbot/master/v0/utils/lock"
@@ -64,8 +63,8 @@ func NewApiServer() ApiServer {
 
 type SSHServer ssh.Server
 
-func NewSSHServer(evtr event.Eventer) SSHServer {
+func NewSSHServer() SSHServer {
 	log.Debug("new ssh server")
 	checkLock()
-	return ssh.NewServer(ssh.NewServerAuth(evtr))
+	return ssh.NewServer(ssh.NewServerAuth())
 }
