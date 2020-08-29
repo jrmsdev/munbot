@@ -43,6 +43,11 @@ func Parse(emailAddr string) (ID, error) {
 type User struct {
 	e  *mail.Address
 	id ID
+	fp string
+}
+
+func New(id ID, fp string) *User {
+	return &User{new(mail.Address), id, fp}
 }
 
 func (u *User) Name() string {
@@ -51,6 +56,10 @@ func (u *User) Name() string {
 
 func (u *User) ID() string {
 	return u.id.String()
+}
+
+func (u *User) Fingerprint() string {
+	return u.fp
 }
 
 func (u *User) String() string {

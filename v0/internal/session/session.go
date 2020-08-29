@@ -31,9 +31,8 @@ func (t Token) String() string {
 }
 
 type Session struct {
-	id  Token
-	uid user.ID
-	fp  string
+	id Token
+	u  *user.User
 }
 
 type sm struct {
@@ -53,7 +52,7 @@ func (m *sm) Add(sid Token, uid user.ID, fp string) (ok bool) {
 	if _, found := m.sess[sid]; found {
 		return false
 	}
-	m.sess[sid] = &Session{sid, uid, fp}
+	m.sess[sid] = &Session{sid, user.New(uid, fp)}
 	return true
 }
 
