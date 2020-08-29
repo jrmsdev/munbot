@@ -10,7 +10,6 @@ import (
 	"github.com/munbot/master/v0/adaptor"
 	"github.com/munbot/master/v0/driver/api"
 	"github.com/munbot/master/v0/driver/sshd"
-	"github.com/munbot/master/v0/internal/event"
 	"github.com/munbot/master/v0/log"
 )
 
@@ -48,15 +47,5 @@ func (r *Munbot) Gobot() *gobot.Robot {
 }
 
 func (r *Munbot) Work() {
-	log.Debug("start work...")
-	// failure handler
-	if err := r.Once(event.Fail, func(data interface{}) {
-		if data != nil {
-			err := data.(event.Error)
-			log.Info("Failure!")
-			log.Panicf("event %q failure: %v", err.Type, err.Err)
-		}
-	}); err != nil {
-		log.Panic(err)
-	}
+	log.Debug("no work! =)")
 }

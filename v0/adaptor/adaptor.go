@@ -11,7 +11,6 @@ import (
 	"gobot.io/x/gobot/api"
 
 	"github.com/munbot/master/v0/internal/core"
-	"github.com/munbot/master/v0/internal/event"
 	"github.com/munbot/master/v0/log"
 )
 
@@ -30,7 +29,7 @@ type Munbot struct {
 	master   *gobot.Master
 	name     string
 	interval time.Duration
-	evtr     event.Eventer
+	evtr     gobot.Eventer
 }
 
 func New(m *gobot.Master) *Munbot {
@@ -38,7 +37,7 @@ func New(m *gobot.Master) *Munbot {
 		master:   m,
 		name:     "munbot",
 		interval: 300 * time.Millisecond,
-		evtr:     event.NewEventer(),
+		evtr:     gobot.NewEventer(),
 	}
 }
 
@@ -61,9 +60,6 @@ func (a *Munbot) Connect() error {
 
 func (a *Munbot) Finalize() error {
 	log.Printf("Finalize %s platform.", a.name)
-	a.evtr.Publish(event.Fail, nil)
-	log.Debug("wait eventer to finish...")
-	a.evtr.Wait()
 	log.Debug("unlock core runtime")
 	core.Unlock()
 	return nil
