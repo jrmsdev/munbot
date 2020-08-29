@@ -5,8 +5,6 @@
 package robot
 
 import (
-	"time"
-
 	"gobot.io/x/gobot"
 
 	"github.com/munbot/master/v0/adaptor"
@@ -56,8 +54,6 @@ func (r *Munbot) Work() {
 	if err := r.Once(event.Fail, func(data interface{}) {
 		if data == nil {
 			// called from adaptor.Finalize (ideally)
-			r.Publish(event.ApiStart, false)
-			r.Publish(event.ApiStop, false)
 			r.Publish(event.SSHDStart, false)
 			r.Publish(event.SSHDStop, false)
 		} else {
@@ -70,7 +66,5 @@ func (r *Munbot) Work() {
 	}
 
 	// start core runtime
-	r.Publish(event.ApiStart, true)
-	time.Sleep(r.conn.Interval())
 	r.Publish(event.SSHDStart, true)
 }
