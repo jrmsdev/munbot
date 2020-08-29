@@ -119,7 +119,7 @@ var allTests map[string]*sshcmdTest = map[string]*sshcmdTest{
 	"Connect":   {[]string{}, 255, "logout\r\n"},
 	"PtyReq":    {[]string{"-tt"}, 255, "logout\r\n"},
 	"Tunnel":    {[]string{"-tt", "-L", "9999:localhost:6492"}, 255, "logout\r\n"},
-	//~ "ExecError": {[]string{"testing"}, 255, ""},
+	"ExecError": {[]string{"testing"}, 255, ""},
 }
 
 func (s *sshCmdSuite) TestAll() {
