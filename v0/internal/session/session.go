@@ -36,14 +36,14 @@ type Session struct {
 }
 
 type sm struct {
-	*sync.Mutex
+	*sync.RWMutex
 	sess map[Token]*Session
 }
 
 var sess *sm
 
 func init() {
-	sess = &sm{new(sync.Mutex), make(map[Token]*Session)}
+	sess = &sm{new(sync.RWMutex), make(map[Token]*Session)}
 }
 
 func (m *sm) Add(sid Token, uid user.ID, fp string) (ok bool) {
@@ -68,6 +68,8 @@ func (m *sm) Remove(sid Token) (ok bool) {
 
 func Login(sid Token, uid user.ID, fp string) error {
 	log.Debugf("%s login", sid)
+	sess.RLock()
+	defer sess.RUnlock()
 	if !sess.Add(sid, uid, fp) {
 		return log.Errorf("Session found %s.", sid)
 	}
@@ -77,6 +79,8 @@ func Login(sid Token, uid user.ID, fp string) error {
 
 func Logout(sid Token) error {
 	log.Debugf("%s logout", sid)
+	sess.RLock()
+	defer sess.RUnlock()
 	if !sess.Remove(sid) {
 		return log.Errorf("Session not found %s.", sid)
 	}
