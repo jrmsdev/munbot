@@ -91,6 +91,8 @@ func (a *Driver) Halt() error {
 	}
 	log.Debug("wait...")
 	a.wg.Wait()
-	a.srv = nil
+	if err == nil {
+		a.srv = nil
+	}
 	return err
 }

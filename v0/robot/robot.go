@@ -49,14 +49,9 @@ func (r *Munbot) Gobot() *gobot.Robot {
 
 func (r *Munbot) Work() {
 	log.Debug("start work...")
-
 	// failure handler
 	if err := r.Once(event.Fail, func(data interface{}) {
-		if data == nil {
-			// called from adaptor.Finalize (ideally)
-			r.Publish(event.SSHDStart, false)
-			r.Publish(event.SSHDStop, false)
-		} else {
+		if data != nil {
 			err := data.(event.Error)
 			log.Info("Failure!")
 			log.Panicf("event %q failure: %v", err.Type, err.Err)
@@ -64,7 +59,4 @@ func (r *Munbot) Work() {
 	}); err != nil {
 		log.Panic(err)
 	}
-
-	// start core runtime
-	r.Publish(event.SSHDStart, true)
 }

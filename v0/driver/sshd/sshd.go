@@ -11,7 +11,6 @@ import (
 
 	"github.com/munbot/master/v0/adaptor"
 	"github.com/munbot/master/v0/internal/core"
-	"github.com/munbot/master/v0/internal/event"
 	"github.com/munbot/master/v0/log"
 	"github.com/munbot/master/v0/utils/net"
 )
@@ -22,8 +21,6 @@ type Driver struct {
 	name string
 	srv  core.SSHServer
 	wg   *sync.WaitGroup
-	err  error
-	gobot.Eventer
 }
 
 func NewDriver(a adaptor.Adaptor) gobot.Driver {
@@ -32,7 +29,6 @@ func NewDriver(a adaptor.Adaptor) gobot.Driver {
 		conn:    a,
 		name:    "munbot.sshd",
 		wg:      new(sync.WaitGroup),
-		Eventer: a.Eventer(),
 	}
 }
 
@@ -59,57 +55,39 @@ func (s *Driver) Start() error {
 	if s.srv != nil {
 		return log.Error("SSH server already started")
 	}
-	s.err = nil
 	s.srv = core.NewSSHServer()
 	// configure
 	log.Printf("Configure ssh server.")
 	if err := s.srv.Configure(); err != nil {
 		return log.Error(err)
 	}
-	// stop handler
+	// start
 	s.wg.Add(1)
-	s.AddEvent(event.SSHDStop)
-	if err := s.Once(event.SSHDStop, func(data interface{}) {
-		defer s.wg.Done()
-		if run := data.(bool); !run {
-			return
-		}
-		s.Lock()
-		defer s.Unlock()
-		log.Debug("stop ssh server")
-		if err := s.srv.Stop(); err != nil {
-			s.err = log.Error(err)
-		}
-	}); err != nil {
-		return log.Error(err)
-	}
-	// start handler
-	s.wg.Add(1)
-	s.AddEvent(event.SSHDStart)
-	if err := s.Once(event.SSHDStart, func(data interface{}) {
-		defer s.wg.Done()
-		if run := data.(bool); !run {
-			return
-		}
+	go func() {
 		log.Debug("start ssh server")
+		defer s.wg.Done()
 		if err := s.srv.Start(); err != nil {
-			log.Error(err)
-			s.Publish(event.Fail, event.Error{event.SSHDStart, err})
+			log.Panic(err)
 		}
-	}); err != nil {
-		return log.Error(err)
-	}
+	}()
 	return nil
 }
 
 func (s *Driver) Halt() error {
 	log.Printf("Halt %s driver.", s.name)
-	s.Publish(event.SSHDStop, true)
-	s.wg.Wait()
 	s.Lock()
 	defer s.Unlock()
-	s.srv = nil
-	return s.err
+	log.Debug("stop ssh server")
+	err := s.srv.Stop()
+	if err != nil {
+		log.Error(err)
+	}
+	log.Debug("wait...")
+	s.wg.Wait()
+	if err == nil {
+		s.srv = nil
+	}
+	return err
 }
 
 // munbot interface

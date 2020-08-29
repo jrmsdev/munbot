@@ -17,8 +17,6 @@ type Error struct {
 
 const (
 	Fail       string = "fail"
-	SSHDStart         = "sshd.start"
-	SSHDStop          = "sshd.stop"
 )
 
 type Eventer interface {
