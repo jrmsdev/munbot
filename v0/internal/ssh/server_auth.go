@@ -69,7 +69,7 @@ func (a *ServerAuth) setup() error {
 	if err != nil {
 		return err
 	}
-	log.Printf("Auth %s %s", a.name, a.keyfp(a.id.PublicKey()))
+	log.Printf("Auth %s %s.", a.name, a.keyfp(a.id.PublicKey()))
 	return nil
 }
 
@@ -186,6 +186,7 @@ func (a *ServerAuth) Login(sid session.Token, u *user.User) error {
 		return log.Errorf("Auth login %s: %v.", sid, err)
 	}
 	log.Infof("Auth login %s %s.", u.Fingerprint(), sid)
+	log.Printf("User %s %s.", u.ID(), sid)
 	return nil
 }
 
@@ -193,6 +194,6 @@ func (a *ServerAuth) Logout(sid session.Token) error {
 	if err := session.Logout(sid); err != nil {
 		return log.Errorf("Auth logout %s: %v.", sid, err)
 	}
-	log.Infof("Auth logout %s", sid)
+	log.Infof("Auth logout %s.", sid)
 	return nil
 }
