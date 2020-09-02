@@ -210,15 +210,16 @@ func (s *SSHD) dispatch(ctx context.Context, nc net.Conn, sid string) {
 		ssh.DiscardRequests(reqs)
 	}(reqs)
 	// new session
-	fp := conn.Permissions.Extensions["pubkey-fp"]
-	uid := conn.Permissions.Extensions["x-munbot-user"]
-	if fp == "" || uid == "" {
-		log.Errorf("Auth invalid credentials %s.", sid)
-		return
-	}
 	var sess session.Token
 	if sess, err = session.FromString(sid); err != nil {
 		log.Debugf("%s dispatch session error: %v", sid, err)
+		return
+	}
+	var u *user.User
+	u, err = user.Unmarshal(conn.Permissions.Extensions["x-munbot-user"])
+	if err != nil {
+		log.Debugf("%s user error: %v", sid, err)
+		log.Errorf("Auth invalid credentials %s.", sid)
 		return
 	}
 	// serve channels
@@ -231,6 +232,6 @@ LOOP:
 			break LOOP
 		default:
 		}
-		s.serve(ctx, nc, sess, user.ID(uid), fp)
+		s.serve(ctx, nc, sess, u)
 	}
 }

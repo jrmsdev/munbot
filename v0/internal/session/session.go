@@ -47,14 +47,14 @@ func init() {
 	sess = &sm{new(sync.Mutex), make(map[string]*Session)}
 }
 
-func (m *sm) Add(sid Token, uid user.ID, fp string) (ok bool) {
+func (m *sm) Add(sid Token, u *user.User) (ok bool) {
 	m.Lock()
 	defer m.Unlock()
 	s := sid.String()
 	if _, found := m.sess[s]; found {
 		return false
 	}
-	m.sess[s] = &Session{sid, user.New(uid, fp)}
+	m.sess[s] = &Session{sid, u}
 	log.Debugf("%s added", s)
 	return true
 }
@@ -71,9 +71,9 @@ func (m *sm) Remove(sid Token) (ok bool) {
 	return true
 }
 
-func Login(sid Token, uid user.ID, fp string) error {
+func Login(sid Token, u *user.User) error {
 	log.Debugf("%s login", sid)
-	if !sess.Add(sid, uid, fp) {
+	if !sess.Add(sid, u) {
 		return errors.New("session found")
 	}
 	return nil

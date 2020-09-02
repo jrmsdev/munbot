@@ -23,7 +23,7 @@ type request struct {
 	Serve bool
 }
 
-func (s *SSHD) serve(ctx context.Context, nc ssh.NewChannel, sid session.Token, uid user.ID, fp string) {
+func (s *SSHD) serve(ctx context.Context, nc ssh.NewChannel, sid session.Token, u *user.User) {
 	log.Debugf("session %s", sid)
 	t := nc.ChannelType()
 	log.Debugf("%s channel type %s", sid, t)
@@ -69,7 +69,7 @@ func (s *SSHD) serve(ctx context.Context, nc ssh.NewChannel, sid session.Token, 
 			switch req.Type {
 			case "shell":
 				wait = false
-				s.serveShell(ctx, ch, sid, uid, fp)
+				s.serveShell(ctx, ch, sid, u)
 			default:
 				if !req.Serve {
 					log.Errorf("%s ssh invalid request: %s", sid, req.Type)
@@ -83,7 +83,7 @@ func (s *SSHD) serve(ctx context.Context, nc ssh.NewChannel, sid session.Token, 
 	}(ctx, ch, reqs)
 }
 
-func (s *SSHD) serveShell(ctx context.Context, ch ssh.Channel, sid session.Token, uid user.ID, fp string) {
+func (s *SSHD) serveShell(ctx context.Context, ch ssh.Channel, sid session.Token, u *user.User) {
 	log.Debugf("%s serve shell", sid)
 	defer func() {
 		if err := ch.Close(); err != nil {
@@ -94,7 +94,7 @@ func (s *SSHD) serveShell(ctx context.Context, ch ssh.Channel, sid session.Token
 	}()
 	term := terminal.NewTerminal(ch, "")
 	resp := bufio.NewWriter(term)
-	if err := s.auth.Login(sid, uid, fp); err != nil {
+	if err := s.auth.Login(sid, u); err != nil {
 		log.Debugf("%s auth login error: %v", sid, err)
 		if err := shellWrite(resp, "", "login error"); err != nil {
 			log.Errorf("SSHD terminal %s: %v", sid, err)

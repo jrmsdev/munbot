@@ -25,8 +25,8 @@ var _ AuthManager = &ServerAuth{}
 type AuthManager interface {
 	Configure(dir string) error
 	ServerConfig() *ssh.ServerConfig
-	Login(sid session.Token, uid user.ID, fp string) error
-	Logout(sid session.Token) error
+	Login(session.Token, *user.User) error
+	Logout(session.Token) error
 }
 
 // ServerAuth implemenst the ssh server auth manager.
@@ -73,36 +73,35 @@ func (a *ServerAuth) setup() error {
 	return nil
 }
 
-func (a *ServerAuth) parseAuthKeys(fp string) (user.ID, error) {
+func (a *ServerAuth) parseAuthKeys(fp string) (string, error) {
 	log.Debug("parse authorized keys")
 	blob, err := vfs.ReadFile(a.keys)
 	if err != nil {
-		return user.Nil, log.Error(err)
+		return "", log.Error(err)
 	}
 	for len(blob) > 0 {
 		key, info, _, rest, err := ssh.ParseAuthorizedKey(blob)
 		if err != nil {
-			return user.Nil, log.Error(err)
+			return "", log.Error(err)
 		}
 		if fp == a.keyfp(key) {
 			log.Debugf("valid key %s", fp)
-			return user.Parse(info)
+			return user.Marshal(info, fp)
 		}
 		blob = rest
 	}
-	return user.Nil, log.Errorf("Auth key %s", fp)
+	return "", log.Errorf("Auth key %s", fp)
 }
 
 func (a *ServerAuth) publicKeyCallback(c ssh.ConnMetadata, k ssh.PublicKey) (*ssh.Permissions, error) {
 	fp := a.keyfp(k)
-	uid, err := a.parseAuthKeys(fp)
+	u, err := a.parseAuthKeys(fp)
 	if err != nil {
 		return nil, err
 	}
-	log.Debugf("allow uid: %s", uid)
 	return &ssh.Permissions{Extensions: map[string]string{
 		"pubkey-fp":     fp,
-		"x-munbot-user": uid.String(),
+		"x-munbot-user": u,
 	}}, nil
 }
 
@@ -182,11 +181,11 @@ func (a *ServerAuth) sshNewKeys(fn string) (ssh.Signer, error) {
 	return a.sshLoadKeys(fn)
 }
 
-func (a *ServerAuth) Login(sid session.Token, uid user.ID, fp string) error {
-	if err := session.Login(sid, uid, fp); err != nil {
+func (a *ServerAuth) Login(sid session.Token, u *user.User) error {
+	if err := session.Login(sid, u); err != nil {
 		return log.Errorf("Auth login %s: %v.", sid, err)
 	}
-	log.Infof("Auth login %s %s.", fp, sid)
+	log.Infof("Auth login %s %s.", u.Fingerprint(), sid)
 	return nil
 }
 
