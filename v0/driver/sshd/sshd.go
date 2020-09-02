@@ -25,10 +25,10 @@ type Driver struct {
 
 func NewDriver(a adaptor.Adaptor) gobot.Driver {
 	return &Driver{
-		Mutex:   new(sync.Mutex),
-		conn:    a,
-		name:    "munbot.sshd",
-		wg:      new(sync.WaitGroup),
+		Mutex: new(sync.Mutex),
+		conn:  a,
+		name:  "munbot.sshd",
+		wg:    new(sync.WaitGroup),
 	}
 }
 
