@@ -1,4 +1,2 @@
 *.log
 known_hosts
-/etc
-/run

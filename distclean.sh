@@ -1,3 +1,0 @@
-#!/bin/sh
-go clean -mod vendor -i -modcache ./...
-exec ./clean.sh

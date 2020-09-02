@@ -1,4 +1,0 @@
-Host testing.munbot.local
-  Hostname localhost
-  LogLevel QUIET
-  StrictHostKeyChecking no
