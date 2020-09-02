@@ -1,6 +1,6 @@
 #!/bin/sh
 set -eu
-tmpdir=./_docker/devel/tmp
+tmpdir=./docker/devel/tmp
 rm -rvf ${tmpdir}
 mkdir -vp ${tmpdir}
 cp -va ./go.env ${tmpdir}/
@@ -10,6 +10,6 @@ for srcd in "./v0"; do
 	cp -va ${srcd}/go.mod ${srcd}/go.sum ${dstd}/
 	install -v -p -d ${srcd}/vendor ${dstd}/vendor
 done
-docker build --rm -t munbot/master:devel ./_docker/devel
+docker build --rm -t munbot/master:devel ./docker/devel
 rm -vrf ${tmpdir}
 exit 0
