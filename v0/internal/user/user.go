@@ -81,6 +81,22 @@ func New(e *mail.Address, fp string) *User {
 	return &User{e: e, fp: fp, id: ID(hash.Sum(e.Address))}
 }
 
+func Unmarshal(s string) (*User, error) {
+	var j jsonUser
+	if err := json.Unmarshal([]byte(s), &j); err != nil {
+		return nil, log.Error(err)
+	}
+	e := &mail.Address{
+		Name:    j.EName,
+		Address: j.EAddr,
+	}
+	u := New(e, j.FP)
+	if u.String() != j.ID {
+		return nil, log.Error("user: invalid credentials")
+	}
+	return u, nil
+}
+
 func (u *User) Name() string {
 	return u.e.Name
 }

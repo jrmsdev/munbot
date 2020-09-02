@@ -22,3 +22,13 @@ func TestMarshal(t *testing.T) {
 	check.NoError(err)
 	check.Equal(tuser.String(), s)
 }
+
+func TestUnmarshal(t *testing.T) {
+	check := assert.New(t)
+	u, err := Unmarshal(tuser.String())
+	check.NoError(err)
+	check.Equal(tuser.EName, u.Name(), "e.name")
+	check.Equal(tuser.EAddr, u.e.Address, "e.address")
+	check.Equal(tuser.FP, u.Fingerprint(), "u.fingerprint")
+	check.Equal(tuser.ID, u.String(), "u.ID")
+}
