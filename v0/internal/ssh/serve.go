@@ -16,6 +16,7 @@ import (
 	"github.com/munbot/master/v0/internal/session"
 	"github.com/munbot/master/v0/internal/user"
 	"github.com/munbot/master/v0/log"
+	"github.com/munbot/master/v0/version"
 )
 
 type request struct {
@@ -101,8 +102,9 @@ func (s *SSHD) serveShell(ctx context.Context, ch ssh.Channel, sid session.Token
 		}
 		return
 	}
-	shellWrite(resp, "", "login")
-	ps1 := fmt.Sprintf("%s> ", env.Get("MUNBOT"))
+	bot := env.Get("MUNBOT")
+	shellWrite(resp, "", fmt.Sprintf("Munbot %s %s.", bot, version.String()))
+	ps1 := fmt.Sprintf("%s> ", bot)
 	term.SetPrompt(ps1)
 LOOP:
 	for {
