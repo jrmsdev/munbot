@@ -1,5 +1,5 @@
 Host master.munbot.local
   Hostname 127.0.0.1
   Port     6492
-  UserKnownHostsFile ./_devel/known_hosts
+  UserKnownHostsFile ./devel/known_hosts
   StrictHostKeyChecking no

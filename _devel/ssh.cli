@@ -1,3 +1,0 @@
-#!/bin/sh
-set -eu
-exec ssh -F ./_devel/ssh_config $@ master.munbot.local
