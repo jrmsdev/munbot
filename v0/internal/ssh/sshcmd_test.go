@@ -70,7 +70,7 @@ func (s *sshCmdSuite) SetupSuite() {
 			t.Fatal(err)
 		}
 	}(s.T(), s.m)
-	time.Sleep(100 * time.Millisecond)
+	time.Sleep(300 * time.Millisecond)
 	s.addr = s.m.Addr().Address()
 	s.T().Logf("sshd addr %q", s.addr)
 	if s.addr == "ssh:" {
